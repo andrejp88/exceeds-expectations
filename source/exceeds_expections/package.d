@@ -114,17 +114,18 @@ in (
 {
     const string[] sourceLines = source[$ - 1] == '\n' ? source.splitLines ~ "" : source.splitLines;
     immutable size_t sourceLength = sourceLines.length;
-    immutable size_t focusLineIndex = focusLine - 1;
+    immutable size_t firstFocusLineIndex = focusLine - 1;
+    immutable size_t lastFocusLineIndex = sourceLines[firstFocusLineIndex..$].countUntil!(e => e.canFind(';')) + firstFocusLineIndex;
 
     immutable size_t firstLineIndex =
-        focusLineIndex.to!int - radius.to!int < 0 ?
+        firstFocusLineIndex.to!int - radius.to!int < 0 ?
         0 :
-        focusLineIndex - radius;
+        firstFocusLineIndex - radius;
 
     immutable size_t lastLineIndex =
-        focusLineIndex + radius >= sourceLength ?
+        lastFocusLineIndex + radius >= sourceLength ?
         sourceLength - 1 :
-        focusLineIndex + radius;
+        lastFocusLineIndex + radius;
 
     return
         sourceLines[firstLineIndex .. lastLineIndex + 1]
@@ -132,7 +133,7 @@ in (
         .map!((tup) {
             immutable string lineContents = (tup[1] + 1).to!string.padLeft(' ', 4).to!string ~ " | " ~ tup[0];
             return
-                tup[1] == focusLineIndex ?
+                tup[1] >= firstFocusLineIndex && tup[1] <= lastFocusLineIndex ?
                 lineContents.color(fg.yellow) :
                 lineContents;
         })
