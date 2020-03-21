@@ -1,8 +1,12 @@
 module exceeds_expections;
 
 import colorize;
+import std.algorithm.comparison;
+import std.algorithm.iteration;
 import std.conv;
+import std.range;
 import std.stdio;
+import std.string;
 import std.traits;
 
 
@@ -26,9 +30,9 @@ public class EEException : Exception
  *
  *  TODO: Try to make this auto-ref
  */
-public Expectation!T expect(T)(const T subject, string file = __FILE__, size_t line = __LINE__)
+public Expectation!(T, file) expect(T, string file = __FILE__)(const T subject, size_t line = __LINE__)
 {
-    return Expectation!T(subject, file, line);
+    return Expectation!(T, file)(subject, line);
 }
 
 public enum areEqualityComparable(A, B) = __traits(compiles, A() == B());
@@ -36,16 +40,16 @@ public enum areEqualityComparable(A, B) = __traits(compiles, A() == B());
 /**
  *  Wraps any object and allows assertions to be run.
  */
-public struct Expectation(T)
+public struct Expectation(T, string file = __FILE__)
 {
     private const(T) subject;
-    private string file;
     private size_t line;
 
-    private this(const(T) subject, string file, size_t line)
+    private enum string fileContents = import(file);
+
+    private this(const(T) subject,size_t line)
     {
         this.subject = subject;
-        this.file = file;
         this.line = line;
     }
 
@@ -56,13 +60,57 @@ public struct Expectation(T)
         if (subject != other)
         {
             throw new EEException(
-                "Compared objects are not equal.\n" ~
-                "Expected: " ~ (T.stringof ~ " " ~ subject.to!string).color("green") ~
-                "\n" ~
-                "Received: " ~ (TOther.stringof ~ " " ~ other.to!string).color("red"),
+                "Arguments are not equal.\n" ~
+                "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
+                "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
+                "Expected: " ~ (T.stringof ~ " " ~ subject.to!string).color("green") ~ "\n" ~
+                "Received: " ~ (TOther.stringof ~ " " ~ other.to!string).color("red") ~ "\n",
                 file,
                 line
             );
         }
     }
+}
+
+private string formatCode(const string source, size_t focusLine, size_t radius)
+in (
+    focusLine != 0,
+    "focusLine must be at least 1"
+)
+in (
+    focusLine < source.splitLines.length,
+    "focusLine must not be larger than the last line in the source (" ~ focusLine.to!string ~ " > " ~ source.splitLines.length.to!string ~ ")"
+)
+in (
+    source.splitLines.length > 0, "source may not be empty"
+)
+{
+    immutable size_t viewSize = 2 * radius + 1;
+    const string[] sourceLines = source[$ - 1] == '\n' ? source.splitLines ~ "" : source.splitLines;
+    immutable size_t sourceLength = sourceLines.length;
+    immutable size_t focusLineIndex = focusLine - 1;
+
+    immutable size_t firstLineIndex =
+        focusLineIndex.to!int - radius.to!int < 0 ?
+        0 :
+        focusLineIndex - radius;
+
+    immutable size_t lastLineIndex =
+        focusLineIndex + radius >= sourceLength ?
+        sourceLength - 1 :
+        focusLineIndex + radius;
+
+    writeln("from ", firstLineIndex + 1, " to ", lastLineIndex + 1, " inclusive");
+
+    return
+        sourceLines[firstLineIndex .. lastLineIndex + 1]
+        .zip(iota(firstLineIndex, lastLineIndex + 1))
+        .map!((tup) {
+            immutable string lineContents = (tup[1] + 1).to!string.padLeft(' ', 4).to!string ~ " | " ~ tup[0];
+            return
+                tup[1] == focusLineIndex ?
+                lineContents.color(fg.yellow) :
+                lineContents;
+        })
+        .join('\n') ~ "\n";
 }
