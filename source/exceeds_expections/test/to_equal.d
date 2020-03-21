@@ -36,12 +36,6 @@ unittest
             const(typeof(this)) other_ = cast(typeof(this)) other;
             return other_ && this.x == other_.x;
         }
-
-        override string toString()
-        const
-        {
-            return "A(x = " ~ x.to!string ~ ")";
-        }
     }
 
     expect(new A(4)).toEqual(new A(4));

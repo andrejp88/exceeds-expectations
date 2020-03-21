@@ -3,6 +3,7 @@ module exceeds_expections;
 import colorize;
 import std.algorithm.comparison;
 import std.algorithm.iteration;
+import std.algorithm.searching;
 import std.conv;
 import std.range;
 import std.stdio;
@@ -62,20 +63,24 @@ public struct Expectation(T, string file = __FILE__)
 
             static if (is(T == class) && !__traits(isOverrideFunction, T.toString))
             {
-                stringOfSubject = (&subject).to!string;
+                stringOfSubject = stringifyClassObject(subject);
             }
 
             static if (is(TOther == class) && !__traits(isOverrideFunction, TOther.toString))
             {
-                stringOfOther = (&other).to!string;
+                stringOfOther = stringifyClassObject(other);
             }
+
+            bool areStringsMultiline = stringOfSubject.canFind('\n') || stringOfOther.canFind('\n');
 
             throw new EEException(
                 "Arguments are not equal.\n" ~
                 "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
                 "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
-                "Expected: " ~ stringOfSubject.color("green") ~ "\n" ~
-                "Received: " ~ stringOfOther.color("red") ~ "\n",
+                "Expected: " ~ (areStringsMultiline ? "\n" : "") ~
+                stringOfSubject.color("green") ~ "\n" ~ (areStringsMultiline ? "\n" : "") ~
+                "Received: " ~ (areStringsMultiline ? "\n" : "") ~
+                stringOfOther.color("red") ~ "\n",
                 file,
                 line
             );
@@ -121,4 +126,44 @@ in (
                 lineContents;
         })
         .join('\n') ~ "\n";
+}
+
+private string stringifyClassObject(T)(const T object)
+if (is(T == class))
+{
+    import std.range : Appender;
+
+    Appender!string output;
+
+    output.put(T.stringof);
+    output.put(" {\n");
+
+    static foreach (tup; zip(fieldTypeStrings!T, [ FieldNameTuple!T ]))
+    {
+        output.put("    ");
+        output.put(tup[0]);
+        output.put(" ");
+        output.put(tup[1]);
+        output.put(" = ");
+        output.put(__traits(getMember, object, tup[1]).to!string);
+        output.put(";\n");
+    }
+
+    output.put("}");
+
+    return output.data;
+}
+
+private enum string[] fieldTypeStrings(T) = fieldTypeStrings_!T;
+
+private string[] fieldTypeStrings_(T)() {
+    string[] types;
+
+    foreach (type; Fields!T)
+    {
+        types ~= type.stringof;
+    }
+
+
+    return types;
 }
