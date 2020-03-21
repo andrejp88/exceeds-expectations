@@ -1,0 +1,40 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/exceeds-expectations
+exceeds-expectations.so
+exceeds-expectations.dylib
+exceeds-expectations.dll
+exceeds-expectations.a
+exceeds-expectations.lib
+exceeds-expectations-test-*
+*.exe
+*.o
+*.obj
+*.lst
+
+# Compiled Object files
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Executables
+*.exe
+
+# DUB
+.dub
+docs.json
+__dummy.html
+docs/
+
+# Code coverage
+*.lst

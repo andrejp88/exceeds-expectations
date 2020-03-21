@@ -1,0 +1,5 @@
+name "exceeds-expectations"
+description "A simple, IDE-friendly assertion library"
+authors "Andrej Petrovic"
+copyright "Copyright © 2020, Andrej Petrovic"
+license "MIT"
