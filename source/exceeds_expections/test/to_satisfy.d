@@ -28,3 +28,51 @@ unittest
 
     expect(new A(2, 3, 6)).toSatisfy(a => sqrt(a.x * a.x + a.y * a.y + a.z * a.z) == 7);
 }
+
+unittest
+{
+    // No failures
+    expect(5).toSatisfyAll(
+        e => e < 10,
+        e => e > 2,
+        e => e % 2 == 1
+    );
+
+    // One failure
+    showMessage(
+        expect(5).toSatisfyAll(
+            e => e < 10,
+            e => e > 8,
+            e => e % 2 == 1
+        )
+    );
+
+    // Two failures
+    showMessage(
+        expect(5).toSatisfyAll(
+            e => e < 3,
+            e => e > 8,
+            e => e % 2 == 1
+        )
+    );
+
+    // Three failures
+    showMessage(
+        expect(5).toSatisfyAll(
+            e => e < 3,
+            e => e > 8,
+            e => e % 2 == 0,
+            e => true
+        )
+    );
+
+    // All failures
+    showMessage(
+        expect(5).toSatisfyAll(
+            e => e < 3,
+            e => e > 8,
+            e => e % 2 == 0,
+            e => false
+        )
+    );
+}

@@ -97,6 +97,47 @@ public struct Expectation(TReceived, string file = __FILE__)
             );
         }
     }
+
+    /// Throws an [EEException] unless `predicate(received)` returns true for all predicates in `predicates`.
+    public void toSatisfyAll(bool delegate(const(TReceived))[] predicates...)
+    {
+        auto results = predicates.map!(p => p(received));
+        immutable size_t numFailures = results.count!(e => !e);
+
+        if (numFailures == 0) return;
+
+        string stringOfReceived = stringify(received);
+
+        string[] failingIndices =
+            results
+            .zip(iota(0, results.length))
+            .filter!(tup => !tup[0])
+            .map!(tup => tup[1].to!string)
+            .array;
+
+        immutable string failingIndicesString =
+            numFailures == 1 ? failingIndices[0] :
+            numFailures == 2 ? failingIndices.join(" and ") :
+            failingIndices[0 .. $ - 1].join(", ") ~ ", and " ~ failingIndices[$ - 1];
+
+        string blame =
+            numFailures == predicates.length ? "Received value does not satisfy any predicates." :
+            "Received value does not satisfy " ~
+            (numFailures == 1 ? "predicate at index " : "predicates at indices ") ~
+            failingIndicesString ~ " (first argument is index 0).";
+
+        immutable bool areStringsMultiline = stringOfReceived.canFind('\n');
+
+        throw new EEException(
+            blame ~ "\n" ~
+            "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
+            "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
+            "Received: " ~ (areStringsMultiline ? "\n" : "") ~
+            stringOfReceived.color("red") ~ "\n",
+            file,
+            line
+        );
+    }
 }
 
 private string formatCode(const string source, size_t focusLine, size_t radius)
