@@ -31,56 +31,67 @@ public class EEException : Exception
  *
  *  TODO: Try to make this auto-ref
  */
-public Expectation!(T, file) expect(T, string file = __FILE__)(const T subject, size_t line = __LINE__)
+public Expectation!(T, file) expect(T, string file = __FILE__)(const T actual, size_t line = __LINE__)
 {
-    return Expectation!(T, file)(subject, line);
+    return Expectation!(T, file)(actual, line);
 }
 
 /**
  *  Wraps any object and allows assertions to be run.
  */
-public struct Expectation(T, string file = __FILE__)
+public struct Expectation(TReceived, string file = __FILE__)
 {
-    private const(T) subject;
-    private size_t line;
+    private const(TReceived) received;
 
+    private size_t line;
     private enum string fileContents = import(file);
 
-    private this(const(T) subject, size_t line)
+    private this(const(TReceived) received, size_t line)
     {
-        this.subject = subject;
+        this.received = received;
         this.line = line;
     }
 
-    /// Throws an exception unless `subject == other`.
-    public void toEqual(TOther)(const auto ref TOther other)
-    if (isImplicitlyConvertible!(T, TOther))
+    /// Throws an [EEException] unless `expected == received`.
+    public void toEqual(TExpected)(const auto ref TExpected expected)
+    if (isImplicitlyConvertible!(TReceived, TExpected))
     {
-        if (subject != other)
+        if (received != expected)
         {
-            string stringOfSubject = subject.to!string;
-            string stringOfOther = other.to!string;
+            string stringOfReceived = stringify(received);
+            string stringOfExpected = stringify(expected);
 
-            static if (is(T == class) && !__traits(isOverrideFunction, T.toString))
-            {
-                stringOfSubject = stringifyClassObject(subject);
-            }
-
-            static if (is(TOther == class) && !__traits(isOverrideFunction, TOther.toString))
-            {
-                stringOfOther = stringifyClassObject(other);
-            }
-
-            bool areStringsMultiline = stringOfSubject.canFind('\n') || stringOfOther.canFind('\n');
+            immutable bool areStringsMultiline = stringOfReceived.canFind('\n') || stringOfExpected.canFind('\n');
 
             throw new EEException(
                 "Arguments are not equal.\n" ~
                 "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
                 "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
                 "Expected: " ~ (areStringsMultiline ? "\n" : "") ~
-                stringOfSubject.color("green") ~ "\n" ~ (areStringsMultiline ? "\n" : "") ~
+                stringOfExpected.color("green") ~ "\n" ~ (areStringsMultiline ? "\n" : "") ~
                 "Received: " ~ (areStringsMultiline ? "\n" : "") ~
-                stringOfOther.color("red") ~ "\n",
+                stringOfReceived.color("red") ~ "\n",
+                file,
+                line
+            );
+        }
+    }
+
+    /// Throws an [EEException] unless `predicate(received)` returns true.
+    public void toSatisfy(bool delegate(const(TReceived)) predicate)
+    {
+        if (!predicate(received))
+        {
+            string stringOfReceived = stringify(received);
+
+            immutable bool areStringsMultiline = stringOfReceived.canFind('\n');
+
+            throw new EEException(
+                "Received value does not satisfy the predicate.\n" ~
+                "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
+                "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
+                "Received: " ~ (areStringsMultiline ? "\n" : "") ~
+                stringOfReceived.color("red") ~ "\n",
                 file,
                 line
             );
@@ -126,6 +137,18 @@ in (
                 lineContents;
         })
         .join('\n') ~ "\n";
+}
+
+private string stringify(T)(T t)
+{
+    static if (is(T == class) && !__traits(isOverrideFunction, T.toString))
+    {
+        return stringifyClassObject(t);
+    }
+    else
+    {
+        return t.to!string;
+    }
 }
 
 private string stringifyClassObject(T)(const T object)

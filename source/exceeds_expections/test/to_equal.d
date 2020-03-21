@@ -38,6 +38,6 @@ unittest
         }
     }
 
-    expect(new A(4)).toEqual(new A(4));
-    expect(new A(7)).toEqual(new A(8));
+    showMessage(expect(new A(4)).toEqual(new A(4)));
+    showMessage(expect(new A(7)).toEqual(new A(8)));
 }
