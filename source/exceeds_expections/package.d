@@ -15,8 +15,8 @@ import std.traits;
  */
 public class EEException : Exception
 {
-    /// Constructs a new EEException.
-    this(string message, string file = __FILE__, size_t line = __LINE__, Throwable next = null)
+    /// Constructs a new EEException
+    private this(string message, string file = __FILE__, size_t line = __LINE__, Throwable next = null)
     @safe pure nothrow
     {
         super(message, file, line, next);
@@ -34,8 +34,6 @@ public Expectation!(T, file) expect(T, string file = __FILE__)(const T subject, 
 {
     return Expectation!(T, file)(subject, line);
 }
-
-public enum areEqualityComparable(A, B) = __traits(compiles, A() == B());
 
 /**
  *  Wraps any object and allows assertions to be run.
@@ -63,8 +61,8 @@ public struct Expectation(T, string file = __FILE__)
                 "Arguments are not equal.\n" ~
                 "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
                 "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
-                "Expected: " ~ (T.stringof ~ " " ~ subject.to!string).color("green") ~ "\n" ~
-                "Received: " ~ (TOther.stringof ~ " " ~ other.to!string).color("red") ~ "\n",
+                "Expected: " ~ subject.to!string.color("green") ~ "\n" ~
+                "Received: " ~ other.to!string.color("red") ~ "\n",
                 file,
                 line
             );
@@ -85,7 +83,6 @@ in (
     source.splitLines.length > 0, "source may not be empty"
 )
 {
-    immutable size_t viewSize = 2 * radius + 1;
     const string[] sourceLines = source[$ - 1] == '\n' ? source.splitLines ~ "" : source.splitLines;
     immutable size_t sourceLength = sourceLines.length;
     immutable size_t focusLineIndex = focusLine - 1;
@@ -99,8 +96,6 @@ in (
         focusLineIndex + radius >= sourceLength ?
         sourceLength - 1 :
         focusLineIndex + radius;
-
-    writeln("from ", firstLineIndex + 1, " to ", lastLineIndex + 1, " inclusive");
 
     return
         sourceLines[firstLineIndex .. lastLineIndex + 1]
