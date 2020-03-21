@@ -76,3 +76,22 @@ unittest
         )
     );
 }
+
+unittest
+{
+    // Passes
+    expect(5).toSatisfyAny(
+        e => e < 10,
+        e => e > 9,
+        e => e % 2 == 1
+    );
+
+    // Fails
+    showMessage(
+        expect(5).toSatisfyAny(
+            e => e < 3,
+            e => e > 9,
+            e => e % 2 == 0
+        )
+    );
+}

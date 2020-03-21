@@ -151,6 +151,41 @@ public struct Expectation(TReceived, string file = __FILE__)
             file, line
         );
     }
+
+    /// Throws an [EEException] if `predicate(received)` returns false for all predicates in `predicates`.
+    public void toSatisfyAny(bool delegate(const(TReceived))[] predicates...)
+    {
+        if (predicates.length == 0)
+        {
+            throw new EEException(
+                "Missing predicates at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
+                "\n" ~ formatCode(fileContents, line, 2) ~ "\n",
+                file, line
+            );
+        }
+
+        if (predicates.length == 1)
+        {
+            toSatisfy(predicates[0]);
+        }
+
+        foreach (predicate; predicates)
+        {
+            if (predicate(received)) return;
+        }
+
+        string stringOfReceived = stringify(received);
+        immutable bool areStringsMultiline = stringOfReceived.canFind('\n');
+
+        throw new EEException(
+            "Received value does not satisfy any predicates.\n" ~
+            "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
+            "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
+            "Received: " ~ (areStringsMultiline ? "\n" : "") ~
+            stringOfReceived.color("red") ~ "\n",
+            file, line
+        );
+    }
 }
 
 private string formatCode(const string source, size_t focusLine, size_t radius)
