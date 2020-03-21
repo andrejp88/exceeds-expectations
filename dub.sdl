@@ -3,3 +3,5 @@ description "A simple, IDE-friendly assertion library"
 authors "Andrej Petrovic"
 copyright "Copyright © 2020, Andrej Petrovic"
 license "MIT"
+
+dependency "colorize" version="==1.0.5"

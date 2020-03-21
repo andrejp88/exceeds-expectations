@@ -1,7 +1,9 @@
 module exceeds_expections;
 
-import std.stdio;
+import colorize;
 import std.conv;
+import std.stdio;
+import std.traits;
 
 
 /**
@@ -29,16 +31,18 @@ public Expectation!T expect(T)(const T subject, string file = __FILE__, size_t l
     return Expectation!T(subject, file, line);
 }
 
+public enum areEqualityComparable(A, B) = __traits(compiles, A() == B());
+
 /**
  *  Wraps any object and allows assertions to be run.
  */
 public struct Expectation(T)
 {
-    private T subject;
+    private const(T) subject;
     private string file;
     private size_t line;
 
-    private this(const T subject, string file, size_t line)
+    private this(const(T) subject, string file, size_t line)
     {
         this.subject = subject;
         this.file = file;
@@ -47,12 +51,15 @@ public struct Expectation(T)
 
     /// Checks that two objects are equal according to '=='.
     public void toEqual(TOther)(const auto ref TOther other)
+    if (isImplicitlyConvertible!(T, TOther))
     {
         if (subject != other)
         {
             throw new EEException(
-                `Expected ` ~ T.stringof ~ ` ` ~ subject.to!string ~
-                ` but received ` ~ TOther.stringof ~ ` ` ~ other.to!string,
+                "Compared objects are not equal.\n" ~
+                "Expected: " ~ (T.stringof ~ " " ~ subject.to!string).color("green") ~
+                "\n" ~
+                "Received: " ~ (TOther.stringof ~ " " ~ other.to!string).color("red"),
                 file,
                 line
             );
