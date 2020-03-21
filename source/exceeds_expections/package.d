@@ -45,24 +45,37 @@ public struct Expectation(T, string file = __FILE__)
 
     private enum string fileContents = import(file);
 
-    private this(const(T) subject,size_t line)
+    private this(const(T) subject, size_t line)
     {
         this.subject = subject;
         this.line = line;
     }
 
-    /// Checks that two objects are equal according to '=='.
+    /// Throws an exception unless `subject == other`.
     public void toEqual(TOther)(const auto ref TOther other)
     if (isImplicitlyConvertible!(T, TOther))
     {
         if (subject != other)
         {
+            string stringOfSubject = subject.to!string;
+            string stringOfOther = other.to!string;
+
+            static if (is(T == class) && !__traits(isOverrideFunction, T.toString))
+            {
+                stringOfSubject = (&subject).to!string;
+            }
+
+            static if (is(TOther == class) && !__traits(isOverrideFunction, TOther.toString))
+            {
+                stringOfOther = (&other).to!string;
+            }
+
             throw new EEException(
                 "Arguments are not equal.\n" ~
                 "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
                 "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
-                "Expected: " ~ subject.to!string.color("green") ~ "\n" ~
-                "Received: " ~ other.to!string.color("red") ~ "\n",
+                "Expected: " ~ stringOfSubject.color("green") ~ "\n" ~
+                "Received: " ~ stringOfOther.color("red") ~ "\n",
                 file,
                 line
             );
