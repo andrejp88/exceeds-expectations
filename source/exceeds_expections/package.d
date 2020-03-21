@@ -101,6 +101,20 @@ public struct Expectation(TReceived, string file = __FILE__)
     /// Throws an [EEException] unless `predicate(received)` returns true for all predicates in `predicates`.
     public void toSatisfyAll(bool delegate(const(TReceived))[] predicates...)
     {
+        if (predicates.length == 0)
+        {
+            throw new EEException(
+                "Missing predicates at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
+                "\n" ~ formatCode(fileContents, line, 2) ~ "\n",
+                file, line
+            );
+        }
+
+        if (predicates.length == 1)
+        {
+            toSatisfy(predicates[0]);
+        }
+
         auto results = predicates.map!(p => p(received));
         immutable size_t numFailures = results.count!(e => !e);
 
@@ -134,8 +148,7 @@ public struct Expectation(TReceived, string file = __FILE__)
             "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
             "Received: " ~ (areStringsMultiline ? "\n" : "") ~
             stringOfReceived.color("red") ~ "\n",
-            file,
-            line
+            file, line
         );
     }
 }
