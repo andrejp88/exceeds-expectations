@@ -5,6 +5,8 @@ import std.algorithm.comparison;
 import std.algorithm.iteration;
 import std.algorithm.searching;
 import std.conv;
+import std.format;
+import std.math;
 import std.range;
 import std.stdio;
 import std.string;
@@ -186,6 +188,37 @@ public struct Expectation(TReceived, string file = __FILE__)
             file, line
         );
     }
+
+    /// Throws an [EEException] unless `received.approxEqual(expected, maxRelDiff, maxAbsDiff)`.
+    public void toApproximatelyEqual(TExpected, F : real)(
+        const auto ref TExpected expected,
+        F maxRelDiff = 0.01,
+        F maxAbsDiff = 1.0e-05
+    )
+    if (
+        isImplicitlyConvertible!(TReceived, TExpected) &&
+        __traits(compiles, received.approxEqual(expected, maxRelDiff, maxAbsDiff))
+    )
+    {
+        if (!received.approxEqual(expected, maxRelDiff, maxAbsDiff))
+        {
+            string stringOfRelDiff = stringify(fabs((received - expected) / expected));
+            string stringOfAbsDiff = stringify(fabs(received - expected));
+
+            throw new EEException(
+                "Arguments are not approximately equal.\n" ~
+                "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
+                "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
+                "Expected: " ~ stringify(expected).color("green") ~ "\n" ~
+                "Received: " ~ stringify(received).color("red") ~ "\n" ~
+                "Relative Difference: " ~ stringOfRelDiff.color("yellow") ~
+                " > " ~ stringify(maxRelDiff) ~ " (maxRelDiff)\n" ~
+                "Absolute Difference: " ~ stringOfAbsDiff.color("yellow") ~
+                " > " ~ stringify(maxAbsDiff) ~ " (maxAbsDiff)\n",
+                file, line
+            );
+        }
+    }
 }
 
 private string formatCode(const string source, size_t focusLine, size_t radius)
@@ -234,6 +267,11 @@ private string stringify(T)(T t)
     static if (is(T == class) && !__traits(isOverrideFunction, T.toString))
     {
         return stringifyClassObject(t);
+    }
+    else static if (is(T : real))
+    {
+        string asString = "%.14f".format(t);
+        return asString.canFind('.') ? asString.stripRight("0.") : asString;
     }
     else
     {
