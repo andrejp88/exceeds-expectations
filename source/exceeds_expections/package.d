@@ -54,7 +54,7 @@ public struct Expectation(TReceived, string file = __FILE__)
         this.line = line;
     }
 
-    /// Throws an [EEException] unless `expected == received`.
+    /// Throws an [EEException] unless `received == expected`.
     public void toEqual(TExpected)(const auto ref TExpected expected)
     if (isImplicitlyConvertible!(TReceived, TExpected))
     {
@@ -219,6 +219,62 @@ public struct Expectation(TReceived, string file = __FILE__)
             );
         }
     }
+
+    /// Throws an [EEException] unless `received is expected`.
+    public void toBe(TExpected)(const auto ref TExpected expected)
+    {
+        static if (!__traits(compiles, received is expected))
+        {
+            return false;
+        }
+
+        if (received !is expected)
+        {
+            string stringOfReceived;
+            string stringOfExpected;
+
+            static if (
+                is(TReceived == struct) ||
+                is(TReceived == union) ||
+                is(TReceived == enum) ||
+                (isBuiltinType!TReceived && !is(TReceived == void)) ||
+                isStaticArray!TReceived
+            )
+            {
+                stringOfReceived = stringify(received);
+                stringOfExpected = stringify(expected);
+            }
+            else
+            {
+                static if (!isDelegate!TReceived)
+                {
+                    stringOfReceived = stringifyReference(received);
+                }
+                else
+                {
+                    stringOfReceived = "<a different delegate>";
+                }
+
+                static if (!isDelegate!TExpected)
+                {
+                    stringOfExpected = stringifyReference(expected);
+                }
+                else
+                {
+                    stringOfExpected = "<delegate>";
+                }
+            }
+
+            throw new EEException(
+                "Arguments are not equal.\n" ~
+                "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
+                "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
+                "Expected: " ~ stringOfExpected.color("green") ~ "\n" ~
+                "Received: " ~ stringOfReceived.color("red") ~ "\n",
+                file, line
+            );
+        }
+    }
 }
 
 private string formatCode(const string source, size_t focusLine, size_t radius)
@@ -268,7 +324,7 @@ private string stringify(T)(T t)
     {
         return stringifyClassObject(t);
     }
-    else static if (is(T : real))
+    else static if (isFloatingPoint!T)
     {
         string asString = "%.14f".format(t);
         return asString.canFind('.') ? asString.stripRight("0.") : asString;
@@ -289,7 +345,7 @@ if (is(T == class))
     output.put(T.stringof);
     output.put(" {\n");
 
-    static foreach (tup; zip(fieldTypeStrings!T, [ FieldNameTuple!T ]))
+    static foreach (tup; zip(fieldTypeStrings!T, cast(string[])[ FieldNameTuple!T ]))
     {
         output.put("    ");
         output.put(tup[0]);
@@ -318,3 +374,33 @@ private string[] fieldTypeStrings_(T)() {
 
     return types;
 }
+
+// Covers function pointers as well.
+private string stringifyReference(T)(T t)
+if (isPointer!T)
+{
+    return t.to!string;
+}
+
+private string stringifyReference(T)(T t)
+if (
+    is(T == class) ||
+    is(T == interface) ||
+    isDynamicArray!T ||
+    isAssociativeArray!T
+)
+{
+    return stringifyReference(cast(void*)t);
+}
+
+// private string stringifyReference(T)(ref T t)
+// if (
+//     is(T == struct) ||
+//     is(T == union) ||
+//     is(T == enum) ||
+//     (isBuiltinType!T && !is(T == void)) ||
+//     isStaticArray!T
+// )
+// {
+//     return (&t).to!string;
+// }
