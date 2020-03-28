@@ -39,10 +39,13 @@ public class EEException : Exception
     {
         Appender!string message;
 
-        message.put(location);
-        message.put('\n');
-        message.put(description);
-        message.put('\n');
+        message.put(location); message.put('\n');
+
+        if (description != "")
+        {
+            message.put(description); message.put('\n');
+        }
+
         message.put('\n');
         message.put(codeExcerpt);
 
@@ -87,7 +90,7 @@ public struct Expectation(TReceived, string file = __FILE__)
         this.expectationCodeExcerpt = formatCode(fileContents, line, 2);
     }
 
-    private void throwEEException(string description, string differences, string file, size_t line)
+    private void throwEEException(string differences, string description = "")
     {
         throw new EEException(
             description,
@@ -105,9 +108,7 @@ public struct Expectation(TReceived, string file = __FILE__)
         if (received != expected)
         {
             throwEEException(
-                "Arguments are not equal.",
-                formatDifferences(stringify(expected), stringify(received)),
-                file, line
+                formatDifferences(stringify(expected), stringify(received))
             );
         }
     }
@@ -117,12 +118,8 @@ public struct Expectation(TReceived, string file = __FILE__)
     {
         if (!predicate(received))
         {
-            string stringOfReceived = stringify(received);
-
             throwEEException(
-                "Received value does not satisfy the predicate.",
-                "Received: " ~ (stringOfReceived.isMultiline ? "\n" : "") ~ stringOfReceived.color("red"),
-                file, line
+                "Received: " ~ stringify(received).color("red")
             );
         }
     }
@@ -149,8 +146,6 @@ public struct Expectation(TReceived, string file = __FILE__)
 
         if (numFailures == 0) return;
 
-        string stringOfReceived = stringify(received);
-
         string[] failingIndices =
             results
             .zip(iota(0, results.length))
@@ -163,17 +158,15 @@ public struct Expectation(TReceived, string file = __FILE__)
             numFailures == 2 ? failingIndices.join(" and ") :
             failingIndices[0 .. $ - 1].join(", ") ~ ", and " ~ failingIndices[$ - 1];
 
-        string blame =
+        immutable string description =
             numFailures == predicates.length ? "Received value does not satisfy any predicates." :
             "Received value does not satisfy " ~
             (numFailures == 1 ? "predicate at index " : "predicates at indices ") ~
             failingIndicesString ~ " (first argument is index 0).";
 
         throwEEException(
-            blame,
-            "Received: " ~ (stringOfReceived.isMultiline ? "\n" : "") ~ stringOfReceived.color("red"),
-            file,
-            line
+            "Received: " ~ stringify(received).color("red"),
+            description
         );
     }
 
@@ -202,9 +195,7 @@ public struct Expectation(TReceived, string file = __FILE__)
         string stringOfReceived = stringify(received);
 
         throwEEException(
-            "Received value does not satisfy any predicates.",
-            "Received: " ~ (stringOfReceived.isMultiline ? "\n" : "") ~ stringOfReceived.color("red"),
-            file, line
+            "Received: " ~ stringOfReceived.color("red")
         );
     }
 
@@ -225,16 +216,13 @@ public struct Expectation(TReceived, string file = __FILE__)
             string stringOfAbsDiff = stringify(fabs(received - expected));
 
             throwEEException(
-                "Arguments are not approximately equal.",
                 formatDifferences(stringify(expected), stringify(received)) ~ "\n" ~
 
                 "Relative Difference: " ~ stringOfRelDiff.color("yellow") ~
                 " > " ~ stringify(maxRelDiff) ~ " (maxRelDiff)\n" ~
 
                 "Absolute Difference: " ~ stringOfAbsDiff.color("yellow") ~
-                " > " ~ stringify(maxAbsDiff) ~ " (maxAbsDiff)\n",
-
-                file, line
+                " > " ~ stringify(maxAbsDiff) ~ " (maxAbsDiff)\n"
             );
         }
     }
@@ -258,9 +246,8 @@ public struct Expectation(TReceived, string file = __FILE__)
         else static if (!__traits(compiles, received is expected))
         {
             throwEEException(
-                "Arguments do not reference the same type.",
                 formatDifferences(TExpected.stringof, TReceived.stringof),
-                file, line
+                "Arguments do not reference the same type."
             );
         }
         else
@@ -268,9 +255,8 @@ public struct Expectation(TReceived, string file = __FILE__)
             if (received !is expected)
             {
                 throwEEException(
-                    "Arguments do not reference the same object (received !is expected).",
                     "",
-                    file, line
+                    "Arguments do not reference the same object (received !is expected)."
                 );
             }
         }
