@@ -119,7 +119,7 @@ public struct Expectation(TReceived, string file = __FILE__)
         if (!predicate(received))
         {
             throwEEException(
-                "Received: " ~ stringify(received).color("red")
+                "Received: " ~ stringify(received).color(fg.light_red)
             );
         }
     }
@@ -165,7 +165,7 @@ public struct Expectation(TReceived, string file = __FILE__)
             failingIndicesString ~ " (first argument is index 0).";
 
         throwEEException(
-            "Received: " ~ stringify(received).color("red"),
+            "Received: " ~ stringify(received).color(fg.light_red),
             description
         );
     }
@@ -195,7 +195,7 @@ public struct Expectation(TReceived, string file = __FILE__)
         string stringOfReceived = stringify(received);
 
         throwEEException(
-            "Received: " ~ stringOfReceived.color("red")
+            "Received: " ~ stringOfReceived.color(fg.light_red)
         );
     }
 
@@ -218,10 +218,10 @@ public struct Expectation(TReceived, string file = __FILE__)
             throwEEException(
                 formatDifferences(stringify(expected), stringify(received)) ~ "\n" ~
 
-                "Relative Difference: " ~ stringOfRelDiff.color("yellow") ~
+                "Relative Difference: " ~ stringOfRelDiff.color(fg.yellow) ~
                 " > " ~ stringify(maxRelDiff) ~ " (maxRelDiff)\n" ~
 
-                "Absolute Difference: " ~ stringOfAbsDiff.color("yellow") ~
+                "Absolute Difference: " ~ stringOfAbsDiff.color(fg.yellow) ~
                 " > " ~ stringify(maxAbsDiff) ~ " (maxAbsDiff)\n"
             );
         }
