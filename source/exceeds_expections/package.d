@@ -223,56 +223,39 @@ public struct Expectation(TReceived, string file = __FILE__)
     /// Throws an [EEException] unless `received is expected`.
     public void toBe(TExpected)(const auto ref TExpected expected)
     {
-        static if (!__traits(compiles, received is expected))
+        static if (
+            is(TReceived == struct) ||
+            is(TReceived == union) ||
+            is(TReceived == enum) ||
+            (isBuiltinType!TReceived && !is(TReceived == void)) ||
+            isStaticArray!TReceived
+        )
         {
-            return false;
+            toEqual(expected);
+            return;
         }
-
-        if (received !is expected)
+        else static if (!__traits(compiles, received is expected))
         {
-            string stringOfReceived;
-            string stringOfExpected;
-
-            static if (
-                is(TReceived == struct) ||
-                is(TReceived == union) ||
-                is(TReceived == enum) ||
-                (isBuiltinType!TReceived && !is(TReceived == void)) ||
-                isStaticArray!TReceived
-            )
-            {
-                stringOfReceived = stringify(received);
-                stringOfExpected = stringify(expected);
-            }
-            else
-            {
-                static if (!isDelegate!TReceived)
-                {
-                    stringOfReceived = stringifyReference(received);
-                }
-                else
-                {
-                    stringOfReceived = "<a different delegate>";
-                }
-
-                static if (!isDelegate!TExpected)
-                {
-                    stringOfExpected = stringifyReference(expected);
-                }
-                else
-                {
-                    stringOfExpected = "<delegate>";
-                }
-            }
-
             throw new EEException(
-                "Arguments are not equal.\n" ~
+                "Arguments are do not reference the same type.\n" ~
                 "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
                 "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
-                "Expected: " ~ stringOfExpected.color("green") ~ "\n" ~
-                "Received: " ~ stringOfReceived.color("red") ~ "\n",
+                "Expected: " ~ (TExpected.stringof).color("green") ~ "\n" ~
+                "Received: " ~ (TReceived.stringof).color("red") ~ "\n",
                 file, line
             );
+        }
+        else
+        {
+            if (received !is expected)
+            {
+                throw new EEException(
+                    "Arguments are do not reference the same object (received !is expected).\n" ~
+                    "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
+                    "\n" ~ formatCode(fileContents, line, 2) ~ "\n",
+                    file, line
+                );
+            }
         }
     }
 }

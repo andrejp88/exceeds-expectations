@@ -37,3 +37,11 @@ unittest
 {
    showMessage(expect(2).toBe(3));
 }
+
+unittest
+{
+    int i;
+    int* pi = &i;
+    float* pf = cast(float*)pi;
+    showMessage(expect(pi).toBe(pf));
+}
