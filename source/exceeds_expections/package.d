@@ -19,13 +19,42 @@ import std.traits;
 public class EEException : Exception
 {
     /// Constructs a new EEException
-    private this(string message, string file = __FILE__, size_t line = __LINE__, Throwable next = null)
+    private this(const string message, const string file = __FILE__, size_t line = __LINE__, Throwable next = null)
     @safe pure nothrow
     {
         super(message, file, line, next);
     }
 
+    /// ditto
+    private this(
+        const string description,
+        const string location,
+        const string codeExcerpt,
+        const string differences,
+        const string file = __FILE__,
+        size_t line = __LINE__,
+        Throwable next = null
+    )
+    @safe pure nothrow
+    {
+        Appender!string message;
 
+        message.put(location);
+        message.put('\n');
+        message.put(description);
+        message.put('\n');
+        message.put('\n');
+        message.put(codeExcerpt);
+
+        if (differences != "")
+        {
+            message.put('\n');
+            message.put(differences);
+            message.put('\n');
+        }
+
+        this(message.data, file, line, next);
+    }
 }
 
 /**
@@ -47,11 +76,26 @@ public struct Expectation(TReceived, string file = __FILE__)
 
     private size_t line;
     private enum string fileContents = import(file);
+    private immutable string expectationCodeLocation;
+    private immutable string expectationCodeExcerpt;
 
     private this(const(TReceived) received, size_t line)
     {
         this.received = received;
         this.line = line;
+        this.expectationCodeLocation = "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ ")";
+        this.expectationCodeExcerpt = formatCode(fileContents, line, 2);
+    }
+
+    private void throwEEException(string description, string differences, string file, size_t line)
+    {
+        throw new EEException(
+            description,
+            expectationCodeLocation,
+            expectationCodeExcerpt,
+            differences,
+            file, line
+        );
     }
 
     /// Throws an [EEException] unless `received == expected`.
@@ -60,21 +104,10 @@ public struct Expectation(TReceived, string file = __FILE__)
     {
         if (received != expected)
         {
-            string stringOfReceived = stringify(received);
-            string stringOfExpected = stringify(expected);
-
-            immutable bool areStringsMultiline = stringOfReceived.canFind('\n') || stringOfExpected.canFind('\n');
-
-            throw new EEException(
-                "Arguments are not equal.\n" ~
-                "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
-                "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
-                "Expected: " ~ (areStringsMultiline ? "\n" : "") ~
-                stringOfExpected.color("green") ~ "\n" ~ (areStringsMultiline ? "\n" : "") ~
-                "Received: " ~ (areStringsMultiline ? "\n" : "") ~
-                stringOfReceived.color("red") ~ "\n",
-                file,
-                line
+            throwEEException(
+                "Arguments are not equal.",
+                formatDifferences(stringify(expected), stringify(received)),
+                file, line
             );
         }
     }
@@ -86,16 +119,10 @@ public struct Expectation(TReceived, string file = __FILE__)
         {
             string stringOfReceived = stringify(received);
 
-            immutable bool areStringsMultiline = stringOfReceived.canFind('\n');
-
-            throw new EEException(
-                "Received value does not satisfy the predicate.\n" ~
-                "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
-                "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
-                "Received: " ~ (areStringsMultiline ? "\n" : "") ~
-                stringOfReceived.color("red") ~ "\n",
-                file,
-                line
+            throwEEException(
+                "Received value does not satisfy the predicate.",
+                "Received: " ~ (stringOfReceived.isMultiline ? "\n" : "") ~ stringOfReceived.color("red"),
+                file, line
             );
         }
     }
@@ -142,15 +169,11 @@ public struct Expectation(TReceived, string file = __FILE__)
             (numFailures == 1 ? "predicate at index " : "predicates at indices ") ~
             failingIndicesString ~ " (first argument is index 0).";
 
-        immutable bool areStringsMultiline = stringOfReceived.canFind('\n');
-
-        throw new EEException(
-            blame ~ "\n" ~
-            "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
-            "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
-            "Received: " ~ (areStringsMultiline ? "\n" : "") ~
-            stringOfReceived.color("red") ~ "\n",
-            file, line
+        throwEEException(
+            blame,
+            "Received: " ~ (stringOfReceived.isMultiline ? "\n" : "") ~ stringOfReceived.color("red"),
+            file,
+            line
         );
     }
 
@@ -177,14 +200,10 @@ public struct Expectation(TReceived, string file = __FILE__)
         }
 
         string stringOfReceived = stringify(received);
-        immutable bool areStringsMultiline = stringOfReceived.canFind('\n');
 
-        throw new EEException(
-            "Received value does not satisfy any predicates.\n" ~
-            "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
-            "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
-            "Received: " ~ (areStringsMultiline ? "\n" : "") ~
-            stringOfReceived.color("red") ~ "\n",
+        throwEEException(
+            "Received value does not satisfy any predicates.",
+            "Received: " ~ (stringOfReceived.isMultiline ? "\n" : "") ~ stringOfReceived.color("red"),
             file, line
         );
     }
@@ -205,16 +224,16 @@ public struct Expectation(TReceived, string file = __FILE__)
             string stringOfRelDiff = stringify(fabs((received - expected) / expected));
             string stringOfAbsDiff = stringify(fabs(received - expected));
 
-            throw new EEException(
-                "Arguments are not approximately equal.\n" ~
-                "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
-                "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
-                "Expected: " ~ stringify(expected).color("green") ~ "\n" ~
-                "Received: " ~ stringify(received).color("red") ~ "\n" ~
+            throwEEException(
+                "Arguments are not approximately equal.",
+                formatDifferences(stringify(expected), stringify(received)) ~ "\n" ~
+
                 "Relative Difference: " ~ stringOfRelDiff.color("yellow") ~
                 " > " ~ stringify(maxRelDiff) ~ " (maxRelDiff)\n" ~
+
                 "Absolute Difference: " ~ stringOfAbsDiff.color("yellow") ~
                 " > " ~ stringify(maxAbsDiff) ~ " (maxAbsDiff)\n",
+
                 file, line
             );
         }
@@ -236,12 +255,9 @@ public struct Expectation(TReceived, string file = __FILE__)
         }
         else static if (!__traits(compiles, received is expected))
         {
-            throw new EEException(
-                "Arguments are do not reference the same type.\n" ~
-                "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
-                "\n" ~ formatCode(fileContents, line, 2) ~ "\n" ~
-                "Expected: " ~ (TExpected.stringof).color("green") ~ "\n" ~
-                "Received: " ~ (TReceived.stringof).color("red") ~ "\n",
+            throwEEException(
+                "Arguments do not reference the same type.",
+                formatDifferences(TExpected.stringof, TReceived.stringof),
                 file, line
             );
         }
@@ -249,10 +265,9 @@ public struct Expectation(TReceived, string file = __FILE__)
         {
             if (received !is expected)
             {
-                throw new EEException(
-                    "Arguments are do not reference the same object (received !is expected).\n" ~
-                    "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
-                    "\n" ~ formatCode(fileContents, line, 2) ~ "\n",
+                throwEEException(
+                    "Arguments do not reference the same object (received !is expected).",
+                    "",
                     file, line
                 );
             }
@@ -260,14 +275,15 @@ public struct Expectation(TReceived, string file = __FILE__)
     }
 }
 
-private string formatCode(const string source, size_t focusLine, size_t radius)
+private string formatCode(string source, size_t focusLine, size_t radius)
 in (
     focusLine != 0,
     "focusLine must be at least 1"
 )
 in (
     focusLine < source.splitLines.length,
-    "focusLine must not be larger than the last line in the source (" ~ focusLine.to!string ~ " > " ~ source.splitLines.length.to!string ~ ")"
+    "focusLine must not be larger than the last line in the source (" ~
+    focusLine.to!string ~ " > " ~ source.splitLines.length.to!string ~ ")"
 )
 in (
     source.splitLines.length > 0, "source may not be empty"
@@ -276,7 +292,8 @@ in (
     const string[] sourceLines = source[$ - 1] == '\n' ? source.splitLines ~ "" : source.splitLines;
     immutable size_t sourceLength = sourceLines.length;
     immutable size_t firstFocusLineIndex = focusLine - 1;
-    immutable size_t lastFocusLineIndex = sourceLines[firstFocusLineIndex..$].countUntil!(e => e.canFind(';')) + firstFocusLineIndex;
+    immutable size_t lastFocusLineIndex =
+        sourceLines[firstFocusLineIndex..$].countUntil!(e => e.canFind(';')) + firstFocusLineIndex;
 
     immutable size_t firstLineIndex =
         firstFocusLineIndex.to!int - radius.to!int < 0 ?
@@ -301,21 +318,33 @@ in (
         .join('\n') ~ "\n";
 }
 
+private string formatDifferences(string expected, string received)
+{
+    return (
+        "Expected: " ~ expected.color(fg.green) ~ (expected.isMultiline ? "\n\n" : "\n") ~
+        "Received: " ~ received.color(fg.light_red)
+    );
+}
+
 private string stringify(T)(T t)
 {
     static if (is(T == class) && !__traits(isOverrideFunction, T.toString))
     {
-        return stringifyClassObject(t);
+        immutable string rawStringified = stringifyClassObject(t);
     }
     else static if (isFloatingPoint!T)
     {
         string asString = "%.14f".format(t);
-        return asString.canFind('.') ? asString.stripRight("0.") : asString;
+        immutable string rawStringified = asString.canFind('.') ? asString.stripRight("0.") : asString;
     }
     else
     {
-        return t.to!string;
+        immutable string rawStringified = t.to!string;
     }
+
+    return (
+        rawStringified.canFind('\n') ? "\n" : ""
+    ) ~ (rawStringified);
 }
 
 private string stringifyClassObject(T)(const T object)
@@ -344,9 +373,7 @@ if (is(T == class))
     return output.data;
 }
 
-private enum string[] fieldTypeStrings(T) = fieldTypeStrings_!T;
-
-private string[] fieldTypeStrings_(T)() {
+private string[] fieldTypeStrings(T)() {
     string[] types;
 
     foreach (type; Fields!T)
@@ -376,14 +403,7 @@ if (
     return stringifyReference(cast(void*)t);
 }
 
-// private string stringifyReference(T)(ref T t)
-// if (
-//     is(T == struct) ||
-//     is(T == union) ||
-//     is(T == enum) ||
-//     (isBuiltinType!T && !is(T == void)) ||
-//     isStaticArray!T
-// )
-// {
-//     return (&t).to!string;
-// }
+private bool isMultiline(string s)
+{
+    return s.canFind('\n');
+}
