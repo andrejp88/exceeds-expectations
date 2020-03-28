@@ -6,6 +6,7 @@ import exceeds_expections.test;
 unittest
 {
     expect(2.9999999999).toApproximatelyEqual(3.0);
+    expect(2.9999999999).toBeCloseTo(3.0);
 
 
     showMessage(

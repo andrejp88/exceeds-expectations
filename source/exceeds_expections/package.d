@@ -239,6 +239,8 @@ public struct Expectation(TReceived, string file = __FILE__)
         }
     }
 
+    alias toBeCloseTo = toApproximatelyEqual;
+
     /// Throws an [EEException] unless `received is expected`.
     public void toBe(TExpected)(const auto ref TExpected expected)
     {
