@@ -95,3 +95,10 @@ unittest
         )
     );
 }
+
+unittest
+{
+    expect(5).toSatisfy(e => e == 5);
+    expect('c').toSatisfyAny(c => c == 'c', c => c == 'd');
+    expect(0).toSatisfyAll(i => i < 100, i => i > -1, i => i == 0);
+}

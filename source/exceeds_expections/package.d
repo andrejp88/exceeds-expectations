@@ -4,6 +4,7 @@ import colorize;
 import std.algorithm.comparison;
 import std.algorithm.iteration;
 import std.algorithm.searching;
+import std.algorithm.sorting;
 import std.conv;
 import std.format;
 import std.math;
@@ -81,6 +82,7 @@ public struct Expectation(TReceived, string file = __FILE__)
     private enum string fileContents = import(file);
     private immutable string expectationCodeLocation;
     private immutable string expectationCodeExcerpt;
+    private bool negated;
 
     private this(const(TReceived) received, size_t line)
     {
@@ -101,11 +103,24 @@ public struct Expectation(TReceived, string file = __FILE__)
         );
     }
 
+    /// Negates the expectation
+    public Expectation!(TReceived, file) not()
+    {
+        if (negated) throw new EEException(
+            `Found multiple "not"s at ` ~ file ~ "(" ~ line.to!string ~ "): \n" ~
+            "\n" ~ formatCode(fileContents, line, 2) ~ "\n",
+            file, line
+        );
+
+        negated = !negated;
+        return this;
+    }
+
     /// Throws an [EEException] unless `received == expected`.
     public void toEqual(TExpected)(const auto ref TExpected expected)
     if (isImplicitlyConvertible!(TReceived, TExpected))
     {
-        if (received != expected)
+        if ((received != expected) != negated)
         {
             throwEEException(
                 formatDifferences(stringify(expected), stringify(received))
@@ -116,7 +131,7 @@ public struct Expectation(TReceived, string file = __FILE__)
     /// Throws an [EEException] unless `predicate(received)` returns true.
     public void toSatisfy(bool delegate(const(TReceived)) predicate)
     {
-        if (!predicate(received))
+        if ((!predicate(received)) != negated)
         {
             throwEEException(
                 "Received: " ~ stringify(received).color(fg.light_red)
@@ -142,27 +157,43 @@ public struct Expectation(TReceived, string file = __FILE__)
         }
 
         auto results = predicates.map!(p => p(received));
+
+        if (negated)
+        {
+            immutable size_t numPassed = results.count!(e => e);
+
+            if (numPassed < predicates.length) return;
+
+            throwEEException(
+                "Received: " ~ stringify(received).color(fg.light_red),
+                "Received value satisfies all predicates."
+            );
+        }
+
         immutable size_t numFailures = results.count!(e => !e);
 
-        if (numFailures == 0) return;
+        if(numFailures == 0) return;
 
-        string[] failingIndices =
+        size_t[] failingIndices =
             results
             .zip(iota(0, results.length))
             .filter!(tup => !tup[0])
-            .map!(tup => tup[1].to!string)
+            .map!(tup => tup[1])
             .array;
 
-        immutable string failingIndicesString =
-            numFailures == 1 ? failingIndices[0] :
-            numFailures == 2 ? failingIndices.join(" and ") :
-            failingIndices[0 .. $ - 1].join(", ") ~ ", and " ~ failingIndices[$ - 1];
-
         immutable string description =
-            numFailures == predicates.length ? "Received value does not satisfy any predicates." :
-            "Received value does not satisfy " ~
-            (numFailures == 1 ? "predicate at index " : "predicates at indices ") ~
-            failingIndicesString ~ " (first argument is index 0).";
+            numFailures == predicates.length ?
+            "Received value does not satisfy any predicates." :
+            (
+                "Received value does not satisfy " ~
+                (
+                    (
+                        numFailures == 1 ?
+                        "predicate at index " :
+                        "predicates at indices "
+                    ) ~ stringifyArray(failingIndices) ~ " (first argument is index 0)."
+                )
+            );
 
         throwEEException(
             "Received: " ~ stringify(received).color(fg.light_red),
@@ -187,15 +218,74 @@ public struct Expectation(TReceived, string file = __FILE__)
             toSatisfy(predicates[0]);
         }
 
-        foreach (predicate; predicates)
+        auto results = predicates.map!(p => p(received));
+
+        if (!negated)
         {
-            if (predicate(received)) return;
+            immutable size_t numPassed = results.count!(e => !e);
+
+            if(numPassed > 0) return;
+
+            throwEEException(
+                "Received: " ~ stringify(received).color(fg.light_red)
+            );
         }
 
-        string stringOfReceived = stringify(received);
+        immutable size_t numPassed = results.count!(e => e);
+
+        if(numPassed == 0) return;
+
+        size_t[] passingIndices =
+            results
+            .zip(iota(0, results.length))
+            .filter!(tup => tup[0])
+            .map!(tup => tup[1])
+            .array;
+
+        immutable string description =
+            numPassed == predicates.length ?
+            "Received value satisfies all predicates." :
+            (
+                "Received value satisfies " ~
+                (
+                    (
+                        numPassed == 1 ?
+                        "predicate at index " :
+                        "predicates at indices "
+                    ) ~ stringifyArray(passingIndices) ~ " (first argument is index 0)."
+                )
+            );
 
         throwEEException(
-            "Received: " ~ stringOfReceived.color(fg.light_red)
+            "Received: " ~ stringify(received).color(fg.light_red),
+            description
+        );
+    }
+
+    /// Given an array of orderable elements,
+    ///
+    /// Example:
+    ///     Given `[]` return ""
+    ///
+    /// Example:
+    ///     Given `[1]` return "1"
+    ///
+    /// Example:
+    ///     Given `[3, 0]` return "0 and 3"
+    ///
+    /// Example:
+    ///     Given `[1, 0, 3]` returns "0, 1, and 3"
+    private string stringifyArray(N)(N[] numbers)
+    if (isOrderingComparable!N)
+    {
+        if (numbers.length == 0) return "";
+
+        auto strings = numbers.sort.map!(e => e.to!string);
+
+        return (
+            strings.length == 1 ? strings[0] :
+            strings.length == 2 ? strings.join(" and ") :
+            strings[0 .. $ - 1].join(", ") ~ ", and " ~ strings[$ - 1]
         );
     }
 
@@ -210,19 +300,23 @@ public struct Expectation(TReceived, string file = __FILE__)
         __traits(compiles, received.approxEqual(expected, maxRelDiff, maxAbsDiff))
     )
     {
-        if (!received.approxEqual(expected, maxRelDiff, maxAbsDiff))
+        if (!received.approxEqual(expected, maxRelDiff, maxAbsDiff) != negated)
         {
-            string stringOfRelDiff = stringify(fabs((received - expected) / expected));
-            string stringOfAbsDiff = stringify(fabs(received - expected));
+            immutable real relDiff = fabs((received - expected) / expected);
+            immutable real absDiff = fabs(received - expected);
+            string stringOfRelDiff = stringify(relDiff);
+            string stringOfAbsDiff = stringify(absDiff);
 
             throwEEException(
                 formatDifferences(stringify(expected), stringify(received)) ~ "\n" ~
 
                 "Relative Difference: " ~ stringOfRelDiff.color(fg.yellow) ~
-                " > " ~ stringify(maxRelDiff) ~ " (maxRelDiff)\n" ~
+                (relDiff > maxRelDiff ? " > " : relDiff < maxRelDiff ? " < " : " = ") ~
+                stringify(maxRelDiff) ~ " (maxRelDiff)\n" ~
 
                 "Absolute Difference: " ~ stringOfAbsDiff.color(fg.yellow) ~
-                " > " ~ stringify(maxAbsDiff) ~ " (maxAbsDiff)\n"
+                (absDiff > maxAbsDiff ? " > " : absDiff < maxAbsDiff ? " < " : " = ") ~
+                stringify(maxAbsDiff) ~ " (maxAbsDiff)\n"
             );
         }
     }
@@ -245,6 +339,7 @@ public struct Expectation(TReceived, string file = __FILE__)
         }
         else static if (!__traits(compiles, received is expected))
         {
+            // TODO: Should this succeed if negated?
             throwEEException(
                 formatDifferences(TExpected.stringof, TReceived.stringof),
                 "Arguments do not reference the same type."
@@ -252,10 +347,12 @@ public struct Expectation(TReceived, string file = __FILE__)
         }
         else
         {
-            if (received !is expected)
+            if ((received !is expected) != negated)
             {
                 throwEEException(
                     "",
+                    negated ?
+                    "Arguments reference the same object (received is expected)" :
                     "Arguments do not reference the same object (received !is expected)."
                 );
             }
@@ -316,19 +413,23 @@ private string formatDifferences(string expected, string received)
 
 private string stringify(T)(T t)
 {
+    string rawStringified;
+
     static if (is(T == class) && !__traits(isOverrideFunction, T.toString))
     {
-        immutable string rawStringified = stringifyClassObject(t);
+        rawStringified = stringifyClassObject(t);
     }
     else static if (isFloatingPoint!T)
     {
         string asString = "%.14f".format(t);
-        immutable string rawStringified = asString.canFind('.') ? asString.stripRight("0.") : asString;
+        rawStringified = asString.canFind('.') ? asString.stripRight("0.") : asString;
     }
     else
     {
-        immutable string rawStringified = t.to!string;
+        rawStringified = t.to!string;
     }
+
+    if (rawStringified == "") rawStringified = t.to!string;
 
     return (
         rawStringified.canFind('\n') ? "\n" : ""

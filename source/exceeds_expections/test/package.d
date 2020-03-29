@@ -10,6 +10,7 @@ version (unittest)
         try
         {
             dg;
+            assert(false, "Expected an exception but received none.");
         }
         catch (EEException e)
         {
