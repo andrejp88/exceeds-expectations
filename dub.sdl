@@ -5,4 +5,11 @@ copyright "Copyright © 2020, Andrej Petrovic"
 license "MIT"
 
 dependency "colorize" version="==1.0.5"
-stringImportPaths "."
+
+configuration "unittest" {
+    stringImportPaths "."
+}
+
+configuration "library" {
+    excludedSourceFiles "test/*"
+}
