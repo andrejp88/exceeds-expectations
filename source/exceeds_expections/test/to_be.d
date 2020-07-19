@@ -5,6 +5,7 @@ import exceeds_expections.test;
 
 import std.conv;
 
+@("Class is Class")
 unittest
 {
     class C {}
@@ -16,6 +17,7 @@ unittest
     expect(5).toBe(5);
 }
 
+@("Class !is Class")
 unittest
 {
     class C {}
@@ -25,6 +27,16 @@ unittest
     showMessage(expect(c).toBe(c2));
 }
 
+@("Delegate is Delegate")
+unittest
+{
+    int delegate(int) f = i => i + 1;
+    int delegate(int) g = f;
+
+    expect(f).toBe(g);
+}
+
+@("Delegate !is Delegate")
 unittest
 {
     int delegate(int) f = i => i + 1;
@@ -33,11 +45,19 @@ unittest
     showMessage(expect(f).toBe(g));
 }
 
+@("Integer is Integer")
+unittest
+{
+   expect(2).toBe(2);
+}
+
+@("Integer !is Integer")
 unittest
 {
    showMessage(expect(2).toBe(3));
 }
 
+@("int* is float*")
 unittest
 {
     int i;
