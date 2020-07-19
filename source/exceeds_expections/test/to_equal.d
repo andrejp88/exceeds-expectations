@@ -6,38 +6,74 @@ import exceeds_expections.test;
 import std.conv;
 
 
+@("Integer == Integer")
+unittest
+{
+    expect(2).toEqual(2);
+}
+
+@("Integer != Integer")
 unittest
 {
     showMessage(expect(2).toEqual(3));
 }
 
+@("Floating point == Floating Point")
 unittest
 {
-    showMessage(expect(float(2.5)).toEqual(real(2.12)));
+    expect(float(2.5)).toEqual(float(2.5));
 }
 
+@("float == real")
+unittest
+{
+    expect(float(2.5)).toEqual(real(2.5));
+}
+
+@("Floating point != Floating point")
+unittest
+{
+    showMessage(expect(float(2.5)).toEqual(float(2.12)));
+}
+
+@("Struct == Struct")
 unittest
 {
     import std.datetime : Date, SysTime;
-    showMessage(expect(Date(2020, 3, 25)).toEqual(Date(2020, 3, 15)));
+    expect(Date(2020, 3, 25)).toEqual(Date(2020, 3, 25));
 }
 
+@("Struct != Struct")
 unittest
 {
-    class A
+    import std.datetime : Date, SysTime;
+    showMessage(expect(Date(2020, 3, 25)).toEqual(Date(2020, 2, 17)));
+}
+
+private class A
+{
+    int x;
+
+    this(int x) { this.x = x; }
+
+    override bool opEquals(Object other)
+    const
     {
-        int x;
-
-        this(int x) { this.x = x; }
-
-        override bool opEquals(Object other)
-        const
-        {
-            const(typeof(this)) other_ = cast(typeof(this)) other;
-            return other_ && this.x == other_.x;
-        }
+        const(typeof(this)) other_ = cast(typeof(this)) other;
+        return other_ && this.x == other_.x;
     }
 
-    showMessage(expect(new A(4)).toEqual(new A(4)));
+
+}
+
+@("Class == Class")
+unittest
+{
+    expect(new A(4)).toEqual(new A(4));
+}
+
+@("Class != Class")
+unittest
+{
     showMessage(expect(new A(7)).toEqual(new A(8)));
 }

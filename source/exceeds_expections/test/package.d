@@ -3,18 +3,16 @@ module exceeds_expections.test;
 import exceeds_expections;
 import std.stdio;
 
-version (unittest)
+
+package void showMessage(lazy void dg)
 {
-    package void showMessage(lazy void dg)
+    try
     {
-        try
-        {
-            dg;
-            assert(false, "Expected an exception but received none.");
-        }
-        catch (EEException e)
-        {
-            writeln(e.message);
-        }
+        dg;
+        assert(false, "Expected an exception but received none.");
+    }
+    catch (EEException e)
+    {
+        debug(SHOW_MESSAGE) writeln(e.message);
     }
 }
