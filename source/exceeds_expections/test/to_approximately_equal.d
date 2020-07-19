@@ -9,7 +9,7 @@ unittest
     expect(float(2.9999999999)).toApproximatelyEqual(float(3.0));
     expect(float(2.9999999999)).toBeCloseTo(float(3.0));
 
-    showMessage(
+    shouldFail(
         expect(2.9999999999).toEqual(3.0)
     );
 }
@@ -17,5 +17,5 @@ unittest
 @("float !toApproximatelyEqual float")
 unittest
 {
-    showMessage(expect(2.9).toApproximatelyEqual(3.0));
+    shouldFail(expect(2.9).toApproximatelyEqual(3.0));
 }

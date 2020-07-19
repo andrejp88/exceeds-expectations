@@ -6,7 +6,7 @@ import exceeds_expections.test;
 @("Integer satisfy 1/1")
 unittest
 {
-    showMessage(expect(45).toSatisfy(a => a < 32 && a > 23));
+    shouldFail(expect(45).toSatisfy(a => a < 32 && a > 23));
 }
 
 @("Class satisfy 1/1")
@@ -44,7 +44,7 @@ unittest
 @("Integer satisfyAll 2/3")
 unittest
 {
-    showMessage(
+    shouldFail(
         expect(5).toSatisfyAll(
             e => e < 10,
             e => e > 8,
@@ -56,7 +56,7 @@ unittest
 @("Integer satisfyAll 2/3")
 unittest
 {
-    showMessage(
+    shouldFail(
         expect(5).toSatisfyAll(
             e => e < 3,
             e => e > 8,
@@ -69,7 +69,7 @@ unittest
 @("Integer satisfyAll 3/4")
 unittest
 {
-    showMessage(
+    shouldFail(
         expect(5).toSatisfyAll(
             e => e < 3,
             e => e > 8,
@@ -79,7 +79,7 @@ unittest
     );
 
     // All failures
-    showMessage(
+    shouldFail(
         expect(5).toSatisfyAll(
             e => e < 3,
             e => e > 8,
@@ -110,7 +110,7 @@ unittest
 unittest
 {
     // Fails
-    showMessage(
+    shouldFail(
         expect(5).toSatisfyAny(
             e => e < 3,
             e => e > 9,

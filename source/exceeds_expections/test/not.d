@@ -35,35 +35,35 @@ unittest
 
 unittest
 {
-    showMessage(expect(4).not.toEqual(4));
+    shouldFail(expect(4).not.toEqual(4));
 }
 
 unittest
 {
-    showMessage(expect(4).not.toBe(4));
+    shouldFail(expect(4).not.toBe(4));
 }
 
 unittest
 {
-    showMessage(expect(4).not.toApproximatelyEqual(4.0));
+    shouldFail(expect(4).not.toApproximatelyEqual(4.0));
 }
 
 unittest
 {
-    showMessage(expect(4).not.toSatisfy(i => i == 4));
+    shouldFail(expect(4).not.toSatisfy(i => i == 4));
 }
 
 unittest
 {
-    showMessage(expect(4).not.toSatisfyAny(i => i == 5, i => i == 4));
+    shouldFail(expect(4).not.toSatisfyAny(i => i == 5, i => i == 4));
 }
 
 unittest
 {
-    showMessage(expect(4).not.toSatisfyAll(i => i == 4, i => i <= 5));
+    shouldFail(expect(4).not.toSatisfyAll(i => i == 4, i => i <= 5));
 }
 
 unittest
 {
-    showMessage(expect(4).not.not);
+    shouldFail(expect(4).not.not);
 }

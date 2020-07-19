@@ -24,7 +24,7 @@ unittest
     C c = new C;
     C c2 = new C;
 
-    showMessage(expect(c).toBe(c2));
+    shouldFail(expect(c).toBe(c2));
 }
 
 @("Delegate is Delegate")
@@ -42,7 +42,7 @@ unittest
     int delegate(int) f = i => i + 1;
     int delegate(int) g = i => i - 1;
 
-    showMessage(expect(f).toBe(g));
+    shouldFail(expect(f).toBe(g));
 }
 
 @("Integer is Integer")
@@ -54,7 +54,7 @@ unittest
 @("Integer !is Integer")
 unittest
 {
-   showMessage(expect(2).toBe(3));
+   shouldFail(expect(2).toBe(3));
 }
 
 @("int* is float*")
@@ -63,5 +63,5 @@ unittest
     int i;
     int* pi = &i;
     float* pf = cast(float*)pi;
-    showMessage(expect(pi).toBe(pf));
+    shouldFail(expect(pi).toBe(pf));
 }

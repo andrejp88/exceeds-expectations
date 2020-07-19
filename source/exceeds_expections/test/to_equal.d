@@ -15,7 +15,7 @@ unittest
 @("Integer != Integer")
 unittest
 {
-    showMessage(expect(2).toEqual(3));
+    shouldFail(expect(2).toEqual(3));
 }
 
 @("Floating point == Floating Point")
@@ -33,7 +33,7 @@ unittest
 @("Floating point != Floating point")
 unittest
 {
-    showMessage(expect(float(2.5)).toEqual(float(2.12)));
+    shouldFail(expect(float(2.5)).toEqual(float(2.12)));
 }
 
 @("Struct == Struct")
@@ -47,7 +47,7 @@ unittest
 unittest
 {
     import std.datetime : Date, SysTime;
-    showMessage(expect(Date(2020, 3, 25)).toEqual(Date(2020, 2, 17)));
+    shouldFail(expect(Date(2020, 3, 25)).toEqual(Date(2020, 2, 17)));
 }
 
 private class A
@@ -75,5 +75,5 @@ unittest
 @("Class != Class")
 unittest
 {
-    showMessage(expect(new A(7)).toEqual(new A(8)));
+    shouldFail(expect(new A(7)).toEqual(new A(8)));
 }
