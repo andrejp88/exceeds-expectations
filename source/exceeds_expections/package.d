@@ -220,9 +220,10 @@ public struct Expectation(TReceived, string file = __FILE__)
 
         auto results = predicates.map!(p => p(received));
 
+        immutable size_t numPassed = results.count!(e => e);
+
         if (!negated)
         {
-            immutable size_t numPassed = results.count!(e => !e);
 
             if(numPassed > 0) return;
 
@@ -230,8 +231,6 @@ public struct Expectation(TReceived, string file = __FILE__)
                 "Received: " ~ stringify(received).color(fg.light_red)
             );
         }
-
-        immutable size_t numPassed = results.count!(e => e);
 
         if(numPassed == 0) return;
 
