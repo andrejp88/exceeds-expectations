@@ -53,7 +53,7 @@ unittest
     );
 }
 
-@("Integer satisfyAll 2/3")
+@("Integer satisfyAll 1/3")
 unittest
 {
     shouldFail(
@@ -66,7 +66,7 @@ unittest
 
 }
 
-@("Integer satisfyAll 3/4")
+@("Integer satisfyAll 1/4")
 unittest
 {
     shouldFail(
@@ -77,8 +77,11 @@ unittest
             e => true
         )
     );
+}
 
-    // All failures
+@("Integer satisfyAll 0/4")
+unittest
+{
     shouldFail(
         expect(5).toSatisfyAll(
             e => e < 3,
@@ -98,7 +101,6 @@ unittest
 @("Integer satisfyAny 2/3")
 unittest
 {
-    // Passes
     expect(5).toSatisfyAny(
         e => e < 10,
         e => e > 9,
@@ -109,7 +111,6 @@ unittest
 @("Integer satisfyAny 0/3")
 unittest
 {
-    // Fails
     shouldFail(
         expect(5).toSatisfyAny(
             e => e < 3,
