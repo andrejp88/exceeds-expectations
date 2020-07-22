@@ -68,28 +68,29 @@ public class EEException : Exception
  */
 public Expectation!(T, file) expect(T, string file = __FILE__)(const T actual, size_t line = __LINE__)
 {
-    return Expectation!(T, file)(actual, line);
+    return Expectation!(T, file)(actual, line, false);
 }
 
 /**
  *  Wraps any object and allows assertions to be run.
  */
-public struct Expectation(TReceived, string file = __FILE__)
+public const struct Expectation(TReceived, string file = __FILE__)
 {
     private const(TReceived) received;
 
-    private size_t line;
+    private immutable size_t line;
     private enum string fileContents = import(file);
     private immutable string expectationCodeLocation;
     private immutable string expectationCodeExcerpt;
-    private bool negated;
+    private immutable bool negated;
 
-    private this(const(TReceived) received, size_t line)
+    private this(const(TReceived) received, size_t line, bool negated)
     {
         this.received = received;
         this.line = line;
         this.expectationCodeLocation = "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ ")";
         this.expectationCodeExcerpt = formatCode(fileContents, line, 2);
+        this.negated = negated;
     }
 
     private void throwEEException(string differences, string description = "")
@@ -112,8 +113,7 @@ public struct Expectation(TReceived, string file = __FILE__)
             file, line
         );
 
-        negated = !negated;
-        return this;
+        return Expectation(received, line, true);
     }
 
     /// Throws an [EEException] unless `received == expected`.
@@ -258,33 +258,6 @@ public struct Expectation(TReceived, string file = __FILE__)
         throwEEException(
             "Received: " ~ stringify(received).color(fg.light_red),
             description
-        );
-    }
-
-    /// Given an array of orderable elements,
-    ///
-    /// Example:
-    ///     Given `[]` return ""
-    ///
-    /// Example:
-    ///     Given `[1]` return "1"
-    ///
-    /// Example:
-    ///     Given `[3, 0]` return "0 and 3"
-    ///
-    /// Example:
-    ///     Given `[1, 0, 3]` returns "0, 1, and 3"
-    private string stringifyArray(N)(N[] numbers)
-    if (isOrderingComparable!N)
-    {
-        if (numbers.length == 0) return "";
-
-        auto strings = numbers.sort.map!(e => e.to!string);
-
-        return (
-            strings.length == 1 ? strings[0] :
-            strings.length == 2 ? strings.join(" and ") :
-            strings[0 .. $ - 1].join(", ") ~ ", and " ~ strings[$ - 1]
         );
     }
 
@@ -494,4 +467,32 @@ if (
 private bool isMultiline(string s)
 {
     return s.canFind('\n');
+}
+
+
+/// Given an array of orderable elements,
+///
+/// Example:
+///     Given `[]` return ""
+///
+/// Example:
+///     Given `[1]` return "1"
+///
+/// Example:
+///     Given `[3, 0]` return "0 and 3"
+///
+/// Example:
+///     Given `[1, 0, 3]` returns "0, 1, and 3"
+private string stringifyArray(N)(N[] numbers)
+if (isOrderingComparable!N)
+{
+    if (numbers.length == 0) return "";
+
+    auto strings = numbers.sort.map!(e => e.to!string);
+
+    return (
+        strings.length == 1 ? strings[0] :
+        strings.length == 2 ? strings.join(" and ") :
+        strings[0 .. $ - 1].join(", ") ~ ", and " ~ strings[$ - 1]
+    );
 }
