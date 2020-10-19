@@ -19,3 +19,9 @@ unittest
 {
     shouldFail(expect(2.9).toApproximatelyEqual(3.0));
 }
+
+@("float toApproximatelyEqual int")
+unittest
+{
+    expect(float(2.9999999999)).toApproximatelyEqual(int(3));
+}

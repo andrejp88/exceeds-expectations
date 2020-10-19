@@ -116,9 +116,11 @@ public const struct Expectation(TReceived, string file = __FILE__)
         return Expectation(received, line, true);
     }
 
+    private enum bool canCompareForEquality(L, R) = __traits(compiles, rvalueOf!L == rvalueOf!R);
+
     /// Throws an [EEException] unless `received == expected`.
     public void toEqual(TExpected)(const auto ref TExpected expected)
-    if (isImplicitlyConvertible!(TReceived, TExpected))
+    if (canCompareForEquality!(TReceived, TExpected))
     {
         if ((received != expected) != negated)
         {
@@ -268,7 +270,6 @@ public const struct Expectation(TReceived, string file = __FILE__)
         F maxAbsDiff = 1.0e-05
     )
     if (
-        isImplicitlyConvertible!(TReceived, TExpected) &&
         __traits(compiles, received.approxEqual(expected, maxRelDiff, maxAbsDiff))
     )
     {

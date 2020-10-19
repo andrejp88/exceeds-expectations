@@ -36,6 +36,18 @@ unittest
     shouldFail(expect(float(2.5)).toEqual(float(2.12)));
 }
 
+@("float == int")
+unittest
+{
+    expect(2.0f).toEqual(2);
+}
+
+@("float != string")
+unittest
+{
+    static assert(!__traits(compiles, expect(2.0f).toEqual("two")));
+}
+
 @("Struct == Struct")
 unittest
 {
@@ -50,7 +62,7 @@ unittest
     shouldFail(expect(Date(2020, 3, 25)).toEqual(Date(2020, 2, 17)));
 }
 
-private class A
+private class A // @suppress(dscanner.suspicious.incomplete_operator_overloading)
 {
     int x;
 
