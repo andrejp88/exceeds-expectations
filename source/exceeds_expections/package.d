@@ -331,6 +331,24 @@ public const struct Expectation(TReceived, string file = __FILE__)
             }
         }
     }
+
+    /// Throws [EEException] unless `received` is a sub-type of `TActual`.
+    public void toBeOfType(TExpected)()
+    if ((is(TExpected == class) || is(TExpected == interface)) &&
+        (is(TReceived == class) || is(TReceived == interface)))
+    {
+        bool canCast = cast(TExpected) received ? true : false;
+        if (negated == canCast)
+        {
+            throwEEException(
+                formatDifferences(
+                    (negated ? "Not " : "") ~ "`" ~ typeid(TExpected).to!string ~ "`",
+                    (negated ? "    " : "") ~ "`" ~ received.to!string ~ "`"
+                ),
+                "Received value does not extend the expected type."
+            );
+        }
+    }
 }
 
 private string formatCode(string source, size_t focusLine, size_t radius)
