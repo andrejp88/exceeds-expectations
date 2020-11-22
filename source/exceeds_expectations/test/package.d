@@ -1,6 +1,6 @@
-module exceeds_expections.test;
+module exceeds_expectations.test;
 
-import exceeds_expections;
+import exceeds_expectations;
 
 import std.conv;
 import std.stdio;

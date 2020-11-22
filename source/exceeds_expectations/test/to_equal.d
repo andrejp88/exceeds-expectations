@@ -1,7 +1,7 @@
-module exceeds_expections.test.to_equal;
+module exceeds_expectations.test.to_equal;
 
-import exceeds_expections;
-import exceeds_expections.test;
+import exceeds_expectations;
+import exceeds_expectations.test;
 
 import std.conv;
 

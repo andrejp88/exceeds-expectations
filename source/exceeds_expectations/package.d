@@ -1,4 +1,4 @@
-module exceeds_expections;
+module exceeds_expectations;
 
 import colorize;
 import std.algorithm.comparison;
