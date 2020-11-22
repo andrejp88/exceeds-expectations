@@ -7,7 +7,6 @@ import exceeds_expectations.test;
 unittest
 {
     expect(float(2.9999999999)).toApproximatelyEqual(float(3.0));
-    expect(float(2.9999999999)).toBeCloseTo(float(3.0));
 
     shouldFail(
         expect(2.9999999999).toEqual(3.0)
