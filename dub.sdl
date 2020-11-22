@@ -7,7 +7,7 @@ license "MIT"
 dependency "colorize" version="==1.0.5"
 
 configuration "unittest" {
-    dependency "silly" version="1.0.2"
+    dependency "silly" version="~>1.0.2"
     stringImportPaths "."
 }
 
