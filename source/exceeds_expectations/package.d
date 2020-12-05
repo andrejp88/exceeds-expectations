@@ -297,36 +297,14 @@ public const struct Expectation(TReceived, string file = __FILE__)
     /// Throws an [EEException] unless `received is expected`.
     public void toBe(TExpected)(const auto ref TExpected expected)
     {
-        static if (
-            is(TReceived == struct) ||
-            is(TReceived == union) ||
-            is(TReceived == enum) ||
-            (isBuiltinType!TReceived && !is(TReceived == void)) ||
-            isStaticArray!TReceived
-        )
+        if ((received !is expected) != negated)
         {
-            toEqual(expected);
-            return;
-        }
-        else static if (!__traits(compiles, received is expected))
-        {
-            // TODO: Should this succeed if negated?
             throwEEException(
-                formatDifferences(TExpected.stringof, TReceived.stringof),
-                "Arguments do not reference the same type."
+                "",
+                negated ?
+                "Arguments reference the same object (received is expected)" :
+                "Arguments do not reference the same object (received !is expected)."
             );
-        }
-        else
-        {
-            if ((received !is expected) != negated)
-            {
-                throwEEException(
-                    "",
-                    negated ?
-                    "Arguments reference the same object (received is expected)" :
-                    "Arguments do not reference the same object (received !is expected)."
-                );
-            }
         }
     }
 

@@ -63,5 +63,5 @@ unittest
     int i;
     int* pi = &i;
     float* pf = cast(float*)pi;
-    shouldFail(expect(pi).toBe(pf));
+    static assert(!__traits(compiles, expect(pi).toBe(pf)));
 }

@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+- n/a
+
+## [0.1.1] · 2020-12-05
+
+### Fixed
+- Fixed `toBe` so that it's legal iff `received is expected` is legal.
+
+
 ## [0.1.0] · 2020-11-22
 
 ### Added:
@@ -17,3 +25,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `toSatisfy`, `toSatisfyAny`, and `toSatisfyAll` methods for checking against predicate functions
 
 [0.1.0]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.1.0
+[0.1.1]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.1.0
