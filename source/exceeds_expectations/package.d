@@ -74,7 +74,7 @@ public Expectation!(T, file) expect(T, string file = __FILE__)(const T actual, s
 /**
  *  Wraps any object and allows assertions to be run.
  */
-public const struct Expectation(TReceived, string file = __FILE__)
+public struct Expectation(TReceived, string file = __FILE__)
 {
     private const(TReceived) received;
 
@@ -83,6 +83,8 @@ public const struct Expectation(TReceived, string file = __FILE__)
     private immutable string expectationCodeLocation;
     private immutable string expectationCodeExcerpt;
     private immutable bool negated;
+    private bool completed = false;
+
 
     private this(const(TReceived) received, size_t line, bool negated)
     {
@@ -91,6 +93,19 @@ public const struct Expectation(TReceived, string file = __FILE__)
         this.expectationCodeLocation = "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ ")";
         this.expectationCodeExcerpt = formatCode(fileContents, line, 2);
         this.negated = negated;
+    }
+
+    ~this()
+    {
+        if (!completed)
+        {
+            throw new EEException(
+                "`expect` was called but no assertion was made at " ~
+                file ~ "(" ~ line.to!string ~ "): \n\n" ~
+                formatCode(fileContents, line, 2) ~ "\n",
+                file, line
+            );
+        }
     }
 
     private void throwEEException(string differences, string description = "")
@@ -107,6 +122,8 @@ public const struct Expectation(TReceived, string file = __FILE__)
     /// Negates the expectation
     public Expectation!(TReceived, file) not()
     {
+        completed = true; // Because a new expectation is returned, and this one will be discarded.
+
         if (negated) throw new EEException(
             `Found multiple "not"s at ` ~ file ~ "(" ~ line.to!string ~ "): \n" ~
             "\n" ~ formatCode(fileContents, line, 2) ~ "\n",
@@ -122,6 +139,8 @@ public const struct Expectation(TReceived, string file = __FILE__)
     public void toEqual(TExpected)(const auto ref TExpected expected)
     if (canCompareForEquality!(TReceived, TExpected))
     {
+        completed = true;
+
         if ((received != expected) != negated)
         {
             throwEEException(
@@ -133,6 +152,8 @@ public const struct Expectation(TReceived, string file = __FILE__)
     /// Throws an [EEException] unless `predicate(received)` returns true.
     public void toSatisfy(bool delegate(const(TReceived)) predicate)
     {
+        completed = true;
+
         if ((!predicate(received)) != negated)
         {
             throwEEException(
@@ -144,6 +165,8 @@ public const struct Expectation(TReceived, string file = __FILE__)
     /// Throws an [EEException] unless `predicate(received)` returns true for all predicates in `predicates`.
     public void toSatisfyAll(bool delegate(const(TReceived))[] predicates...)
     {
+        completed = true;
+
         if (predicates.length == 0)
         {
             throw new EEException(
@@ -206,6 +229,8 @@ public const struct Expectation(TReceived, string file = __FILE__)
     /// Throws an [EEException] if `predicate(received)` returns false for all predicates in `predicates`.
     public void toSatisfyAny(bool delegate(const(TReceived))[] predicates...)
     {
+        completed = true;
+
         if (predicates.length == 0)
         {
             throw new EEException(
@@ -273,6 +298,8 @@ public const struct Expectation(TReceived, string file = __FILE__)
         __traits(compiles, received.approxEqual(expected, maxRelDiff, maxAbsDiff))
     )
     {
+        completed = true;
+
         if (!received.approxEqual(expected, maxRelDiff, maxAbsDiff) != negated)
         {
             immutable real relDiff = fabs((received - expected) / expected);
@@ -297,6 +324,8 @@ public const struct Expectation(TReceived, string file = __FILE__)
     /// Throws an [EEException] unless `received is expected`.
     public void toBe(TExpected)(const auto ref TExpected expected)
     {
+        completed = true;
+
         if ((received !is expected) != negated)
         {
             throwEEException(
@@ -313,6 +342,8 @@ public const struct Expectation(TReceived, string file = __FILE__)
     if ((is(TExpected == class) || is(TExpected == interface)) &&
         (is(TReceived == class) || is(TReceived == interface)))
     {
+        completed = true;
+
         bool canCast = cast(TExpected) received ? true : false;
         if (negated == canCast)
         {
