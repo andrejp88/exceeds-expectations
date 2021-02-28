@@ -9,6 +9,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - n/a
 
+
+## [0.3.0] · 2021-02-28
+
+### Changed
+- Strings are now enclosed by double quotes in order to improve readability of empty strings and multi-line strings.
+
+### Fixed
+- The documentation of `toBeOfType` now correctly refers to `TExpected` instead of `TActual`.
+
+
 ## [0.2.0] · 2020-12-06
 
 ### Added
