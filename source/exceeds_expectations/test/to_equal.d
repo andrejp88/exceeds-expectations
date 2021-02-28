@@ -89,3 +89,19 @@ unittest
 {
     shouldFail(expect(new A(7)).toEqual(new A(8)));
 }
+
+@("string != empty string")
+unittest
+{
+    shouldFail(expect("").toEqual("non-empty"));
+    shouldFail(expect("non-empty").toEqual(""));
+}
+
+@("multi-line strings")
+unittest
+{
+    shouldFail(expect(`Hello
+World.`).toEqual(`
+Hello World.
+`));
+}

@@ -403,10 +403,9 @@ in (
 
 private string formatDifferences(string expected, string received)
 {
-    return (
-        "Expected: " ~ expected.color(fg.green) ~ (expected.isMultiline ? "\n\n" : "\n") ~
-        "Received: " ~ received.color(fg.light_red)
-    );
+    string expectedString = "Expected: " ~ expected.color(fg.green) ~ (expected.isMultiline ? "\n" : "");
+    string receivedString = "Received: " ~ received.color(fg.light_red);
+    return expectedString ~ "\n" ~ receivedString;
 }
 
 private string stringify(T)(T t)
@@ -421,6 +420,10 @@ private string stringify(T)(T t)
     {
         string asString = "%.14f".format(t);
         rawStringified = asString.canFind('.') ? asString.stripRight("0.") : asString;
+    }
+    else static if (isSomeString!T)
+    {
+        rawStringified = '"' ~ t ~ '"';
     }
     else
     {
