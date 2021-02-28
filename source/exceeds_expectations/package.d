@@ -337,7 +337,7 @@ public struct Expectation(TReceived, string file = __FILE__)
         }
     }
 
-    /// Throws [EEException] unless `received` is a sub-type of `TActual`.
+    /// Throws [EEException] unless `received` is a sub-type of `TExpected`.
     public void toBeOfType(TExpected)()
     if ((is(TExpected == class) || is(TExpected == interface)) &&
         (is(TReceived == class) || is(TReceived == interface)))
