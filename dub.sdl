@@ -4,7 +4,7 @@ authors "Andrej Petrović"
 copyright "Copyright © 2020, Andrej Petrović"
 license "MIT"
 
-dependency "colorize" version="==1.0.5"
+dependency "colorize" version="~>1.0"
 
 configuration "unittest" {
     dependency "silly" version="~>1.0.2"
