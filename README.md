@@ -66,7 +66,7 @@ unittest
     expect(8).toSatisfyAny(
         (n) => n < 233 && n >= -48 && n % 2 == 0,
         (n) => n > 692 && n < 10_002 && n % 3 == 1
-    )
+    );
 
     // .toSatisfyAll() is also available
 }
