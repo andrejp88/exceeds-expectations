@@ -1,6 +1,18 @@
+[<img src="readme-resources/gitlab-icon-rgb.svg" width="16px" alt="GitLab" /> Main Repo](https://gitlab.com/andrej88/exceeds-expectations)  
+[<img src="readme-resources/github-icon.svg" width="16px" alt="GitHub" /> Mirror](https://github.com/andrejp88/exceeds-expectations)
+[<img src="readme-resources/dub-logo-small.png" width="16px" alt="Dub Package Registry" /> Dub Package Registry](https://code.dlang.org/packages/exceeds-expectations)
+
 # exceeds-expectations
 
-exceeds-expectations is an assertion library for the D programming language. It uses the `expect(___).to___()` style used by Jest and Chai.
+exceeds-expectations is an assertions library for the D programming language. It uses the `expect(___).to___()` style used by Jest and Chai.
+
+It gets along well with IDE autocompletion:
+
+![After calling "expect" and typing ".to", VSCode shows a list of available assertions.](readme-resources/ide-completion.png)
+
+Failing tests show clear and informative messages:
+
+![Console output of a failing expectation showing the expected value, the received value, and a snippet of code surrounding the expectation.](readme-resources/toequals-failure.png)
 
 ## Usage
 
@@ -17,13 +29,17 @@ configuration "unittest" {
 
 ⚠️ If you run into problems with `stringImportPaths "."`, try using `dflags "-J."` instead.
 
-Now you can write your unittests in an easily legible format using convenient assertions.
+ℹ️ The `stringImportPaths "."` is used by exceeds-expectations to point at the lines of code where an expectation failed.
+
+Now just `import exceeds_expectations` where you need it.
+
+The library was made for writing tests, but it can be used anywhere. Add it as a regular dependency and use it wherever (for example, instead of an `enforce`).
 
 ### Examples
 
 A full list of expectations can be found in the [documentation](https://exceeds-expectations.dpldocs.info/exceeds_expectations.Expectation.html). Here are a few of them:
 
-#### Equality & Identity
+Equality and identity:
 ```d
 unittest
 {
@@ -35,7 +51,7 @@ unittest
 }
 ```
 
-#### Floating Point Comparison
+Floating point comparison:
 ```d
 unittest
 {
@@ -47,9 +63,7 @@ unittest
 ```
 
 
-#### Arbitrary Predicates
-
-When the method you need isn't in the library... yet 😉
+Arbitrary predicates, for when the method you need isn't in the library... yet.
 
 ```d
 unittest
@@ -75,7 +89,16 @@ unittest
 ```
 
 
-## Why?
-Existing assertion libraries (such as [dshould](https://code.dlang.org/packages/dshould) and [fluent-asserts](https://code.dlang.org/packages/fluent-asserts)) rely on [unified function call syntax](https://dlang.org/spec/function.html#pseudo-member) to achieve their natural, sentence-like syntax. Unfortunately, [DCD does not support auto-completions using the UFCS syntax](https://github.com/dlang-community/DCD#status). This means that IDEs cannot automatically suggest assertions for you.
+## Why another assertion library?
 
-In exceeds-expectations, assertions begin with a call to `expect()`, which returns an "Expectation" object whose member functions are visible to DCD.
+There are already a few ways to do assertions in D.
+
+The language itself comes with the [assert expression](https://dlang.org/spec/expression.html#AssertExpression). Unfortunately, these are quite limited and don't tell you much when an assertion fails.
+
+At the time exceeds-expectations was born, some libraries already existed that offered a more natural syntax and more useful failure messages. The two with the highest scores on code.dlang.org are [fluent-asserts](https://code.dlang.org/packages/fluent-asserts) and [dshould](https://code.dlang.org/packages/dshould). Both used the `X.should...` syntax, which results in readable assertions that resemble natural English.
+
+This syntax works because of D's [unified function call syntax](https://dlang.org/spec/function.html#pseudo-member). Unfortunately, [DCD does not support auto-completions using the UFCS syntax](https://github.com/dlang-community/DCD#status). This means that IDEs cannot automatically suggest assertions for you. This was true when exceeds-expecations was created and is still true as of this writing.
+
+To enable a more pleasant experience when using IDEs, assertions from exceeds-expectations begin with a call to `expect()`, which returns an "Expectation" object whose member functions are visible to DCD.
+
+Version 14 of fluent-asserts (in alpha as of April 2021) also offers the `expect()` form like in exceed-expectations.
