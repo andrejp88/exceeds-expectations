@@ -314,6 +314,7 @@ public struct Expectation(TReceived, string file = __FILE__)
     /// something else, an EEException is thrown.
     /// If `received` doesn't throw anything, an EEException is thrown.
     public void toThrow(TExpected : Throwable = Throwable)()
+    if (isCallable!TReceived)
     {
         completed = true;
 

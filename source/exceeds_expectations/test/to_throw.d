@@ -57,3 +57,31 @@ unittest
         expect({ return; }).toThrow()
     );
 }
+
+@("Accept structs with an opCall, as long as the opCall is const")
+unittest
+{
+    struct Callable
+    {
+        void opCall() const
+        {
+            throw new Exception("test");
+        }
+    }
+
+    Callable c;
+
+    expect(c).toThrow!Exception;
+}
+
+
+@("Fail to compile if received is not callable")
+unittest
+{
+    static assert(!__traits(compiles, expect(2).toThrow!Exception));
+    static assert(!__traits(compiles, expect("hello world").toThrow!Exception));
+
+    struct NotCallable {}
+    NotCallable nc;
+    static assert(!__traits(compiles, expect(nc).toThrow!Exception));
+}
