@@ -1,6 +1,6 @@
 [<img src="readme-resources/gitlab-icon-rgb.svg" width="16px" alt="GitLab" /> Main Repo](https://gitlab.com/andrej88/exceeds-expectations)  
-[<img src="readme-resources/github-icon.svg" width="16px" alt="GitHub" /> Mirror](https://github.com/andrejp88/exceeds-expectations)
-[<img src="readme-resources/dub-logo-small.png" width="16px" alt="Dub Package Registry" /> Dub Package Registry](https://code.dlang.org/packages/exceeds-expectations)
+[<img src="readme-resources/github-icon.svg" width="16px" alt="GitHub" /> Mirror](https://github.com/andrejp88/exceeds-expectations)  
+[<img src="readme-resources/dub-logo-small.png" width="16px" alt="Dub Package Registry" /> Dub Package Registry](https://code.dlang.org/packages/exceeds-expectations)  
 
 # exceeds-expectations
 
