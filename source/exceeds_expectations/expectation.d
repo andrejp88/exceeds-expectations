@@ -307,4 +307,92 @@ public struct Expectation(TReceived, string file = __FILE__)
             );
         }
     }
+
+    /// If `received` throw a `TExpected` (or one of its sub-types),
+    /// it is caught and this function exits successfully.
+    /// If `received` does not throw a `TExpected`, but does throw
+    /// something else, an EEException is thrown.
+    /// If `received` doesn't throw anything, an EEException is thrown.
+    public void toThrow(TExpected : Throwable = Throwable)()
+    {
+        completed = true;
+
+        if (!negated)
+        {
+            try
+            {
+                received();
+            }
+            catch (Throwable e)             // @suppress(dscanner.suspicious.catch_em_all)
+            {
+                if (cast(TExpected) e) return;
+
+                throwEEException(
+                    formatDifferences(
+                        typeid(TExpected).name,
+                        typeid(e).name
+                    )
+                );
+            }
+
+            throwEEException(
+                formatDifferences(
+                    typeid(TExpected).name,
+                    "Nothing was thrown"
+                )
+            );
+        }
+        else
+        {
+            try
+            {
+                received();
+            }
+            catch (Throwable e)             // @suppress(dscanner.suspicious.catch_em_all)
+            {
+                if (!(cast(TExpected) e)) return;
+
+                TypeInfo_Class receivedTypeInfo = typeid(e);
+                TypeInfo_Class expectedTypeInfo = typeid(TExpected);
+
+                if (receivedTypeInfo.name == expectedTypeInfo.name)
+                {
+                    throwEEException(
+                        formatDifferences(
+                            "Not " ~ expectedTypeInfo.name,
+                            "    " ~ receivedTypeInfo.name
+                        )
+                    );
+                }
+                else
+                {
+                    TypeInfo_Class[] superClasses;
+                    TypeInfo_Class current = receivedTypeInfo.base;
+                    enum objectTypeId = typeid(Object);
+
+                    while (current != objectTypeId)
+                    {
+                        superClasses ~= current;
+
+                        if (current == expectedTypeInfo) break;
+
+                        current = current.base;
+                    }
+
+                    string superClassesTrace = fold!(
+                        (string acc, TypeInfo_Class ti) => acc ~ "\n           <: " ~ ti.name
+                    )(superClasses, "");
+
+                    throwEEException(
+                        formatDifferences(
+                            "Not " ~ expectedTypeInfo.name,
+                            "    " ~ receivedTypeInfo.name ~ superClassesTrace
+                        )
+                    );
+                }
+            }
+
+            return;
+        }
+    }
 }
