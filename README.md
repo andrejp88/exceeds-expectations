@@ -21,6 +21,8 @@ Now you can write your unittests in an easily legible format using convenient as
 
 ### Examples
 
+A full list of expectations can be found in the [documentation](https://exceeds-expectations.dpldocs.info/exceeds_expectations.Expectation.html). Here are a few of them:
+
 #### Equality & Identity
 ```d
 unittest
