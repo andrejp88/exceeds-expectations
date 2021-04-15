@@ -23,13 +23,26 @@ configuration "unittest" {
 }
 ```
 
+```json
+"configurations": [
+    {
+        "name": "unittest",
+        "dependencies": {
+            "exceeds-expectations": "<current version>"
+        },
+        "stringImportPaths": [
+            "."
+        ],
+        "targetType": "library"
+    }
+]
+```
+
+Now just `import exceeds_expectations` where you need it. Some example usages can be found in the next section.
+
 ℹ️ The `stringImportPaths "."` is used by exceeds-expectations to point at the lines of code where an expectation failed.
 
-⚠️ If you run into problems with `stringImportPaths "."`, try using `dflags "-J."` instead.
-
-ℹ️ The `stringImportPaths "."` is used by exceeds-expectations to point at the lines of code where an expectation failed.
-
-Now just `import exceeds_expectations` where you need it.
+⚠️ If you run into problems with `stringImportPaths "."`, try using `dflags "-J."` instead (or for JSON, `"dflags": [ "-J." ]`).
 
 The library was made for writing tests, but it can be used anywhere. Add it as a regular dependency and use it wherever (for example, instead of an `enforce`).
 
@@ -66,23 +79,43 @@ Arbitrary predicates, for when the method you need isn't in the library... yet.
 ```d
 unittest
 {
-    static bool someConvolutedRequirement(int n)
+    static bool needlesslyComplicatedRequirement(int n)
     {
-        return (n < 233 && n >= -48 && n % 2 == 0) || (n > 692 && n < 10_002 && n % 3 == 1);
+        return (
+            (n > 233 || n <= -48 || n % 2 == 0) &&
+            (n < 692 || n > 10_002 || n % 3 == 1)
+        );
     }
 
-    int myNumber = 8;
+    expect(8).toSatisfy(&needlesslyComplicatedRequirement);
 
-    expect(myNumber).toSatisfy(&someConvolutedRequirement);
+}
 
-    // Or:
 
+// This example can also be written using toSatisfyAll...
+unittest
+{    
+    expect(8).toSatisfyAll(
+        (n) => n > 233 || n <= -48 || n % 2 == 0,
+        (n) => n < 692 || n > 10_002 || n % 3 == 1
+    );
+}
+
+
+// ...or toSatisfyAny.
+unittest
+{
     expect(8).toSatisfyAny(
-        (n) => n < 233 && n >= -48 && n % 2 == 0,
-        (n) => n > 692 && n < 10_002 && n % 3 == 1
+        (n) => n > 233,
+        (n) => n <= -48,
+        (n) => n % 2 == 0
     );
 
-    // .toSatisfyAll() is also available
+    expect(8).toSatisfyAny(
+        (n) => n < 692,
+        (n) => n > 10_002,
+        (n) => n % 3 == 1
+    );
 }
 ```
 
