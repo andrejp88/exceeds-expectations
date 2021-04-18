@@ -6,6 +6,7 @@ import exceeds_expectations.utils;
 import std.algorithm;
 import std.array;
 import std.conv;
+import std.file;
 import std.math;
 import std.range;
 import std.traits;
@@ -16,28 +17,27 @@ import std.traits;
  *
  *  TODO: Try to make this auto-ref
  */
-public Expectation!(T, file) expect(T, string file = __FILE__)(const T actual, size_t line = __LINE__)
+public Expectation!T expect(T)(const T received, string filePath = __FILE__, size_t line = __LINE__)
 {
-    return Expectation!(T, file)(actual, line, false);
+    return Expectation!T(received, filePath, line, false);
 }
 
 
 /**
  *  Wraps any object and allows assertions to be run.
  */
-public struct Expectation(TReceived, string file = __FILE__)
+public struct Expectation(TReceived)
 {
     private const(TReceived) received;
-
+    private immutable string filePath;
     private immutable size_t line;
-    private enum string fileContents = import(file);
     private immutable bool negated;
     private bool completed = false;
 
-
-    private this(const(TReceived) received, size_t line, bool negated)
+    private this(const(TReceived) received, string filePath, size_t line, bool negated)
     {
         this.received = received;
+        this.filePath = filePath;
         this.line = line;
         this.negated = negated;
     }
@@ -48,39 +48,39 @@ public struct Expectation(TReceived, string file = __FILE__)
         {
             throw new EEException(
                 "`expect` was called but no assertion was made at " ~
-                file ~ "(" ~ line.to!string ~ "): \n\n" ~
-                formatCode(fileContents, line, 2) ~ "\n",
-                file, line
+                filePath ~ "(" ~ line.to!string ~ "): \n\n" ~
+                formatCode(readText(filePath), line, 2) ~ "\n",
+                filePath, line
             );
         }
     }
 
     private void throwEEException(string differences, string description = "")
     {
-        string locationString = "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ ")";
-        string expectationCodeExcerpt = formatCode(fileContents, line, 2);
+        string locationString = "Failing expectation at " ~ filePath ~ "(" ~ line.to!string ~ ")";
+        string expectationCodeExcerpt = formatCode(readText(filePath), line, 2);
 
         throw new EEException(
             description,
             locationString,
             expectationCodeExcerpt,
             differences,
-            file, line
+            filePath, line
         );
     }
 
     /// Negates the expectation
-    public Expectation!(TReceived, file) not()
+    public Expectation!(TReceived) not()
     {
         completed = true; // Because a new expectation is returned, and this one will be discarded.
 
         if (negated) throw new EEException(
-            `Found multiple "not"s at ` ~ file ~ "(" ~ line.to!string ~ "): \n" ~
-            "\n" ~ formatCode(fileContents, line, 2) ~ "\n",
-            file, line
+            `Found multiple "not"s at ` ~ filePath ~ "(" ~ line.to!string ~ "): \n" ~
+            "\n" ~ formatCode(readText(filePath), line, 2) ~ "\n",
+            filePath, line
         );
 
-        return Expectation(received, line, true);
+        return Expectation(received, filePath, line, true);
     }
 
     private enum bool canCompareForEquality(L, R) = __traits(compiles, rvalueOf!L == rvalueOf!R);
@@ -120,9 +120,9 @@ public struct Expectation(TReceived, string file = __FILE__)
         if (predicates.length == 0)
         {
             throw new EEException(
-                "Missing predicates at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
-                "\n" ~ formatCode(fileContents, line, 2) ~ "\n",
-                file, line
+                "Missing predicates at " ~ filePath ~ "(" ~ line.to!string ~ "): \n" ~
+                "\n" ~ formatCode(readText(filePath), line, 2) ~ "\n",
+                filePath, line
             );
         }
 
@@ -184,9 +184,9 @@ public struct Expectation(TReceived, string file = __FILE__)
         if (predicates.length == 0)
         {
             throw new EEException(
-                "Missing predicates at " ~ file ~ "(" ~ line.to!string ~ "): \n" ~
-                "\n" ~ formatCode(fileContents, line, 2) ~ "\n",
-                file, line
+                "Missing predicates at " ~ filePath ~ "(" ~ line.to!string ~ "): \n" ~
+                "\n" ~ formatCode(readText(filePath), line, 2) ~ "\n",
+                filePath, line
             );
         }
 
