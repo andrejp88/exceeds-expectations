@@ -31,8 +31,6 @@ public struct Expectation(TReceived, string file = __FILE__)
 
     private immutable size_t line;
     private enum string fileContents = import(file);
-    private immutable string expectationCodeLocation;
-    private immutable string expectationCodeExcerpt;
     private immutable bool negated;
     private bool completed = false;
 
@@ -41,8 +39,6 @@ public struct Expectation(TReceived, string file = __FILE__)
     {
         this.received = received;
         this.line = line;
-        this.expectationCodeLocation = "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ ")";
-        this.expectationCodeExcerpt = formatCode(fileContents, line, 2);
         this.negated = negated;
     }
 
@@ -61,9 +57,12 @@ public struct Expectation(TReceived, string file = __FILE__)
 
     private void throwEEException(string differences, string description = "")
     {
+        string locationString = "Failing expectation at " ~ file ~ "(" ~ line.to!string ~ ")";
+        string expectationCodeExcerpt = formatCode(fileContents, line, 2);
+
         throw new EEException(
             description,
-            expectationCodeLocation,
+            locationString,
             expectationCodeExcerpt,
             differences,
             file, line
