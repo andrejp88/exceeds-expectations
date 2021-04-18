@@ -16,12 +16,16 @@ Failing tests show clear and informative messages:
 
 To get started, add exceeds-expectations as a unittest dependency to your project:
 
+`dub.sdl`:
+
 ```sdl
 configuration "unittest" {
     dependency "exceeds-expectations" version="<current version>"
     stringImportPaths "."
 }
 ```
+
+`dub.json`:
 
 ```json
 "configurations": [
