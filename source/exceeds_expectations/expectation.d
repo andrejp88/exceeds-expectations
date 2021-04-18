@@ -139,7 +139,7 @@ public struct Expectation(TReceived)
         }
     }
 
-    /// Throws an [EEException] unless `predicate(received)` returns true for all predicates in `predicates`.
+    /// Throws an [EEException] unless `predicate(received)` returns true for all `predicates`.
     public void toSatisfyAll(bool delegate(const(TReceived))[] predicates...)
     {
         completed = true;
@@ -156,54 +156,59 @@ public struct Expectation(TReceived)
         if (predicates.length == 1)
         {
             toSatisfy(predicates[0]);
+            return;
         }
 
-        auto results = predicates.map!(p => p(received));
-
-        if (negated)
+        if (!negated)
         {
-            immutable size_t numPassed = results.count!(e => e);
+            auto results = predicates.map!(p => p(received));
+            immutable size_t numFailures = count!(e => !e)(results);
 
-            if (numPassed < predicates.length) return;
+            if(numFailures > 0)
+            {
+                size_t[] failingIndices =
+                    results
+                    .zip(iota(0, results.length))
+                    .filter!(tup => !tup[0])
+                    .map!(tup => tup[1])
+                    .array;
 
-            throwEEException(
-                "Received: " ~ stringify(received).color(fg.light_red),
-                "Received value satisfies all predicates."
-            );
-        }
-
-        immutable size_t numFailures = results.count!(e => !e);
-
-        if(numFailures == 0) return;
-
-        size_t[] failingIndices =
-            results
-            .zip(iota(0, results.length))
-            .filter!(tup => !tup[0])
-            .map!(tup => tup[1])
-            .array;
-
-        immutable string description =
-            numFailures == predicates.length ?
-            "Received value does not satisfy any predicates." :
-            (
-                "Received value does not satisfy " ~
-                (
+                immutable string description =
+                    numFailures == predicates.length ?
+                    "Received value does not satisfy any predicates." :
                     (
-                        numFailures == 1 ?
-                        "predicate at index " :
-                        "predicates at indices "
-                    ) ~ stringifyArray(failingIndices) ~ " (first argument is index 0)."
-                )
-            );
+                        "Received value does not satisfy " ~
+                        (
+                            (
+                                numFailures == 1 ?
+                                "predicate at index " :
+                                "predicates at indices "
+                            ) ~ stringifyArray(failingIndices) ~ " (first argument is index 0)."
+                        )
+                    );
 
-        throwEEException(
-            "Received: " ~ stringify(received).color(fg.light_red),
-            description
-        );
+                throwEEException(
+                    "Received: " ~ stringify(received).color(fg.light_red),
+                    description
+                );
+            }
+        }
+        else
+        {
+            auto results = predicates.map!(p => p(received));
+            immutable size_t numPassed = count!(e => e)(results);
+
+            if (numPassed >= predicates.length)
+            {
+                throwEEException(
+                    "Received: " ~ stringify(received).color(fg.light_red),
+                    "Received value satisfies all predicates."
+                );
+            }
+        }
     }
 
-    /// Throws an [EEException] if `predicate(received)` returns false for all predicates in `predicates`.
+    /// Throws an [EEException] if `predicate(received)` returns false for all `predicates`.
     public void toSatisfyAny(bool delegate(const(TReceived))[] predicates...)
     {
         completed = true;
@@ -220,49 +225,55 @@ public struct Expectation(TReceived)
         if (predicates.length == 1)
         {
             toSatisfy(predicates[0]);
+            return;
         }
-
-        auto results = predicates.map!(p => p(received));
-
-        immutable size_t numPassed = results.count!(e => e);
 
         if (!negated)
         {
+            auto results = predicates.map!(p => p(received));
+            immutable size_t numPassed = count!(e => e)(results);
 
-            if(numPassed > 0) return;
-
-            throwEEException(
-                "Received: " ~ stringify(received).color(fg.light_red)
-            );
+            if(numPassed == 0)
+            {
+                throwEEException(
+                    "Received: " ~ stringify(received).color(fg.light_red)
+                );
+            }
         }
+        else
+        {
+            auto results = predicates.map!(p => p(received));
+            immutable size_t numPassed = count!(e => e)(results);
 
-        if(numPassed == 0) return;
+            if (numPassed > 0)
+            {
+                size_t[] passingIndices =
+                    results
+                    .zip(iota(0, results.length))
+                    .filter!(tup => tup[0])
+                    .map!(tup => tup[1])
+                    .array;
 
-        size_t[] passingIndices =
-            results
-            .zip(iota(0, results.length))
-            .filter!(tup => tup[0])
-            .map!(tup => tup[1])
-            .array;
-
-        immutable string description =
-            numPassed == predicates.length ?
-            "Received value satisfies all predicates." :
-            (
-                "Received value satisfies " ~
-                (
+                immutable string description =
+                    numPassed == predicates.length ?
+                    "Received value satisfies all predicates." :
                     (
-                        numPassed == 1 ?
-                        "predicate at index " :
-                        "predicates at indices "
-                    ) ~ stringifyArray(passingIndices) ~ " (first argument is index 0)."
-                )
-            );
+                        "Received value satisfies " ~
+                        (
+                            (
+                                numPassed == 1 ?
+                                "predicate at index " :
+                                "predicates at indices "
+                            ) ~ stringifyArray(passingIndices) ~ " (first argument is index 0)."
+                        )
+                    );
 
-        throwEEException(
-            "Received: " ~ stringify(received).color(fg.light_red),
-            description
-        );
+                throwEEException(
+                    "Received: " ~ stringify(received).color(fg.light_red),
+                    description
+                );
+            }
+        }
     }
 
     /**
