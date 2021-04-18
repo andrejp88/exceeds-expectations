@@ -3,6 +3,7 @@ module exceeds_expectations.utils;
 import colorize;
 import std.algorithm;
 import std.conv;
+import std.math;
 import std.range;
 import std.string;
 import std.traits;
@@ -57,6 +58,33 @@ package string formatDifferences(string expected, string received)
     string receivedString = "Received: " ~ received.color(fg.light_red);
     return expectedString ~ "\n" ~ receivedString;
 }
+
+package string formatApproxDifferences(TReceived, TExpected, F : real)(
+    const auto ref TReceived received,
+    const auto ref TExpected expected,
+    F maxRelDiff = CommonDefaultFor!(TReceived, TExpected),
+    F maxAbsDiff = 0.0
+)
+{
+    immutable real relDiff = fabs((received - expected) / expected);
+    immutable real absDiff = fabs(received - expected);
+
+    return formatDifferences(stringify(expected), stringify(received)) ~ "\n" ~
+
+        "Relative Difference: " ~
+        stringify(relDiff).color(fg.yellow) ~ getOrderOperator(relDiff, maxRelDiff) ~ stringify(maxRelDiff) ~
+        " (maxRelDiff)\n" ~
+
+        "Absolute Difference: " ~
+        stringify(absDiff).color(fg.yellow) ~ getOrderOperator(absDiff, maxAbsDiff) ~ stringify(maxAbsDiff) ~
+        " (maxAbsDiff)\n";
+}
+
+private string getOrderOperator(L, R)(L lhs, R rhs)
+{
+    return lhs > rhs ? " > " : lhs < rhs ? " < " : " = ";
+}
+
 
 package string stringify(T)(T t)
 {

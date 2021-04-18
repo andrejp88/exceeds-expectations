@@ -72,13 +72,18 @@ public struct Expectation(TReceived)
     {
         completed = true; // Because a new expectation is returned, and this one will be discarded.
 
-        if (negated) throw new EEException(
-            `Found multiple "not"s at ` ~ filePath ~ "(" ~ line.to!string ~ "): \n" ~
-            "\n" ~ formatCode(readText(filePath), line, 2) ~ "\n",
-            filePath, line
-        );
-
-        return Expectation(received, filePath, line, true);
+        if (!negated)
+        {
+            return Expectation(received, filePath, line, true);
+        }
+        else
+        {
+            throw new EEException(
+                `Found multiple "not"s at ` ~ filePath ~ "(" ~ line.to!string ~ "): \n" ~
+                "\n" ~ formatCode(readText(filePath), line, 2) ~ "\n",
+                filePath, line
+            );
+        }
     }
 
     private enum bool canCompareForEquality(L, R) = __traits(compiles, rvalueOf!L == rvalueOf!R);
@@ -89,11 +94,23 @@ public struct Expectation(TReceived)
     {
         completed = true;
 
-        if ((received != expected) != negated)
+        if (!negated)
         {
-            throwEEException(
-                formatDifferences(stringify(expected), stringify(received))
-            );
+            if (received != expected)
+            {
+                throwEEException(
+                    formatDifferences(stringify(expected), stringify(received))
+                );
+            }
+        }
+        else
+        {
+            if (received == expected)
+            {
+                throwEEException(
+                    formatDifferences(stringify(expected), stringify(received))
+                );
+            }
         }
     }
 
@@ -102,11 +119,23 @@ public struct Expectation(TReceived)
     {
         completed = true;
 
-        if ((!predicate(received)) != negated)
+        if (!negated)
         {
-            throwEEException(
-                "Received: " ~ stringify(received).color(fg.light_red)
-            );
+            if (!predicate(received))
+            {
+                throwEEException(
+                    "Received: " ~ stringify(received).color(fg.light_red)
+                );
+            }
+        }
+        else
+        {
+            if (predicate(received))
+            {
+                throwEEException(
+                    "Received: " ~ stringify(received).color(fg.light_red)
+                );
+            }
         }
     }
 
@@ -252,24 +281,23 @@ public struct Expectation(TReceived)
     {
         completed = true;
 
-        if (!received.isClose(expected, maxRelDiff, maxAbsDiff) != negated)
+        if (!negated)
         {
-            immutable real relDiff = fabs((received - expected) / expected);
-            immutable real absDiff = fabs(received - expected);
-            string stringOfRelDiff = stringify(relDiff);
-            string stringOfAbsDiff = stringify(absDiff);
-
-            throwEEException(
-                formatDifferences(stringify(expected), stringify(received)) ~ "\n" ~
-
-                "Relative Difference: " ~ stringOfRelDiff.color(fg.yellow) ~
-                (relDiff > maxRelDiff ? " > " : relDiff < maxRelDiff ? " < " : " = ") ~
-                stringify(maxRelDiff) ~ " (maxRelDiff)\n" ~
-
-                "Absolute Difference: " ~ stringOfAbsDiff.color(fg.yellow) ~
-                (absDiff > maxAbsDiff ? " > " : absDiff < maxAbsDiff ? " < " : " = ") ~
-                stringify(maxAbsDiff) ~ " (maxAbsDiff)\n"
-            );
+            if (!received.isClose(expected, maxRelDiff, maxAbsDiff))
+            {
+                throwEEException(
+                    formatApproxDifferences(received, expected, maxRelDiff, maxAbsDiff)
+                );
+            }
+        }
+        else if (negated)
+        {
+            if (received.isClose(expected, maxRelDiff, maxAbsDiff))
+            {
+                throwEEException(
+                    formatApproxDifferences(received, expected, maxRelDiff, maxAbsDiff)
+                );
+            }
         }
     }
 
@@ -278,14 +306,25 @@ public struct Expectation(TReceived)
     {
         completed = true;
 
-        if ((received !is expected) != negated)
+        if (!negated)
         {
-            throwEEException(
-                "",
-                negated ?
-                "Arguments reference the same object (received is expected)" :
-                "Arguments do not reference the same object (received !is expected)."
-            );
+            if (received !is expected)
+            {
+                throwEEException(
+                    "",
+                    "Arguments do not reference the same object (received !is expected)."
+                );
+            }
+        }
+        else
+        {
+            if (received is expected)
+            {
+                throwEEException(
+                    "",
+                    "Arguments reference the same object (received is expected)"
+                );
+            }
         }
     }
 
@@ -296,16 +335,31 @@ public struct Expectation(TReceived)
     {
         completed = true;
 
-        bool canCast = cast(TExpected) received ? true : false;
-        if (negated == canCast)
+        if (!negated)
         {
-            throwEEException(
-                formatDifferences(
-                    (negated ? "Not " : "") ~ "`" ~ typeid(TExpected).to!string ~ "`",
-                    (negated ? "    " : "") ~ "`" ~ received.to!string ~ "`"
-                ),
-                "Received value does not extend the expected type."
-            );
+            if (!cast(TExpected) received)
+            {
+                throwEEException(
+                    formatDifferences(
+                        "`" ~ typeid(TExpected).to!string ~ "`",
+                        "`" ~ received.to!string ~ "`"
+                    ),
+                    "Received value does not extend the expected type."
+                );
+            }
+        }
+        else
+        {
+            if (cast(TExpected) received)
+            {
+                throwEEException(
+                    formatDifferences(
+                        "Not `" ~ typeid(TExpected).to!string ~ "`",
+                        "    `" ~ received.to!string ~ "`"
+                    ),
+                    "Received value extends the type but was not expected to."
+                );
+            }
         }
     }
 
