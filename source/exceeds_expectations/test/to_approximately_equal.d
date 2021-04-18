@@ -3,7 +3,7 @@ module exceeds_expectations.test.to_approximately_equal;
 import exceeds_expectations;
 import exceeds_expectations.test;
 
-@("float approximatelyEqualTo float")
+@("float toApproximatelyEqual float")
 unittest
 {
     expect(float(2.9999999999)).toApproximatelyEqual(float(3.0));

@@ -239,19 +239,23 @@ public struct Expectation(TReceived, string file = __FILE__)
         );
     }
 
-    /// Throws an [EEException] unless `received.approxEqual(expected, maxRelDiff, maxAbsDiff)`.
+    /**
+     * Throws an [EEException] unless `received.isClose(expected, maxRelDiff, maxAbsDiff)`.
+     *
+     * See_Also: std.math.isClose
+     */
     public void toApproximatelyEqual(TExpected, F : real)(
         const auto ref TExpected expected,
-        F maxRelDiff = 0.01,
-        F maxAbsDiff = 1.0e-05
+        F maxRelDiff = CommonDefaultFor!(TReceived, TExpected),
+        F maxAbsDiff = 0.0
     )
     if (
-        __traits(compiles, received.approxEqual(expected, maxRelDiff, maxAbsDiff))
+        __traits(compiles, received.isClose(expected, maxRelDiff, maxAbsDiff))
     )
     {
         completed = true;
 
-        if (!received.approxEqual(expected, maxRelDiff, maxAbsDiff) != negated)
+        if (!received.isClose(expected, maxRelDiff, maxAbsDiff) != negated)
         {
             immutable real relDiff = fabs((received - expected) / expected);
             immutable real absDiff = fabs(received - expected);
