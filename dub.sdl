@@ -8,7 +8,6 @@ dependency "colorize" version="~>1.0"
 
 configuration "unittest" {
     dependency "silly" version="*"
-    stringImportPaths "."
 }
 
 configuration "library" {

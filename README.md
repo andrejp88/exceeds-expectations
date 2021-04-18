@@ -21,7 +21,6 @@ To get started, add exceeds-expectations as a unittest dependency to your projec
 ```sdl
 configuration "unittest" {
     dependency "exceeds-expectations" version="<current version>"
-    stringImportPaths "."
 }
 ```
 
@@ -33,22 +32,14 @@ configuration "unittest" {
         "name": "unittest",
         "dependencies": {
             "exceeds-expectations": "<current version>"
-        },
-        "stringImportPaths": [
-            "."
-        ],
-        "targetType": "library"
+        }
     }
 ]
 ```
 
 Now just `import exceeds_expectations` where you need it. Some example usages can be found in the next section.
 
-ℹ️ The `stringImportPaths "."` is used by exceeds-expectations to point at the lines of code where an expectation failed.
-
-⚠️ If you run into problems with `stringImportPaths "."`, try using `dflags "-J."` instead (or for JSON, `"dflags": [ "-J." ]`).
-
-The library was made for writing tests, but it can be used anywhere. Add it as a regular dependency and use it wherever (for example, instead of an `enforce`).
+This library was made for writing tests, but it can be used anywhere. Add it as a regular dependency and use it wherever (for example, instead of an `enforce`).
 
 ### Examples
 
