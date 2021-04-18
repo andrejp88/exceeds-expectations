@@ -1,7 +1,9 @@
 module exceeds_expectations.eeexception;
 
+import exceeds_expectations.utils;
 import std.array;
 import std.exception;
+import std.file : readText;
 
 
 /**
@@ -10,23 +12,21 @@ import std.exception;
 public class EEException : Exception
 {
     /// Constructs a new EEException
-    package this(const string message, const string file = __FILE__, size_t line = __LINE__, Throwable next = null)
+    package this(const string message, const string filePath = __FILE__, size_t line = __LINE__, Throwable next = null)
     @safe pure nothrow
     {
-        super(message, file, line, next);
+        super(message, filePath, line, next);
     }
 
     /// ditto
     package this(
         const string description,
         const string location,
-        const string codeExcerpt,
         const string differences,
-        const string file = __FILE__,
+        const string filePath = __FILE__,
         size_t line = __LINE__,
         Throwable next = null
     )
-    @safe pure nothrow
     {
         Appender!string message;
 
@@ -38,7 +38,7 @@ public class EEException : Exception
         }
 
         message.put('\n');
-        message.put(codeExcerpt);
+        message.put(formatCode(readText(filePath), line, 2));
 
         if (differences != "")
         {
@@ -47,6 +47,6 @@ public class EEException : Exception
             message.put('\n');
         }
 
-        this(message.data, file, line, next);
+        this(message.data, filePath, line, next);
     }
 }

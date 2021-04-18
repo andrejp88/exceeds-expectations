@@ -58,12 +58,10 @@ public struct Expectation(TReceived)
     private void throwEEException(string differences, string description = "")
     {
         string locationString = "Failing expectation at " ~ filePath ~ "(" ~ line.to!string ~ ")";
-        string expectationCodeExcerpt = formatCode(readText(filePath), line, 2);
 
         throw new EEException(
             description,
             locationString,
-            expectationCodeExcerpt,
             differences,
             filePath, line
         );
