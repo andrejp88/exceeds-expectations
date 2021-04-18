@@ -126,5 +126,5 @@ unittest
 @("Double negative should not be allowed")
 unittest
 {
-    shouldFail(expect(4).not.not);
+    static assert(!__traits(compiles, expect(4).not.not));
 }

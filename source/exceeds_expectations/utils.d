@@ -234,3 +234,5 @@ private template FloatingPointBaseType(T)
         alias FloatingPointBaseType = real;
     }
 }
+
+package enum bool canCompareForEquality(L, R) = __traits(compiles, rvalueOf!L == rvalueOf!R);

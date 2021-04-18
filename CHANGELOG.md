@@ -7,8 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## Unreleased
 
 ### Changes
-- Update `toApproximatelyEqual` to use `std.math.isClose` instead of the deprecated `std.math.approxEqual`.
-- Load excerpts from source files only when an expectation fails, and not at compile time for every expectation. This means `stringImportPaths "."` and `dflags "-J."` are no longer needed in the project's dub configuration file.
+- Updated `toApproximatelyEqual` to use `std.math.isClose` instead of the deprecated `std.math.approxEqual`.
+- Code excerpts are now loaded from source files only when an expectation fails, and not at compile time for every expectation. This means `stringImportPaths "."` and `dflags "-J."` are no longer needed in the project's dub configuration file.
+- Moved the logic for negated expecations to their own struct.
 
 
 ## [0.4.2] · 2021-04-18
