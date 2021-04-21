@@ -1,6 +1,7 @@
 module exceeds_expectations.utils;
 
 import colorize;
+import exceeds_expectations;
 import std.algorithm;
 import std.conv;
 import std.math;
@@ -41,6 +42,7 @@ in (
 
     return
         sourceLines[firstLineIndex .. lastLineIndex + 1]
+        .map!convertTabsToSpaces
         .zip(iota(firstLineIndex, lastLineIndex + 1))
         .map!((tup) {
             immutable string lineContents = (tup[1] + 1).to!string.padLeft(' ', 4).to!string ~ " | " ~ tup[0];
@@ -51,6 +53,38 @@ in (
         })
         .join('\n') ~ "\n";
 }
+
+private string convertTabsToSpaces(string line)
+{
+    if (line.length == 0 || line[0] != '\t')
+    {
+        return line;
+    }
+    else
+    {
+        return "    " ~ convertTabsToSpaces(line[1..$]);
+    }
+}
+
+@("convertTabsToSpaces — empty line")
+unittest
+{
+    expect(convertTabsToSpaces("")).toEqual("");
+}
+
+@("convertTabsToSpaces — no indentation")
+unittest
+{
+    expect(convertTabsToSpaces("Test\tHello World\t\t  ")).toEqual("Test\tHello World\t\t  ");
+}
+
+@("convertTabsToSpaces — tabs indentation")
+unittest
+{
+    expect(convertTabsToSpaces("\t\t\tTest\tHello World\t\t  ")).toEqual("            Test\tHello World\t\t  ");
+}
+
+
 
 package string formatDifferences(string expected, string received)
 {
