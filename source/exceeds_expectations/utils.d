@@ -49,7 +49,7 @@ in (
             return
                 tup[1] >= firstFocusLineIndex && tup[1] <= lastFocusLineIndex ?
                 lineContents.color(fg.yellow) :
-                lineContents;
+                truncate(lineContents, 120);
         })
         .join('\n') ~ "\n";
 }
@@ -84,6 +84,35 @@ unittest
     expect(convertTabsToSpaces("\t\t\tTest\tHello World\t\t  ")).toEqual("            Test\tHello World\t\t  ");
 }
 
+private string truncate(string line, int length)
+in(length >= 0, "Cannot truncate line to length " ~ length.to!string)
+{
+    if (line.length > length)
+    {
+        return line[0 .. length - 4] ~ " ...".color(fg.light_black);
+    }
+
+    return line;
+}
+
+@("Truncate empty line")
+unittest
+{
+    expect(truncate("", 80)).toEqual("");
+}
+
+@("Truncate non-empty line to a given length")
+unittest
+{
+    expect(truncate("abcdefghijklmnopqrstuvwxyz", 10)).toEqual("abcdef" ~ " ...".color(fg.light_black));
+}
+
+@("Truncate — edge cases")
+unittest
+{
+    expect(truncate("abcdefghij", 10)).toEqual("abcdefghij");
+    expect(truncate("abcdefghijk", 10)).toEqual("abcdef" ~ " ...".color(fg.light_black));
+}
 
 
 package string formatDifferences(string expected, string received)
