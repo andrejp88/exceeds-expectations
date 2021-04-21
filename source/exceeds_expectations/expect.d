@@ -1,4 +1,4 @@
-module exceeds_expectations.expectation;
+module exceeds_expectations.expect;
 
 import colorize;
 import exceeds_expectations.exceptions;
@@ -17,16 +17,16 @@ import std.traits;
  *
  *  TODO: Try to make this auto-ref
  */
-public Expectation!T expect(T)(const T received, string filePath = __FILE__, size_t line = __LINE__)
+public Expect!T expect(T)(const T received, string filePath = __FILE__, size_t line = __LINE__)
 {
-    return Expectation!T(received, filePath, line);
+    return Expect!T(received, filePath, line);
 }
 
 
 /**
  *  Wraps any object and allows expectations to be made.
  */
-public struct Expectation(TReceived)
+public struct Expect(TReceived)
 {
     private const(TReceived) received;
     private immutable string filePath;

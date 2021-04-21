@@ -12,7 +12,7 @@ import std.traits;
 
 
 /**
- * Provides negated versions of the usual expectations in [Expectation].
+ * Provides negated versions of the usual expectations in [Expect].
  */
 struct ExpectNot(TReceived)
 {

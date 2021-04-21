@@ -43,7 +43,7 @@ This library was made for writing tests, but it can be used anywhere. Add it as 
 
 ### Examples
 
-A full list of expectations can be found in the [documentation](https://exceeds-expectations.dpldocs.info/exceeds_expectations.Expectation.html). Here are a few of them:
+A full list of expectations can be found in the [documentation](https://exceeds-expectations.dpldocs.info/exceeds_expectations.expect.Expect.html). Here are a few of them:
 
 Equality and identity:
 ```d
@@ -125,6 +125,6 @@ At the time exceeds-expectations was born, some libraries already existed that o
 
 This syntax works because of D's [unified function call syntax](https://dlang.org/spec/function.html#pseudo-member). Unfortunately, [DCD does not support auto-completions using the UFCS syntax](https://github.com/dlang-community/DCD#status). This means that IDEs cannot automatically suggest assertions for you. This was true when exceeds-expecations was created and is still true as of this writing.
 
-To enable a more pleasant experience when using IDEs, assertions from exceeds-expectations begin with a call to `expect()`, which returns an "Expectation" object whose member functions are visible to DCD.
+To enable a more pleasant experience when using IDEs, assertions from exceeds-expectations begin with a call to `expect()`, which returns an "Expect" struct whose member functions are visible to DCD.
 
 Version 14 of fluent-asserts (in alpha as of April 2021) also offers the `expect()` form like in exceed-expectations.
