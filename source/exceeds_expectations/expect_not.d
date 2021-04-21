@@ -157,7 +157,7 @@ struct ExpectNot(TReceived)
                             numPassed == 1 ?
                             "predicate at index " :
                             "predicates at indices "
-                        ) ~ stringifyArray(passingIndices) ~ " (first argument is index 0)."
+                        ) ~ stringifyArray(passingIndices) ~ "."
                     )
                 );
 

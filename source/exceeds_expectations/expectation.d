@@ -142,7 +142,7 @@ public struct Expectation(TReceived)
                             numFailures == 1 ?
                             "predicate at index " :
                             "predicates at indices "
-                        ) ~ stringifyArray(failingIndices) ~ " (first argument is index 0)."
+                        ) ~ stringifyArray(failingIndices) ~ "."
                     )
                 );
 
@@ -179,7 +179,8 @@ public struct Expectation(TReceived)
         if(numPassed == 0)
         {
             fail(
-                "Received: " ~ stringify(received).color(fg.light_red)
+                "Received: " ~ stringify(received).color(fg.light_red),
+                "Received value does not satisfy any predicates."
             );
         }
     }
