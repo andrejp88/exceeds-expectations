@@ -1,7 +1,7 @@
 module exceeds_expectations.expectation;
 
 import colorize;
-import exceeds_expectations.eeexception;
+import exceeds_expectations.exceptions;
 import exceeds_expectations.expect_not;
 import exceeds_expectations.utils;
 import std.algorithm;

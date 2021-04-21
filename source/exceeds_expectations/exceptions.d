@@ -1,4 +1,4 @@
-module exceeds_expectations.eeexception;
+module exceeds_expectations.exceptions;
 
 import exceeds_expectations.utils;
 import std.array;
