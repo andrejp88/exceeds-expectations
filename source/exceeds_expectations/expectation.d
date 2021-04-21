@@ -44,7 +44,7 @@ public struct Expectation(TReceived)
     {
         if (!completed)
         {
-            throw new FailingExpectationException(
+            throw new InvalidExpectationException(
                 "`expect` was called but no assertion was made at " ~
                 filePath ~ "(" ~ line.to!string ~ "): \n\n" ~
                 formatCode(readText(filePath), line, 2) ~ "\n",
@@ -106,7 +106,7 @@ public struct Expectation(TReceived)
 
         if (predicates.length == 0)
         {
-            throw new FailingExpectationException(
+            throw new InvalidExpectationException(
                 "Missing predicates at " ~ filePath ~ "(" ~ line.to!string ~ "): \n" ~
                 "\n" ~ formatCode(readText(filePath), line, 2) ~ "\n",
                 filePath, line
@@ -160,7 +160,7 @@ public struct Expectation(TReceived)
 
         if (predicates.length == 0)
         {
-            throw new FailingExpectationException(
+            throw new InvalidExpectationException(
                 "Missing predicates at " ~ filePath ~ "(" ~ line.to!string ~ "): \n" ~
                 "\n" ~ formatCode(readText(filePath), line, 2) ~ "\n",
                 filePath, line

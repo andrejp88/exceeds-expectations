@@ -12,13 +12,6 @@ import std.file : readText;
 public class FailingExpectationException : Exception
 {
     /// Constructs a new FailingExpectationException
-    package this(const string message, const string filePath = __FILE__, size_t line = __LINE__, Throwable next = null)
-    @safe pure nothrow
-    {
-        super(message, filePath, line, next);
-    }
-
-    /// ditto
     package this(
         const string description,
         const string location,
@@ -47,6 +40,21 @@ public class FailingExpectationException : Exception
             message.put('\n');
         }
 
-        this(message.data, filePath, line, next);
+        super(message.data, filePath, line, next);
+    }
+}
+
+
+/**
+ *  Thrown when an expectation is used incorrectly. In other words, it indicates
+ *  a problem in the test, not a problem in the implementation.
+ */
+public class InvalidExpectationException : Exception
+{
+    /// Constructs a new InvalidExpectationException
+    package this(const string message, const string filePath = __FILE__, size_t line = __LINE__, Throwable next = null)
+    @safe pure nothrow
+    {
+        super(message, filePath, line, next);
     }
 }
