@@ -9,9 +9,9 @@ import std.file : readText;
 /**
  *  Represents an assertion failure in exceeds_expectations.
  */
-public class EEException : Exception
+public class FailingExpectationException : Exception
 {
-    /// Constructs a new EEException
+    /// Constructs a new FailingExpectationException
     package this(const string message, const string filePath = __FILE__, size_t line = __LINE__, Throwable next = null)
     @safe pure nothrow
     {

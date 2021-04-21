@@ -44,7 +44,7 @@ public struct Expectation(TReceived)
     {
         if (!completed)
         {
-            throw new EEException(
+            throw new FailingExpectationException(
                 "`expect` was called but no assertion was made at " ~
                 filePath ~ "(" ~ line.to!string ~ "): \n\n" ~
                 formatCode(readText(filePath), line, 2) ~ "\n",
@@ -53,11 +53,11 @@ public struct Expectation(TReceived)
         }
     }
 
-    private void throwEEException(string differences, string description = "")
+    private void fail(string differences, string description = "")
     {
         string locationString = "Failing expectation at " ~ filePath ~ "(" ~ line.to!string ~ ")";
 
-        throw new EEException(
+        throw new FailingExpectationException(
             description,
             locationString,
             differences,
@@ -72,7 +72,7 @@ public struct Expectation(TReceived)
         return ExpectNot!TReceived(received, filePath, line);
     }
 
-    /// Throws an [EEException] unless `received == expected`.
+    /// Throws a [FailingExpectationException] unless `received == expected`.
     public void toEqual(TExpected)(const auto ref TExpected expected)
     if (canCompareForEquality!(TReceived, TExpected))
     {
@@ -80,33 +80,33 @@ public struct Expectation(TReceived)
 
         if (received != expected)
         {
-            throwEEException(
+            fail(
                 formatDifferences(stringify(expected), stringify(received))
             );
         }
     }
 
-    /// Throws an [EEException] unless `predicate(received)` returns true.
+    /// Throws a [FailingExpectationException] unless `predicate(received)` returns true.
     public void toSatisfy(bool delegate(const(TReceived)) predicate)
     {
         completed = true;
 
         if (!predicate(received))
         {
-            throwEEException(
+            fail(
                 "Received: " ~ stringify(received).color(fg.light_red)
             );
         }
     }
 
-    /// Throws an [EEException] unless `predicate(received)` returns true for all `predicates`.
+    /// Throws a [FailingExpectationException] unless `predicate(received)` returns true for all `predicates`.
     public void toSatisfyAll(bool delegate(const(TReceived))[] predicates...)
     {
         completed = true;
 
         if (predicates.length == 0)
         {
-            throw new EEException(
+            throw new FailingExpectationException(
                 "Missing predicates at " ~ filePath ~ "(" ~ line.to!string ~ "): \n" ~
                 "\n" ~ formatCode(readText(filePath), line, 2) ~ "\n",
                 filePath, line
@@ -146,21 +146,21 @@ public struct Expectation(TReceived)
                     )
                 );
 
-            throwEEException(
+            fail(
                 "Received: " ~ stringify(received).color(fg.light_red),
                 description
             );
         }
     }
 
-    /// Throws an [EEException] if `predicate(received)` returns false for all `predicates`.
+    /// Throws a [FailingExpectationException] if `predicate(received)` returns false for all `predicates`.
     public void toSatisfyAny(bool delegate(const(TReceived))[] predicates...)
     {
         completed = true;
 
         if (predicates.length == 0)
         {
-            throw new EEException(
+            throw new FailingExpectationException(
                 "Missing predicates at " ~ filePath ~ "(" ~ line.to!string ~ "): \n" ~
                 "\n" ~ formatCode(readText(filePath), line, 2) ~ "\n",
                 filePath, line
@@ -178,14 +178,14 @@ public struct Expectation(TReceived)
 
         if(numPassed == 0)
         {
-            throwEEException(
+            fail(
                 "Received: " ~ stringify(received).color(fg.light_red)
             );
         }
     }
 
     /**
-     * Throws an [EEException] unless `received.isClose(expected, maxRelDiff, maxAbsDiff)`.
+     * Throws a [FailingExpectationException] unless `received.isClose(expected, maxRelDiff, maxAbsDiff)`.
      *
      * `maxRelDiff` and `maxAbsDiff` have the same default values as in [std.math.isClose].
      *
@@ -204,27 +204,27 @@ public struct Expectation(TReceived)
 
         if (!received.isClose(expected, maxRelDiff, maxAbsDiff))
         {
-            throwEEException(
+            fail(
                 formatApproxDifferences(received, expected, maxRelDiff, maxAbsDiff)
             );
         }
     }
 
-    /// Throws an [EEException] unless `received is expected`.
+    /// Throws a [FailingExpectationException] unless `received is expected`.
     public void toBe(TExpected)(const auto ref TExpected expected)
     {
         completed = true;
 
         if (received !is expected)
         {
-            throwEEException(
+            fail(
                 "",
                 "Arguments do not reference the same object (received !is expected)."
             );
         }
     }
 
-    /// Throws [EEException] unless `received` is a sub-type of `TExpected`.
+    /// Throws a [FailingExpectationException] unless `received` is a sub-type of `TExpected`.
     public void toBeOfType(TExpected)()
     if ((is(TExpected == class) || is(TExpected == interface)) &&
         (is(TReceived == class) || is(TReceived == interface)))
@@ -233,7 +233,7 @@ public struct Expectation(TReceived)
 
         if (!cast(TExpected) received)
         {
-            throwEEException(
+            fail(
                 formatDifferences(
                     "`" ~ typeid(TExpected).to!string ~ "`",
                     "`" ~ received.to!string ~ "`"
@@ -246,8 +246,9 @@ public struct Expectation(TReceived)
     /// If `received` throws a `TExpected` (or one of its sub-types),
     /// it is caught and this function exits successfully.
     /// If `received` does not throw a `TExpected`, but does throw
-    /// something else, an EEException is thrown.
-    /// If `received` doesn't throw anything, an EEException is thrown.
+    /// something else, a FailingExpectationException is thrown.
+    /// If `received` doesn't throw anything, a
+    /// FailingExpectationException is thrown.
     public void toThrow(TExpected : Throwable = Throwable)()
     if (isCallable!TReceived)
     {
@@ -261,7 +262,7 @@ public struct Expectation(TReceived)
         {
             if (cast(TExpected) e) return;
 
-            throwEEException(
+            fail(
                 formatDifferences(
                     typeid(TExpected).name,
                     typeid(e).name
@@ -269,7 +270,7 @@ public struct Expectation(TReceived)
             );
         }
 
-        throwEEException(
+        fail(
             formatDifferences(
                 typeid(TExpected).name,
                 "Nothing was thrown"
