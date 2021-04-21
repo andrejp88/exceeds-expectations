@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Moved the logic for negated expecations to their own struct.
 - Renamed struct `Expectation` to `Expect`.
 - Split `EEException` into two different exceptions. `FailingExpectationException` is thrown upon regular test failures, and `InvalidExpectationException` is thrown when an expectation wasn't constructed properly.
+- When printing source code snippets, lines longer than 120 characters are truncated.
 
 ### Fixed
 - Source code indented with tabs now has its tabs converted to spaces when showing source code snippets. Previously, the tab itself would be printed which sometimes resulted in odd formatting.
