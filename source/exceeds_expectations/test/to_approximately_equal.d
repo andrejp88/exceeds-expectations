@@ -21,6 +21,18 @@ unittest
     );
 }
 
+@("float toApproximatelyEqual float succeeds because of maxRelDiff")
+unittest
+{
+    expect(10.0).toApproximatelyEqual(9.0, 0.15, 0.01);
+}
+
+@("float toApproximatelyEqual float succeeds because of maxAbsDiff")
+unittest
+{
+    expect(10.0).toApproximatelyEqual(9.0, 0.01, 1.5);
+}
+
 @("float toApproximatelyEqual int")
 unittest
 {

@@ -39,6 +39,12 @@ unittest
     shouldFail(expect(4).not.toApproximatelyEqual(4.0));
 }
 
+@("toApproximatelyEqual with custom maxRelDiff and maxAbsDiff")
+unittest
+{
+    expect(10.0).not.toApproximatelyEqual(9.0, 0.05, 0.9);
+}
+
 
 @("toSatisfy")
 unittest
