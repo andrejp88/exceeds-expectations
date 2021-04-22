@@ -43,7 +43,7 @@ This library was made for writing tests, but it can be used anywhere. Add it as 
 
 ### Examples
 
-A full list of expectations can be found in the [documentation](https://exceeds-expectations.dpldocs.info/exceeds_expectations.expect.Expect.html). Here are a few of them:
+A full list of expectations can be found in the [documentation](https://exceeds-expectations.dpldocs.info/exceeds_expectations.expect.Expect.html#function). Here are a few of them:
 
 Equality and identity:
 ```d
