@@ -94,7 +94,7 @@ public struct Expect(TReceived)
         if (!predicate(received))
         {
             fail(
-                "Received: " ~ stringify(received).color(fg.light_red)
+                "Received: ".color(fg.light_red) ~ stringify(received)
             );
         }
     }
@@ -147,7 +147,7 @@ public struct Expect(TReceived)
                 );
 
             fail(
-                "Received: " ~ stringify(received).color(fg.light_red),
+                "Received: ".color(fg.light_red) ~ stringify(received),
                 description
             );
         }
@@ -179,7 +179,7 @@ public struct Expect(TReceived)
         if(numPassed == 0)
         {
             fail(
-                "Received: " ~ stringify(received).color(fg.light_red),
+                "Received: ".color(fg.light_red) ~ stringify(received),
                 "Received value does not satisfy any predicates."
             );
         }
@@ -220,7 +220,7 @@ public struct Expect(TReceived)
         {
             fail(
                 "",
-                "Arguments do not reference the same object (received !is expected)."
+                "Arguments do not reference the same object (`received !is expected`)."
             );
         }
     }
@@ -236,8 +236,8 @@ public struct Expect(TReceived)
         {
             fail(
                 formatDifferences(
-                    "`" ~ typeid(TExpected).to!string ~ "`",
-                    "`" ~ received.to!string ~ "`"
+                    typeid(TExpected).to!string,
+                    received.to!string
                 ),
                 "Received value does not extend the expected type."
             );

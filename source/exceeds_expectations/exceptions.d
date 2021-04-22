@@ -25,19 +25,26 @@ public class FailingExpectationException : Exception
 
         message.put(location); message.put('\n');
 
-        if (description != "")
-        {
-            message.put(description); message.put('\n');
-        }
-
         message.put('\n');
         message.put(formatCode(readText(filePath), line, 2));
 
-        if (differences != "")
+        if (differences != "" || description != "")
         {
             message.put('\n');
-            message.put(differences);
-            message.put('\n');
+
+            if (differences != "")
+            {
+                message.put(differences);
+                message.put('\n');
+            }
+
+            if (description != "")
+            {
+                message.put(description);
+                message.put('\n');
+            }
+
+            message.put("\n");
         }
 
         super(message.data, filePath, line, next);

@@ -117,8 +117,8 @@ unittest
 
 package string formatDifferences(string expected, string received)
 {
-    string expectedString = "Expected: " ~ expected.color(fg.green) ~ (expected.isMultiline ? "\n" : "");
-    string receivedString = "Received: " ~ received.color(fg.light_red);
+    string expectedString = "Expected: ".color(fg.green) ~ expected ~ (expected.isMultiline ? "\n" : "");
+    string receivedString = "Received: ".color(fg.light_red) ~ received;
     return expectedString ~ "\n" ~ receivedString;
 }
 
@@ -134,12 +134,12 @@ package string formatApproxDifferences(TReceived, TExpected, F : real)(
 
     return formatDifferences(stringify(expected), stringify(received)) ~ "\n" ~
 
-        "Relative Difference: " ~
-        stringify(relDiff).color(fg.yellow) ~ getOrderOperator(relDiff, maxRelDiff) ~ stringify(maxRelDiff) ~
+        "Relative Difference: ".color(fg.yellow) ~
+        stringify(relDiff) ~ getOrderOperator(relDiff, maxRelDiff) ~ stringify(maxRelDiff) ~
         " (maxRelDiff)\n" ~
 
-        "Absolute Difference: " ~
-        stringify(absDiff).color(fg.yellow) ~ getOrderOperator(absDiff, maxAbsDiff) ~ stringify(maxAbsDiff) ~
+        "Absolute Difference: ".color(fg.yellow) ~
+        stringify(absDiff) ~ getOrderOperator(absDiff, maxAbsDiff) ~ stringify(maxAbsDiff) ~
         " (maxAbsDiff)\n";
 }
 
@@ -149,29 +149,33 @@ private string getOrderOperator(L, R)(L lhs, R rhs)
 }
 
 
-package string stringify(T)(T t)
+package string stringify(T)(T value)
 {
     string rawStringified;
 
     static if (is(T == class) && !__traits(isOverrideFunction, T.toString))
     {
-        rawStringified = stringifyClassObject(t);
+        rawStringified = stringifyClassObject(value);
     }
     else static if (isFloatingPoint!T)
     {
-        string asString = "%.14f".format(t);
+        string asString = "%.14f".format(value);
         rawStringified = asString.canFind('.') ? asString.stripRight("0.") : asString;
     }
     else static if (isSomeString!T)
     {
-        rawStringified = '"' ~ t ~ '"';
+        rawStringified = (
+            `"`.color(fg.init, bg.init, mode.bold) ~
+            value ~
+            `"`.color(fg.init, bg.init, mode.bold)
+        );
     }
     else
     {
-        rawStringified = t.to!string;
+        rawStringified = value.to!string;
     }
 
-    if (rawStringified == "") rawStringified = t.to!string;
+    if (rawStringified == "") rawStringified = value.to!string; // TODO: unnecessary?
 
     return (
         rawStringified.canFind('\n') ? "\n" : ""

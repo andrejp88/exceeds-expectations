@@ -77,7 +77,7 @@ struct ExpectNot(TReceived)
         if (predicate(received))
         {
             fail(
-                "Received: " ~ stringify(received).color(fg.light_red)
+                "Received: ".color(fg.light_red) ~ stringify(received)
             );
         }
     }
@@ -109,7 +109,7 @@ struct ExpectNot(TReceived)
         if (numPassed >= predicates.length)
         {
             fail(
-                "Received: " ~ stringify(received).color(fg.light_red),
+                "Received: ".color(fg.light_red) ~ stringify(received),
                 "Received value satisfies all predicates."
             );
         }
@@ -162,7 +162,7 @@ struct ExpectNot(TReceived)
                 );
 
             fail(
-                "Received: " ~ stringify(received).color(fg.light_red),
+                "Received: ".color(fg.light_red) ~ stringify(received),
                 description
             );
         }
@@ -220,8 +220,8 @@ struct ExpectNot(TReceived)
         {
             fail(
                 formatDifferences(
-                    "Not `" ~ typeid(TExpected).to!string ~ "`",
-                    "    `" ~ received.to!string ~ "`"
+                    "Not " ~ typeid(TExpected).to!string,
+                    "    " ~ received.to!string
                 ),
                 "Received value extends the type but was not expected to."
             );
