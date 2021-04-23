@@ -166,6 +166,7 @@ package string formatTypeDifferences(TypeInfo expected, TypeInfo received)
 package string formatTypeInfo(TypeInfo typeInfo)
 {
     import std.regex : ctRegex, replaceAll;
+
     string typeName;
 
     if (TypeInfo_Tuple tiu = cast(TypeInfo_Tuple) typeInfo)

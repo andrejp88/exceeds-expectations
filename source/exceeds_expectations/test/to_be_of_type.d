@@ -73,17 +73,3 @@ unittest
         expect(o).toBeOfType!Object
     );
 }
-
-@("Negation")
-unittest
-{
-    interface A {}
-
-    class B : A {}
-    class C : A {}
-
-    A a = new B();
-
-    expect(a).not.toBeOfType!C;
-    shouldFail(expect(a).not.toBeOfType!B);
-}
