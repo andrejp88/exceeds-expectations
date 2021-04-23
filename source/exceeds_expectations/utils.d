@@ -145,65 +145,22 @@ package string formatApproxDifferences(TReceived, TExpected, F : real)(
 
 package string formatTypeDifferences(TypeInfo expected, TypeInfo received)
 {
-    string receivedTypeInfo = formatTypeInfo(received);
-
     if (TypeInfo_Class tic = cast(TypeInfo_Class) received)
     {
-        TypeInfo_Class[] superClasses;
-        TypeInfo_Class current = tic.base;
-
-        while (current !is null)
-        {
-            superClasses ~= current;
-
-            if (current == expected) break;
-
-            current = current.base;
-        }
-
-        string superClassesTrace = fold!(
-            (string acc, TypeInfo_Class ti) => acc ~ "\n       <: " ~ ti.name
-        )(superClasses, "");
-
-        receivedTypeInfo ~= superClassesTrace;
+        return formatDifferences(
+            formatTypeInfo(expected),
+            prettyPrintInheritanceTree(received)
+                .splitLines()
+                .enumerate()
+                .map!((idxValuePair) => idxValuePair[0] == 0 ? idxValuePair[1] : "          " ~ idxValuePair[1])
+                .join("\n")
+        );
     }
 
     return formatDifferences(
         formatTypeInfo(expected),
-        receivedTypeInfo
+        formatTypeInfo(received)
     );
-
-    // if (received.toString() == expected.toString())
-    // {
-    //     return formatDifferences(
-    //         (not ? "Not " : "") ~ expected.toString(),
-    //         (not ? "    " : "") ~ received.toString()
-    //     );
-    // }
-    // else
-    // {
-    //     TypeInfo_Class[] superClasses;
-    //     TypeInfo_Class current = (cast(TypeInfo_Class) received).base;
-    //     enum objectTypeId = typeid(Object);
-
-    //     while (current != objectTypeId && current !is null)
-    //     {
-    //         superClasses ~= current;
-
-    //         if (current == expected) break;
-
-    //         current = current.base;
-    //     }
-
-    //     string superClassesTrace = fold!(
-    //         (string acc, TypeInfo_Class ti) => acc ~ "\n           <: " ~ ti.name
-    //     )(superClasses, "");
-
-    //     return formatDifferences(
-    //         (not ? "Not " : "") ~ expected.toString(),
-    //         (not ? "    " : "") ~ received.toString() ~ superClassesTrace
-    //     );
-    // }
 }
 
 private string formatTypeInfo(TypeInfo typeInfo)
@@ -360,6 +317,139 @@ unittest
     import std.meta : AliasSeq;
     expect(formatTypeInfo(typeid(AliasSeq!(string, int, TestStruct*)))).toEqual(
         "(string, int, exceeds_expectations.utils.TestStruct*)"
+    );
+}
+
+private string prettyPrintInheritanceTree(TypeInfo typeInfo, int indentLevel = 0)
+{
+    expect(typeInfo).toSatisfyAny(
+        (const TypeInfo it) => (cast(TypeInfo_Class) it) !is null,
+        (const TypeInfo it) => (cast(TypeInfo_Interface) it) !is null,
+    );
+
+    if (TypeInfo_Class tic = cast(TypeInfo_Class) typeInfo)
+    {
+        string superClassesTrace;
+
+        string indentation = ' '.repeat(3 * indentLevel).array;
+
+        if (tic.base !is null && tic.base != typeid(Object))
+        {
+            superClassesTrace ~= "\n" ~ indentation ~ "<: " ~ prettyPrintInheritanceTree(tic.base, indentLevel + 1);
+        }
+
+        foreach (Interface i; tic.interfaces)
+        {
+            superClassesTrace ~= "\n" ~ indentation ~ "<: " ~ prettyPrintInheritanceTree(i.classinfo, indentLevel + 1);
+        }
+
+        return formatTypeInfo(typeInfo) ~ superClassesTrace;
+    }
+
+    return formatTypeInfo(typeInfo);
+}
+
+private class Class1 {}
+private interface Interface1 {}
+
+@("prettyPrintInheritanceTree — Simple class")
+unittest
+{
+    expect(prettyPrintInheritanceTree(typeid(Class1))).toEqual(
+        "exceeds_expectations.utils.Class1"
+    );
+}
+
+@("prettyPrintInheritanceTree — Simple interface")
+unittest
+{
+    expect(prettyPrintInheritanceTree(typeid(Interface1))).toEqual(
+        "exceeds_expectations.utils.Interface1"
+    );
+}
+
+private class Class2 : Class1 {}
+
+@("prettyPrintInheritanceTree — class extending class")
+unittest
+{
+    expect(prettyPrintInheritanceTree(typeid(Class2))).toEqual(
+        "exceeds_expectations.utils.Class2\n" ~
+        "<: exceeds_expectations.utils.Class1"
+    );
+}
+
+private class Class3 : Interface1 {}
+
+@("prettyPrintInheritanceTree — class implementing interface")
+unittest
+{
+    expect(prettyPrintInheritanceTree(typeid(Class3))).toEqual(
+        "exceeds_expectations.utils.Class3\n" ~
+        "<: exceeds_expectations.utils.Interface1"
+    );
+}
+
+private interface Interface2 {}
+private class Class4 : Interface1, Interface2 {}
+
+@("prettyPrintInheritanceTree — class implementing 2 interfaces")
+unittest
+{
+    expect(prettyPrintInheritanceTree(typeid(Class4))).toEqual(
+        "exceeds_expectations.utils.Class4\n" ~
+        "<: exceeds_expectations.utils.Interface1\n" ~
+        "<: exceeds_expectations.utils.Interface2"
+    );
+}
+
+private class Class5 : Class1, Interface1 {}
+
+@("prettyPrintInheritanceTree — class extending a class and implementing an interface")
+unittest
+{
+    expect(prettyPrintInheritanceTree(typeid(Class5))).toEqual(
+        "exceeds_expectations.utils.Class5\n" ~
+        "<: exceeds_expectations.utils.Class1\n" ~
+        "<: exceeds_expectations.utils.Interface1"
+    );
+}
+
+private class Class6 : Class2 {}
+
+@("prettyPrintInheritanceTree — class extending class extending class")
+unittest
+{
+    expect(prettyPrintInheritanceTree(typeid(Class6))).toEqual(
+        "exceeds_expectations.utils.Class6\n" ~
+        "<: exceeds_expectations.utils.Class2\n" ~
+        "   <: exceeds_expectations.utils.Class1"
+    );
+}
+
+private interface I1 {}
+private interface I2 {}
+private interface I3 {}
+private interface IA {}
+private interface IB {}
+private interface IC {}
+private interface ICC : IC {}
+
+private class CA : IA {}
+private class CB3 : IB, I3 {}
+private class CBC3C : CB3, ICC {}
+private class CAC2 : CA, IC, I2 {}
+
+@("prettyPrintInheritanceTree — A complicated inheritance tree")
+unittest
+{
+    expect(prettyPrintInheritanceTree(typeid(CBC3C))).toEqual(
+        "exceeds_expectations.utils.CBC3C\n" ~
+        "<: exceeds_expectations.utils.CB3\n" ~
+        "   <: exceeds_expectations.utils.IB\n" ~
+        "   <: exceeds_expectations.utils.I3\n" ~
+        "<: exceeds_expectations.utils.ICC\n" ~
+        "   <: exceeds_expectations.utils.IC"
     );
 }
 

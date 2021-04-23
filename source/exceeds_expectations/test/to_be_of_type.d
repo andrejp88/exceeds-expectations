@@ -33,6 +33,30 @@ unittest
     shouldFail(expect(a).toBeOfType!C);
 }
 
+@("A complicated inheritance tree")
+unittest
+{
+    interface I1 {}
+    interface I2 {}
+    interface I3 {}
+    interface IA {}
+    interface IB {}
+    interface IC {}
+    interface ICC : IC {}
+
+    class CA : IA {}
+    class CB3 : IB, I3 {}
+    class CBC3C : CB3, ICC {}
+    class CAC2 : CA, IC, I2 {}
+
+
+    CBC3C c = new CBC3C();
+
+    shouldFail(
+        expect(c).toBeOfType!I2
+    );
+}
+
 @("Negation")
 unittest
 {
