@@ -143,6 +143,227 @@ package string formatApproxDifferences(TReceived, TExpected, F : real)(
         " (maxAbsDiff)\n";
 }
 
+package string formatTypeDifferences(TypeInfo expected, TypeInfo received)
+{
+    string receivedTypeInfo = formatTypeInfo(received);
+
+    if (TypeInfo_Class tic = cast(TypeInfo_Class) received)
+    {
+        TypeInfo_Class[] superClasses;
+        TypeInfo_Class current = tic.base;
+
+        while (current !is null)
+        {
+            superClasses ~= current;
+
+            if (current == expected) break;
+
+            current = current.base;
+        }
+
+        string superClassesTrace = fold!(
+            (string acc, TypeInfo_Class ti) => acc ~ "\n       <: " ~ ti.name
+        )(superClasses, "");
+
+        receivedTypeInfo ~= superClassesTrace;
+    }
+
+    return formatDifferences(
+        formatTypeInfo(expected),
+        receivedTypeInfo
+    );
+
+    // if (received.toString() == expected.toString())
+    // {
+    //     return formatDifferences(
+    //         (not ? "Not " : "") ~ expected.toString(),
+    //         (not ? "    " : "") ~ received.toString()
+    //     );
+    // }
+    // else
+    // {
+    //     TypeInfo_Class[] superClasses;
+    //     TypeInfo_Class current = (cast(TypeInfo_Class) received).base;
+    //     enum objectTypeId = typeid(Object);
+
+    //     while (current != objectTypeId && current !is null)
+    //     {
+    //         superClasses ~= current;
+
+    //         if (current == expected) break;
+
+    //         current = current.base;
+    //     }
+
+    //     string superClassesTrace = fold!(
+    //         (string acc, TypeInfo_Class ti) => acc ~ "\n           <: " ~ ti.name
+    //     )(superClasses, "");
+
+    //     return formatDifferences(
+    //         (not ? "Not " : "") ~ expected.toString(),
+    //         (not ? "    " : "") ~ received.toString() ~ superClassesTrace
+    //     );
+    // }
+}
+
+private string formatTypeInfo(TypeInfo typeInfo)
+{
+    import std.regex : ctRegex, replaceAll;
+    string typeName;
+
+    if (TypeInfo_Tuple tiu = cast(TypeInfo_Tuple) typeInfo)
+    {
+        // The default toString() does not separate the elements with spaces
+        typeName = "(" ~
+            (
+                tiu.elements
+                    .map!formatTypeInfo
+                    .join(", ")
+            ) ~ ")";
+    }
+    else
+    {
+        typeName = typeInfo.toString();
+    }
+
+    return typeName.replaceAll(ctRegex!`immutable\(char\)\[\]`, "string");
+}
+
+private class TestClass {}
+private interface TestInterface {}
+private struct TestStruct {}
+private enum TestEnum { TestEnumValue }
+private enum int testEnumConst = 4;
+
+@("formatTypeInfo — class")
+unittest
+{
+    expect(formatTypeInfo(typeid(TestClass))).toEqual("exceeds_expectations.utils.TestClass");
+    expect(formatTypeInfo(TestClass.classinfo)).toEqual("exceeds_expectations.utils.TestClass");
+    expect(formatTypeInfo(typeid(new TestClass()))).toEqual("exceeds_expectations.utils.TestClass");
+    expect(formatTypeInfo((new TestClass()).classinfo)).toEqual("exceeds_expectations.utils.TestClass");
+}
+
+@("formatTypeInfo — interface")
+unittest
+{
+    expect(formatTypeInfo(TestInterface.classinfo)).toEqual("exceeds_expectations.utils.TestInterface");
+}
+
+@("formatTypeInfo — struct")
+unittest
+{
+    expect(formatTypeInfo(typeid(TestStruct))).toEqual("exceeds_expectations.utils.TestStruct");
+    expect(formatTypeInfo(typeid(TestStruct()))).toEqual("exceeds_expectations.utils.TestStruct");
+}
+
+@("formatTypeInfo — int")
+unittest
+{
+    expect(formatTypeInfo(typeid(int))).toEqual("int");
+}
+
+@("formatTypeInfo — string")
+unittest
+{
+    expect(formatTypeInfo(typeid("Hello World"))).toEqual("string");
+}
+
+@("formatTypeInfo — static array")
+unittest
+{
+    expect(formatTypeInfo(typeid(int[3]))).toEqual("int[3]");
+    expect(formatTypeInfo(typeid(TestClass[3]))).toEqual("exceeds_expectations.utils.TestClass[3]");
+    expect(formatTypeInfo(typeid(TestInterface[3]))).toEqual("exceeds_expectations.utils.TestInterface[3]");
+}
+
+@("formatTypeInfo — dynamic array")
+unittest
+{
+    expect(formatTypeInfo(typeid(int[]))).toEqual("int[]");
+    expect(formatTypeInfo(typeid(TestClass[]))).toEqual("exceeds_expectations.utils.TestClass[]");
+    expect(formatTypeInfo(typeid(TestInterface[]))).toEqual("exceeds_expectations.utils.TestInterface[]");
+}
+
+@("formatTypeInfo — enum")
+unittest
+{
+    expect(formatTypeInfo(typeid(TestEnum))).toEqual("exceeds_expectations.utils.TestEnum");
+    expect(formatTypeInfo(typeid(TestEnum.TestEnumValue))).toEqual("exceeds_expectations.utils.TestEnum");
+    expect(formatTypeInfo(typeid(testEnumConst))).toEqual("int");
+}
+
+@("formatTypeInfo — associative array")
+unittest
+{
+    expect(formatTypeInfo(typeid(int[string]))).toEqual("int[string]");
+    expect(formatTypeInfo(typeid(TestClass[TestInterface]))).toEqual(
+        "exceeds_expectations.utils.TestClass[exceeds_expectations.utils.TestInterface]"
+    );
+    expect(formatTypeInfo(typeid(TestInterface[TestClass]))).toEqual(
+        "exceeds_expectations.utils.TestInterface[exceeds_expectations.utils.TestClass]"
+    );
+}
+
+@("formatTypeInfo — pointer")
+unittest
+{
+    expect(formatTypeInfo(typeid(TestStruct*))).toEqual("exceeds_expectations.utils.TestStruct*");
+}
+
+@("formatTypeInfo — function")
+unittest
+{
+    expect(formatTypeInfo(typeid(TestClass function(TestInterface ti)))).toEqual(
+        "exceeds_expectations.utils.TestClass function(exceeds_expectations.utils.TestInterface)*"
+    );
+
+    static int testFn(float x) { return 0; }
+    expect(formatTypeInfo(typeid(&testFn))).toEqual(
+        "int function(float) pure nothrow @nogc @safe*"
+    );
+
+    TestStruct* function(int[string]) testFnVar = (aa) => new TestStruct();
+    expect(formatTypeInfo(typeid(testFnVar))).toEqual(
+        "exceeds_expectations.utils.TestStruct* function(int[string])*"
+    );
+
+    expect(formatTypeInfo(typeid((string s) => 3))).toEqual("int function(string) pure nothrow @nogc @safe*");
+}
+
+@("formatTypeInfo — delegate")
+unittest
+{
+    expect(formatTypeInfo(typeid(TestClass delegate(TestInterface ti)))).toEqual(
+        "exceeds_expectations.utils.TestClass delegate(exceeds_expectations.utils.TestInterface)"
+    );
+
+    int y = 4;
+    int testDg(float x) { return y; }
+    expect(formatTypeInfo(typeid(&testDg))).toEqual(
+        "int delegate(float) pure nothrow @nogc @safe"
+    );
+
+    string[string] delegate(TestInterface[]) testDgVar = (arr) => ["hello": "world"];
+    expect(formatTypeInfo(typeid(testDgVar))).toEqual(
+        "string[string] delegate(exceeds_expectations.utils.TestInterface[])"
+    );
+
+    int z = 5;
+    expect(formatTypeInfo(typeid((string s) => z))).toEqual("int delegate(string) pure nothrow @nogc @safe");
+}
+
+@("formatTypeInfo — tuple (AliasSeq)")
+unittest
+{
+    // import std.typecons : tuple, Tuple;
+    import std.meta : AliasSeq;
+    expect(formatTypeInfo(typeid(AliasSeq!(string, int, TestStruct*)))).toEqual(
+        "(string, int, exceeds_expectations.utils.TestStruct*)"
+    );
+}
+
+
 private string getOrderOperator(L, R)(L lhs, R rhs)
 {
     return lhs > rhs ? " > " : lhs < rhs ? " < " : " = ";

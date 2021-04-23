@@ -27,6 +27,28 @@ unittest
     shouldFail(expect(4).not.toBe(4));
 }
 
+@("toBeOfType")
+unittest
+{
+    interface I {}
+    class A : I {}
+    class B : I {}
+
+    expect(new A()).not.toBeOfType!B;
+}
+
+@("toBeOfType, but is")
+unittest
+{
+    interface I {}
+    class A : I {}
+    class B : A {}
+
+    shouldFail(
+        expect(new B()).not.toBeOfType!A
+    );
+}
+
 @("toApproximatelyEqual")
 unittest
 {

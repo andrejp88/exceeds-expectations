@@ -235,9 +235,9 @@ public struct Expect(TReceived)
         if (!cast(TExpected) received)
         {
             fail(
-                formatDifferences(
-                    typeid(TExpected).to!string,
-                    received.to!string
+                formatTypeDifferences(
+                    typeid(TExpected),
+                    typeid(received)
                 ),
                 "Received value does not extend the expected type."
             );
@@ -264,9 +264,9 @@ public struct Expect(TReceived)
             if (cast(TExpected) e) return;
 
             fail(
-                formatDifferences(
-                    typeid(TExpected).name,
-                    typeid(e).name
+                formatTypeDifferences(
+                    typeid(TExpected),
+                    typeid(e)
                 )
             );
         }

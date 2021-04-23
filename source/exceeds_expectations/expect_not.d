@@ -219,11 +219,10 @@ struct ExpectNot(TReceived)
         if (cast(TExpected) received)
         {
             fail(
-                formatDifferences(
-                    "Not " ~ typeid(TExpected).to!string,
-                    "    " ~ received.to!string
-                ),
-                "Received value extends the type but was not expected to."
+                formatTypeDifferences(
+                    typeid(TExpected),
+                    typeid(received)
+                )
             );
         }
     }
@@ -246,44 +245,12 @@ struct ExpectNot(TReceived)
         {
             if (!(cast(TExpected) e)) return;
 
-            TypeInfo_Class receivedTypeInfo = typeid(e);
-            TypeInfo_Class expectedTypeInfo = typeid(TExpected);
-
-            if (receivedTypeInfo.name == expectedTypeInfo.name)
-            {
-                fail(
-                    formatDifferences(
-                        "Not " ~ expectedTypeInfo.name,
-                        "    " ~ receivedTypeInfo.name
-                    )
-                );
-            }
-            else
-            {
-                TypeInfo_Class[] superClasses;
-                TypeInfo_Class current = receivedTypeInfo.base;
-                enum objectTypeId = typeid(Object);
-
-                while (current != objectTypeId)
-                {
-                    superClasses ~= current;
-
-                    if (current == expectedTypeInfo) break;
-
-                    current = current.base;
-                }
-
-                string superClassesTrace = fold!(
-                    (string acc, TypeInfo_Class ti) => acc ~ "\n           <: " ~ ti.name
-                )(superClasses, "");
-
-                fail(
-                    formatDifferences(
-                        "Not " ~ expectedTypeInfo.name,
-                        "    " ~ receivedTypeInfo.name ~ superClassesTrace
-                    )
-                );
-            }
+            fail(
+                formatTypeDifferences(
+                    typeid(TExpected),
+                    typeid(e)
+                )
+            );
         }
     }
 }
