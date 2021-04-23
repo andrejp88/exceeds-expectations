@@ -234,10 +234,17 @@ public struct Expect(TReceived)
 
         if (!cast(TExpected) received)
         {
+            TypeInfo receivedTypeInfo = typeid(received);
+
+            static if (is(TReceived == interface))
+            {
+                receivedTypeInfo = typeid(cast(Object) received);
+            }
+
             fail(
                 formatTypeDifferences(
                     typeid(TExpected),
-                    typeid(received)
+                    receivedTypeInfo
                 ),
                 "Received value does not extend the expected type."
             );
