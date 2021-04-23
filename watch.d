@@ -36,6 +36,6 @@ private void runTests(string[] args)
 {
     Pid clearPid = spawnShell("clear");
     wait(clearPid);
-    Pid dubTestPid = spawnProcess(["dub", "test"] ~ args[1..$]);
+    Pid dubTestPid = spawnProcess(["dub", "test", "--compiler=dmd"] ~ args[1..$]);
     wait(dubTestPid);
 }
