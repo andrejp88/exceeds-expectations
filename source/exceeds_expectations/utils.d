@@ -163,7 +163,7 @@ package string formatTypeDifferences(TypeInfo expected, TypeInfo received)
     );
 }
 
-private string formatTypeInfo(TypeInfo typeInfo)
+package string formatTypeInfo(TypeInfo typeInfo)
 {
     import std.regex : ctRegex, replaceAll;
     string typeName;

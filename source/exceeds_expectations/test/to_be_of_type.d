@@ -57,6 +57,23 @@ unittest
     );
 }
 
+@("null")
+unittest
+{
+    // The purpose of toBeOfType is to check received's actual type at runtime.
+    // If received is null, it doesn't make sense to say it is the given type,
+    // because the type of null is (1) not possible to name in D and (2) the
+    // bottom (ish?) type, so it is technically everything. We want this to
+    // fail because if, say, a function call returns null, then it didn't
+    // really return what was expected of it.
+
+    Object o = null;
+
+    shouldFail(
+        expect(o).toBeOfType!Object
+    );
+}
+
 @("Negation")
 unittest
 {
