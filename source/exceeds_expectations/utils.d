@@ -150,7 +150,7 @@ package string formatTypeDifferences(TypeInfo expected, TypeInfo received, bool 
     if (TypeInfo_Class tic = cast(TypeInfo_Class) received)
     {
         return formatDifferences(
-            formatTypeInfo(expected),
+            prettyPrintTypeInfo(expected),
             prettyPrintInheritanceTree(received)
                 .splitLines()
                 .enumerate()
@@ -167,13 +167,13 @@ package string formatTypeDifferences(TypeInfo expected, TypeInfo received, bool 
     }
 
     return formatDifferences(
-        formatTypeInfo(expected),
-        formatTypeInfo(received),
+        prettyPrintTypeInfo(expected),
+        prettyPrintTypeInfo(received),
         not
     );
 }
 
-package string formatTypeInfo(TypeInfo typeInfo)
+package string prettyPrintTypeInfo(TypeInfo typeInfo)
 {
     import std.regex : ctRegex, replaceAll;
 
@@ -185,7 +185,7 @@ package string formatTypeInfo(TypeInfo typeInfo)
         typeName = "(" ~
             (
                 tiu.elements
-                    .map!formatTypeInfo
+                    .map!prettyPrintTypeInfo
                     .join(", ")
             ) ~ ")";
     }
@@ -203,130 +203,130 @@ private struct TestStruct {}
 private enum TestEnum { TestEnumValue }
 private enum int testEnumConst = 4;
 
-@("formatTypeInfo — class")
+@("prettyPrintTypeInfo — class")
 unittest
 {
-    expect(formatTypeInfo(typeid(TestClass))).toEqual("exceeds_expectations.utils.TestClass");
-    expect(formatTypeInfo(TestClass.classinfo)).toEqual("exceeds_expectations.utils.TestClass");
-    expect(formatTypeInfo(typeid(new TestClass()))).toEqual("exceeds_expectations.utils.TestClass");
-    expect(formatTypeInfo((new TestClass()).classinfo)).toEqual("exceeds_expectations.utils.TestClass");
+    expect(prettyPrintTypeInfo(typeid(TestClass))).toEqual("exceeds_expectations.utils.TestClass");
+    expect(prettyPrintTypeInfo(TestClass.classinfo)).toEqual("exceeds_expectations.utils.TestClass");
+    expect(prettyPrintTypeInfo(typeid(new TestClass()))).toEqual("exceeds_expectations.utils.TestClass");
+    expect(prettyPrintTypeInfo((new TestClass()).classinfo)).toEqual("exceeds_expectations.utils.TestClass");
 }
 
-@("formatTypeInfo — interface")
+@("prettyPrintTypeInfo — interface")
 unittest
 {
-    expect(formatTypeInfo(TestInterface.classinfo)).toEqual("exceeds_expectations.utils.TestInterface");
+    expect(prettyPrintTypeInfo(TestInterface.classinfo)).toEqual("exceeds_expectations.utils.TestInterface");
 }
 
-@("formatTypeInfo — struct")
+@("prettyPrintTypeInfo — struct")
 unittest
 {
-    expect(formatTypeInfo(typeid(TestStruct))).toEqual("exceeds_expectations.utils.TestStruct");
-    expect(formatTypeInfo(typeid(TestStruct()))).toEqual("exceeds_expectations.utils.TestStruct");
+    expect(prettyPrintTypeInfo(typeid(TestStruct))).toEqual("exceeds_expectations.utils.TestStruct");
+    expect(prettyPrintTypeInfo(typeid(TestStruct()))).toEqual("exceeds_expectations.utils.TestStruct");
 }
 
-@("formatTypeInfo — int")
+@("prettyPrintTypeInfo — int")
 unittest
 {
-    expect(formatTypeInfo(typeid(int))).toEqual("int");
+    expect(prettyPrintTypeInfo(typeid(int))).toEqual("int");
 }
 
-@("formatTypeInfo — string")
+@("prettyPrintTypeInfo — string")
 unittest
 {
-    expect(formatTypeInfo(typeid("Hello World"))).toEqual("string");
+    expect(prettyPrintTypeInfo(typeid("Hello World"))).toEqual("string");
 }
 
-@("formatTypeInfo — static array")
+@("prettyPrintTypeInfo — static array")
 unittest
 {
-    expect(formatTypeInfo(typeid(int[3]))).toEqual("int[3]");
-    expect(formatTypeInfo(typeid(TestClass[3]))).toEqual("exceeds_expectations.utils.TestClass[3]");
-    expect(formatTypeInfo(typeid(TestInterface[3]))).toEqual("exceeds_expectations.utils.TestInterface[3]");
+    expect(prettyPrintTypeInfo(typeid(int[3]))).toEqual("int[3]");
+    expect(prettyPrintTypeInfo(typeid(TestClass[3]))).toEqual("exceeds_expectations.utils.TestClass[3]");
+    expect(prettyPrintTypeInfo(typeid(TestInterface[3]))).toEqual("exceeds_expectations.utils.TestInterface[3]");
 }
 
-@("formatTypeInfo — dynamic array")
+@("prettyPrintTypeInfo — dynamic array")
 unittest
 {
-    expect(formatTypeInfo(typeid(int[]))).toEqual("int[]");
-    expect(formatTypeInfo(typeid(TestClass[]))).toEqual("exceeds_expectations.utils.TestClass[]");
-    expect(formatTypeInfo(typeid(TestInterface[]))).toEqual("exceeds_expectations.utils.TestInterface[]");
+    expect(prettyPrintTypeInfo(typeid(int[]))).toEqual("int[]");
+    expect(prettyPrintTypeInfo(typeid(TestClass[]))).toEqual("exceeds_expectations.utils.TestClass[]");
+    expect(prettyPrintTypeInfo(typeid(TestInterface[]))).toEqual("exceeds_expectations.utils.TestInterface[]");
 }
 
-@("formatTypeInfo — enum")
+@("prettyPrintTypeInfo — enum")
 unittest
 {
-    expect(formatTypeInfo(typeid(TestEnum))).toEqual("exceeds_expectations.utils.TestEnum");
-    expect(formatTypeInfo(typeid(TestEnum.TestEnumValue))).toEqual("exceeds_expectations.utils.TestEnum");
-    expect(formatTypeInfo(typeid(testEnumConst))).toEqual("int");
+    expect(prettyPrintTypeInfo(typeid(TestEnum))).toEqual("exceeds_expectations.utils.TestEnum");
+    expect(prettyPrintTypeInfo(typeid(TestEnum.TestEnumValue))).toEqual("exceeds_expectations.utils.TestEnum");
+    expect(prettyPrintTypeInfo(typeid(testEnumConst))).toEqual("int");
 }
 
-@("formatTypeInfo — associative array")
+@("prettyPrintTypeInfo — associative array")
 unittest
 {
-    expect(formatTypeInfo(typeid(int[string]))).toEqual("int[string]");
-    expect(formatTypeInfo(typeid(TestClass[TestInterface]))).toEqual(
+    expect(prettyPrintTypeInfo(typeid(int[string]))).toEqual("int[string]");
+    expect(prettyPrintTypeInfo(typeid(TestClass[TestInterface]))).toEqual(
         "exceeds_expectations.utils.TestClass[exceeds_expectations.utils.TestInterface]"
     );
-    expect(formatTypeInfo(typeid(TestInterface[TestClass]))).toEqual(
+    expect(prettyPrintTypeInfo(typeid(TestInterface[TestClass]))).toEqual(
         "exceeds_expectations.utils.TestInterface[exceeds_expectations.utils.TestClass]"
     );
 }
 
-@("formatTypeInfo — pointer")
+@("prettyPrintTypeInfo — pointer")
 unittest
 {
-    expect(formatTypeInfo(typeid(TestStruct*))).toEqual("exceeds_expectations.utils.TestStruct*");
+    expect(prettyPrintTypeInfo(typeid(TestStruct*))).toEqual("exceeds_expectations.utils.TestStruct*");
 }
 
-@("formatTypeInfo — function")
+@("prettyPrintTypeInfo — function")
 unittest
 {
-    expect(formatTypeInfo(typeid(TestClass function(TestInterface ti)))).toEqual(
+    expect(prettyPrintTypeInfo(typeid(TestClass function(TestInterface ti)))).toEqual(
         "exceeds_expectations.utils.TestClass function(exceeds_expectations.utils.TestInterface)*"
     );
 
     static int testFn(float x) { return 0; }
-    expect(formatTypeInfo(typeid(&testFn))).toEqual(
+    expect(prettyPrintTypeInfo(typeid(&testFn))).toEqual(
         "int function(float) pure nothrow @nogc @safe*"
     );
 
     TestStruct* function(int[string]) testFnVar = (aa) => new TestStruct();
-    expect(formatTypeInfo(typeid(testFnVar))).toEqual(
+    expect(prettyPrintTypeInfo(typeid(testFnVar))).toEqual(
         "exceeds_expectations.utils.TestStruct* function(int[string])*"
     );
 
-    expect(formatTypeInfo(typeid((string s) => 3))).toEqual("int function(string) pure nothrow @nogc @safe*");
+    expect(prettyPrintTypeInfo(typeid((string s) => 3))).toEqual("int function(string) pure nothrow @nogc @safe*");
 }
 
-@("formatTypeInfo — delegate")
+@("prettyPrintTypeInfo — delegate")
 unittest
 {
-    expect(formatTypeInfo(typeid(TestClass delegate(TestInterface ti)))).toEqual(
+    expect(prettyPrintTypeInfo(typeid(TestClass delegate(TestInterface ti)))).toEqual(
         "exceeds_expectations.utils.TestClass delegate(exceeds_expectations.utils.TestInterface)"
     );
 
     int y = 4;
     int testDg(float x) { return y; }
-    expect(formatTypeInfo(typeid(&testDg))).toEqual(
+    expect(prettyPrintTypeInfo(typeid(&testDg))).toEqual(
         "int delegate(float) pure nothrow @nogc @safe"
     );
 
     string[string] delegate(TestInterface[]) testDgVar = (arr) => ["hello": "world"];
-    expect(formatTypeInfo(typeid(testDgVar))).toEqual(
+    expect(prettyPrintTypeInfo(typeid(testDgVar))).toEqual(
         "string[string] delegate(exceeds_expectations.utils.TestInterface[])"
     );
 
     int z = 5;
-    expect(formatTypeInfo(typeid((string s) => z))).toEqual("int delegate(string) pure nothrow @nogc @safe");
+    expect(prettyPrintTypeInfo(typeid((string s) => z))).toEqual("int delegate(string) pure nothrow @nogc @safe");
 }
 
-@("formatTypeInfo — tuple (AliasSeq)")
+@("prettyPrintTypeInfo — tuple (AliasSeq)")
 unittest
 {
     // import std.typecons : tuple, Tuple;
     import std.meta : AliasSeq;
-    expect(formatTypeInfo(typeid(AliasSeq!(string, int, TestStruct*)))).toEqual(
+    expect(prettyPrintTypeInfo(typeid(AliasSeq!(string, int, TestStruct*)))).toEqual(
         "(string, int, exceeds_expectations.utils.TestStruct*)"
     );
 }
@@ -354,10 +354,10 @@ private string prettyPrintInheritanceTree(TypeInfo typeInfo, int indentLevel = 0
             superClassesTrace ~= "\n" ~ indentation ~ "<: " ~ prettyPrintInheritanceTree(i.classinfo, indentLevel + 1);
         }
 
-        return formatTypeInfo(typeInfo) ~ superClassesTrace;
+        return prettyPrintTypeInfo(typeInfo) ~ superClassesTrace;
     }
 
-    return formatTypeInfo(typeInfo);
+    return prettyPrintTypeInfo(typeInfo);
 }
 
 private class Class1 {}

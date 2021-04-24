@@ -238,7 +238,7 @@ public struct Expect(TReceived)
         {
             fail(
                 formatDifferences(
-                    formatTypeInfo(typeid(TExpected)),
+                    prettyPrintTypeInfo(typeid(TExpected)),
                     "null",
                     false
                 )
