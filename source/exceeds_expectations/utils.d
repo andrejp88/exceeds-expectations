@@ -145,23 +145,28 @@ package string formatApproxDifferences(TReceived, TExpected, F : real)(
         " (maxAbsDiff)\n";
 }
 
+private string indentAllButFirst(string text, int numSpaces)
+{
+    return text
+        .splitLines()
+        .enumerate()
+        .map!(
+            idxValuePair => (
+                idxValuePair[0] == 0 ?
+                idxValuePair[1] :
+                ' '.repeat(numSpaces).array.to!string ~ idxValuePair[1]
+            )
+        )
+        .join("\n");
+}
+
 package string formatTypeDifferences(TypeInfo expected, TypeInfo received, bool not)
 {
     if (TypeInfo_Class tic = cast(TypeInfo_Class) received)
     {
         return formatDifferences(
             prettyPrintTypeInfo(expected),
-            prettyPrintInheritanceTree(received)
-                .splitLines()
-                .enumerate()
-                .map!(
-                    idxValuePair => (
-                        idxValuePair[0] == 0 ?
-                        idxValuePair[1] :
-                        ' '.repeat(not ? 11 : 10).array.to!string ~ idxValuePair[1]
-                    )
-                )
-                .join("\n"),
+            prettyPrintInheritanceTree(received).indentAllButFirst(not ? 11 : 10),
             not
         );
     }
