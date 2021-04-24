@@ -77,7 +77,8 @@ struct ExpectNot(TReceived)
         if (predicate(received))
         {
             fail(
-                "Received: ".color(fg.light_red) ~ prettyPrint(received)
+                "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~
+                "Received value satisfied the predicate, but was expected not to."
             );
         }
     }
@@ -110,7 +111,7 @@ struct ExpectNot(TReceived)
         {
             fail(
                 "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~
-                "Received value satisfies all predicates."
+                "Received value satisfied all predicates, but was expected to fail at least one."
             );
         }
     }
@@ -149,17 +150,17 @@ struct ExpectNot(TReceived)
 
             immutable string description =
                 numPassed == predicates.length ?
-                "Received value satisfies all predicates." :
+                "Received value satisfied all predicates" :
                 (
-                    "Received value satisfies " ~
+                    "Received value satisfied " ~
                     (
                         (
                             numPassed == 1 ?
                             "predicate at index " :
                             "predicates at indices "
-                        ) ~ humanReadableNumbers(passingIndices) ~ "."
+                        ) ~ humanReadableNumbers(passingIndices)
                     )
-                );
+                ) ~ ", but was expected not to satisfy any.";
 
             fail(
                 "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~

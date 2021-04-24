@@ -134,15 +134,15 @@ public struct Expect(TReceived)
 
             immutable string description =
                 numFailures == predicates.length ?
-                "Received value does not satisfy any predicates." :
+                "Received value did not satisfy any predicates, but was expected to satisfy all." :
                 (
-                    "Received value does not satisfy " ~
+                    "Received value did not satisfy " ~
                     (
                         (
                             numFailures == 1 ?
                             "predicate at index " :
                             "predicates at indices "
-                        ) ~ humanReadableNumbers(failingIndices) ~ "."
+                        ) ~ humanReadableNumbers(failingIndices) ~ ", but was expected to satisfy all."
                     )
                 );
 
@@ -180,7 +180,7 @@ public struct Expect(TReceived)
         {
             fail(
                 "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~
-                "Received value does not satisfy any predicates."
+                "Received value did not satisfy any predicates, but was expected to satisfy at least one."
             );
         }
     }
@@ -258,8 +258,7 @@ public struct Expect(TReceived)
                     typeid(TExpected),
                     receivedTypeInfo,
                     false,
-                ) ~ "\n" ~
-                "Received value does not extend the expected type."
+                )
             );
         }
     }
@@ -294,7 +293,7 @@ public struct Expect(TReceived)
 
         fail(
             formatDifferences(
-                typeid(TExpected).name,
+                prettyPrintTypeInfo(typeid(TExpected)),
                 "Nothing was thrown",
                 false
             )
