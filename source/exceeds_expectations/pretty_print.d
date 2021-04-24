@@ -40,8 +40,6 @@ package string prettyPrint(T)(T value)
         rawStringified = value.to!string;
     }
 
-    if (rawStringified == "") rawStringified = value.to!string; // TODO: unnecessary?
-
     return (
         rawStringified.canFind('\n') ? "\n" : ""
     ) ~ (rawStringified);
