@@ -553,24 +553,6 @@ private string[] fieldTypeStrings(T)()
     return types;
 }
 
-// Covers function pointers as well.
-package string prettyPrintReference(T)(T t)
-if (isPointer!T)
-{
-    return t.to!string;
-}
-
-package string prettyPrintReference(T)(T t)
-if (
-    is(T == class) ||
-    is(T == interface) ||
-    isDynamicArray!T ||
-    isAssociativeArray!T
-)
-{
-    return prettyPrintReference(cast(void*)t);
-}
-
 private bool isMultiline(string s)
 {
     return s.canFind('\n');
