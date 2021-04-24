@@ -2,6 +2,7 @@ module exceeds_expectations.expect_not;
 
 import colorize;
 import exceeds_expectations.exceptions;
+import exceeds_expectations.pretty_print;
 import exceeds_expectations.utils;
 import std.algorithm;
 import std.conv;
@@ -157,7 +158,7 @@ struct ExpectNot(TReceived)
                             numPassed == 1 ?
                             "predicate at index " :
                             "predicates at indices "
-                        ) ~ prettyPrintArray(passingIndices) ~ "."
+                        ) ~ humanReadableNumbers(passingIndices) ~ "."
                     )
                 );
 

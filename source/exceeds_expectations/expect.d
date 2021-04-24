@@ -3,6 +3,7 @@ module exceeds_expectations.expect;
 import colorize;
 import exceeds_expectations.exceptions;
 import exceeds_expectations.expect_not;
+import exceeds_expectations.pretty_print;
 import exceeds_expectations.utils;
 import std.algorithm;
 import std.conv;
@@ -142,7 +143,7 @@ public struct Expect(TReceived)
                             numFailures == 1 ?
                             "predicate at index " :
                             "predicates at indices "
-                        ) ~ prettyPrintArray(failingIndices) ~ "."
+                        ) ~ humanReadableNumbers(failingIndices) ~ "."
                     )
                 );
 
