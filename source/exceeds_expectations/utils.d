@@ -124,10 +124,10 @@ package string formatDifferences(string expected, string received, bool not)
     return expectedString ~ "\n" ~ receivedString;
 }
 
+
 package string formatApproxDifferences(TReceived, TExpected, F : real)(
     const auto ref TReceived received,
     const auto ref TExpected expected,
-    bool not,
     F maxRelDiff = CommonDefaultFor!(TReceived, TExpected),
     F maxAbsDiff = 0.0
 )
@@ -135,8 +135,7 @@ package string formatApproxDifferences(TReceived, TExpected, F : real)(
     immutable real relDiff = fabs((received - expected) / expected);
     immutable real absDiff = fabs(received - expected);
 
-    return formatDifferences(stringify(expected), stringify(received), not) ~ "\n" ~
-
+    return
         "Relative Difference: ".color(fg.yellow) ~
         stringify(relDiff) ~ getOrderOperator(relDiff, maxRelDiff) ~ stringify(maxRelDiff) ~
         " (maxRelDiff)\n" ~
