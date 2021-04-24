@@ -293,7 +293,7 @@ public struct Expect(TReceived)
 
         fail(
             formatDifferences(
-                prettyPrintTypeInfo(typeid(TExpected)),
+                prettyPrint(typeid(TExpected)),
                 "Nothing was thrown",
                 false
             )
