@@ -1,6 +1,7 @@
 module exceeds_expectations.exceptions;
 
 import exceeds_expectations.utils;
+import std.algorithm;
 import std.array;
 import std.exception;
 import std.file : readText;
@@ -31,6 +32,7 @@ public class FailingExpectationException : Exception
         {
             message.put('\n');
             message.put(description);
+            if (!description.endsWith("\n")) message.put("\n");     // Always terminate the message with at least two line breaks for readability.
             message.put('\n');
         }
 

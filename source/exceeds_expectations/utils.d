@@ -116,12 +116,13 @@ unittest
 }
 
 
+/// Returns a string showing the expected and received values. Ends with a line separator.
 package string formatDifferences(string expected, string received, bool not)
 {
-    string lineLabel1 = not ? "Forbidden: " : "Expected: ";
-    string lineLabel2 = not ? "Received:  " : "Received: ";
-    string expectedString = lineLabel1.color(fg.green) ~ expected ~ (expected.canFind('\n') ? "\n" : "");
-    string receivedString = lineLabel2.color(fg.light_red) ~ received;
+    immutable string lineLabel1 = (not ? "Forbidden: " : "Expected: ").color(fg.green);
+    immutable string lineLabel2 = (not ? "Received:  " : "Received: ").color(fg.light_red);
+    string expectedString = lineLabel1 ~ expected ~ (expected.canFind('\n') ? "\n" : "");
+    string receivedString = lineLabel2 ~ received;
     return expectedString ~ "\n" ~ receivedString ~ "\n";
 }
 
@@ -174,21 +175,12 @@ package string formatTypeDifferences(TypeInfo expected, TypeInfo received, bool 
             .join("\n");
     }
 
-    if (TypeInfo_Class tic = cast(TypeInfo_Class) received)
-    {
-        return formatDifferences(
-            prettyPrint(expected),
-            indentAllExceptFirst(
-                prettyPrintInheritanceTree(received),
-                not ? 11 : 10
-            ),
-            not
-        );
-    }
-
     return formatDifferences(
         prettyPrint(expected),
-        prettyPrint(received),
+        indentAllExceptFirst(
+            prettyPrintInheritanceTree(received),
+            not ? 11 : 10
+        ),
         not
     );
 }

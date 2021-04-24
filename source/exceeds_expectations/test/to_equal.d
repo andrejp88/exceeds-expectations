@@ -100,10 +100,10 @@ unittest
 @("multi-line strings")
 unittest
 {
-    shouldFail(expect(`Hello
-World.`).toEqual(`
+    shouldFail(expect(`
 Hello World.
-`));
+`).toEqual(`Hello
+World.`));
 }
 
 @("Don't over-strip trailing zeroes")
