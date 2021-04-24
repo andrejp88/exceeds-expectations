@@ -126,8 +126,8 @@ package string formatDifferences(string expected, string received, bool not)
 
 
 package string formatApproxDifferences(TReceived, TExpected, F : real)(
-    const auto ref TReceived received,
     const auto ref TExpected expected,
+    const auto ref TReceived received,
     F maxRelDiff = CommonDefaultFor!(TReceived, TExpected),
     F maxAbsDiff = 0.0
 )

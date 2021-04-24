@@ -190,8 +190,8 @@ struct ExpectNot(TReceived)
         if (received.isClose(expected, maxRelDiff, maxAbsDiff))
         {
             fail(
-                formatDifferences(stringify(received), stringify(expected), true) ~ "\n" ~
-                formatApproxDifferences(received, expected, maxRelDiff, maxAbsDiff)
+                formatDifferences(stringify(expected), stringify(received), true) ~ "\n" ~
+                formatApproxDifferences(expected, received, maxRelDiff, maxAbsDiff)
             );
         }
     }
