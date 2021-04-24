@@ -115,16 +115,19 @@ unittest
 }
 
 
-package string formatDifferences(string expected, string received)
+package string formatDifferences(string expected, string received, bool not)
 {
-    string expectedString = "Expected: ".color(fg.green) ~ expected ~ (expected.isMultiline ? "\n" : "");
-    string receivedString = "Received: ".color(fg.light_red) ~ received;
+    string lineLabel1 = not ? "Forbidden: " : "Expected: ";
+    string lineLabel2 = not ? "Received:  " : "Received: ";
+    string expectedString = lineLabel1.color(fg.green) ~ expected ~ (expected.isMultiline ? "\n" : "");
+    string receivedString = lineLabel2.color(fg.light_red) ~ received;
     return expectedString ~ "\n" ~ receivedString;
 }
 
 package string formatApproxDifferences(TReceived, TExpected, F : real)(
     const auto ref TReceived received,
     const auto ref TExpected expected,
+    bool not,
     F maxRelDiff = CommonDefaultFor!(TReceived, TExpected),
     F maxAbsDiff = 0.0
 )
@@ -132,7 +135,7 @@ package string formatApproxDifferences(TReceived, TExpected, F : real)(
     immutable real relDiff = fabs((received - expected) / expected);
     immutable real absDiff = fabs(received - expected);
 
-    return formatDifferences(stringify(expected), stringify(received)) ~ "\n" ~
+    return formatDifferences(stringify(expected), stringify(received), not) ~ "\n" ~
 
         "Relative Difference: ".color(fg.yellow) ~
         stringify(relDiff) ~ getOrderOperator(relDiff, maxRelDiff) ~ stringify(maxRelDiff) ~
@@ -143,7 +146,7 @@ package string formatApproxDifferences(TReceived, TExpected, F : real)(
         " (maxAbsDiff)\n";
 }
 
-package string formatTypeDifferences(TypeInfo expected, TypeInfo received)
+package string formatTypeDifferences(TypeInfo expected, TypeInfo received, bool not)
 {
     if (TypeInfo_Class tic = cast(TypeInfo_Class) received)
     {
@@ -152,14 +155,22 @@ package string formatTypeDifferences(TypeInfo expected, TypeInfo received)
             prettyPrintInheritanceTree(received)
                 .splitLines()
                 .enumerate()
-                .map!((idxValuePair) => idxValuePair[0] == 0 ? idxValuePair[1] : "          " ~ idxValuePair[1])
-                .join("\n")
+                .map!(
+                    idxValuePair => (
+                        idxValuePair[0] == 0 ?
+                        idxValuePair[1] :
+                        ' '.repeat(not ? 11 : 10).array.to!string ~ idxValuePair[1]
+                    )
+                )
+                .join("\n"),
+            not
         );
     }
 
     return formatDifferences(
         formatTypeInfo(expected),
-        formatTypeInfo(received)
+        formatTypeInfo(received),
+        not
     );
 }
 

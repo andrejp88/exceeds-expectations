@@ -81,7 +81,7 @@ public struct Expect(TReceived)
         if (received != expected)
         {
             fail(
-                formatDifferences(stringify(expected), stringify(received))
+                formatDifferences(stringify(expected), stringify(received), false)
             );
         }
     }
@@ -206,7 +206,7 @@ public struct Expect(TReceived)
         if (!received.isClose(expected, maxRelDiff, maxAbsDiff))
         {
             fail(
-                formatApproxDifferences(received, expected, maxRelDiff, maxAbsDiff)
+                formatApproxDifferences(received, expected, false, maxRelDiff, maxAbsDiff)
             );
         }
     }
@@ -238,7 +238,8 @@ public struct Expect(TReceived)
             fail(
                 formatDifferences(
                     formatTypeInfo(typeid(TExpected)),
-                    "null"
+                    "null",
+                    false
                 )
             );
         }
@@ -255,7 +256,8 @@ public struct Expect(TReceived)
             fail(
                 formatTypeDifferences(
                     typeid(TExpected),
-                    receivedTypeInfo
+                    receivedTypeInfo,
+                    false,
                 ),
                 "Received value does not extend the expected type."
             );
@@ -284,7 +286,8 @@ public struct Expect(TReceived)
             fail(
                 formatTypeDifferences(
                     typeid(TExpected),
-                    typeid(e)
+                    typeid(e),
+                    false
                 )
             );
         }
@@ -292,7 +295,8 @@ public struct Expect(TReceived)
         fail(
             formatDifferences(
                 typeid(TExpected).name,
-                "Nothing was thrown"
+                "Nothing was thrown",
+                false
             )
         );
     }

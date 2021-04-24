@@ -64,7 +64,7 @@ struct ExpectNot(TReceived)
         if (received == expected)
         {
             fail(
-                formatDifferences(stringify(expected), stringify(received))
+                formatDifferences(stringify(expected), stringify(received), true)
             );
         }
     }
@@ -190,7 +190,7 @@ struct ExpectNot(TReceived)
         if (received.isClose(expected, maxRelDiff, maxAbsDiff))
         {
             fail(
-                formatApproxDifferences(received, expected, maxRelDiff, maxAbsDiff)
+                formatApproxDifferences(received, expected, true, maxRelDiff, maxAbsDiff)
             );
         }
     }
@@ -229,7 +229,8 @@ struct ExpectNot(TReceived)
             fail(
                 formatTypeDifferences(
                     typeid(TExpected),
-                    receivedTypeInfo
+                    receivedTypeInfo,
+                    true
                 )
             );
         }
@@ -256,7 +257,8 @@ struct ExpectNot(TReceived)
             fail(
                 formatTypeDifferences(
                     typeid(TExpected),
-                    typeid(e)
+                    typeid(e),
+                    true
                 )
             );
         }
