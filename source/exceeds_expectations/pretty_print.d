@@ -25,7 +25,7 @@ package string prettyPrint(T)(T value)
     else static if (isFloatingPoint!T)
     {
         string asString = "%.14f".format(value);
-        rawStringified = asString.canFind('.') ? asString.stripRight("0.") : asString;
+        rawStringified = asString.canFind('.') ? asString.stripRight("0").stripRight(".") : asString;  // Strip trailing zeroes and decimal points
     }
     else static if (isSomeString!T)
     {

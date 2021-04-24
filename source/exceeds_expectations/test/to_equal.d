@@ -105,3 +105,9 @@ World.`).toEqual(`
 Hello World.
 `));
 }
+
+@("Don't over-strip trailing zeroes")
+unittest
+{
+    shouldFail(expect(4.0).toEqual(40.0));
+}
