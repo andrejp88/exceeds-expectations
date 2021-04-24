@@ -64,7 +64,7 @@ struct ExpectNot(TReceived)
         if (received == expected)
         {
             fail(
-                formatDifferences(stringify(expected), stringify(received), true)
+                formatDifferences(prettyPrint(expected), prettyPrint(received), true)
             );
         }
     }
@@ -77,7 +77,7 @@ struct ExpectNot(TReceived)
         if (predicate(received))
         {
             fail(
-                "Received: ".color(fg.light_red) ~ stringify(received)
+                "Received: ".color(fg.light_red) ~ prettyPrint(received)
             );
         }
     }
@@ -109,7 +109,7 @@ struct ExpectNot(TReceived)
         if (numPassed >= predicates.length)
         {
             fail(
-                "Received: ".color(fg.light_red) ~ stringify(received),
+                "Received: ".color(fg.light_red) ~ prettyPrint(received),
                 "Received value satisfies all predicates."
             );
         }
@@ -157,12 +157,12 @@ struct ExpectNot(TReceived)
                             numPassed == 1 ?
                             "predicate at index " :
                             "predicates at indices "
-                        ) ~ stringifyArray(passingIndices) ~ "."
+                        ) ~ prettyPrintArray(passingIndices) ~ "."
                     )
                 );
 
             fail(
-                "Received: ".color(fg.light_red) ~ stringify(received),
+                "Received: ".color(fg.light_red) ~ prettyPrint(received),
                 description
             );
         }
@@ -190,7 +190,7 @@ struct ExpectNot(TReceived)
         if (received.isClose(expected, maxRelDiff, maxAbsDiff))
         {
             fail(
-                formatDifferences(stringify(expected), stringify(received), true) ~ "\n" ~
+                formatDifferences(prettyPrint(expected), prettyPrint(received), true) ~ "\n" ~
                 formatApproxDifferences(expected, received, maxRelDiff, maxAbsDiff)
             );
         }

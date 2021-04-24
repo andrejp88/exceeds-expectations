@@ -137,11 +137,11 @@ package string formatApproxDifferences(TReceived, TExpected, F : real)(
 
     return
         "Relative Difference: ".color(fg.yellow) ~
-        stringify(relDiff) ~ getOrderOperator(relDiff, maxRelDiff) ~ stringify(maxRelDiff) ~
+        prettyPrint(relDiff) ~ getOrderOperator(relDiff, maxRelDiff) ~ prettyPrint(maxRelDiff) ~
         " (maxRelDiff)\n" ~
 
         "Absolute Difference: ".color(fg.yellow) ~
-        stringify(absDiff) ~ getOrderOperator(absDiff, maxAbsDiff) ~ stringify(maxAbsDiff) ~
+        prettyPrint(absDiff) ~ getOrderOperator(absDiff, maxAbsDiff) ~ prettyPrint(maxAbsDiff) ~
         " (maxAbsDiff)\n";
 }
 
@@ -476,13 +476,13 @@ private string getOrderOperator(L, R)(L lhs, R rhs)
 }
 
 
-package string stringify(T)(T value)
+package string prettyPrint(T)(T value)
 {
     string rawStringified;
 
     static if (is(T == class) && !__traits(isOverrideFunction, T.toString))
     {
-        rawStringified = stringifyClassObject(value);
+        rawStringified = prettyPrintClassObject(value);
     }
     else static if (isFloatingPoint!T)
     {
@@ -509,7 +509,7 @@ package string stringify(T)(T value)
     ) ~ (rawStringified);
 }
 
-private string stringifyClassObject(T)(const T object)
+private string prettyPrintClassObject(T)(const T object)
 if (is(T == class))
 {
     import std.range : Appender;
@@ -549,13 +549,13 @@ private string[] fieldTypeStrings(T)()
 }
 
 // Covers function pointers as well.
-package string stringifyReference(T)(T t)
+package string prettyPrintReference(T)(T t)
 if (isPointer!T)
 {
     return t.to!string;
 }
 
-package string stringifyReference(T)(T t)
+package string prettyPrintReference(T)(T t)
 if (
     is(T == class) ||
     is(T == interface) ||
@@ -563,7 +563,7 @@ if (
     isAssociativeArray!T
 )
 {
-    return stringifyReference(cast(void*)t);
+    return prettyPrintReference(cast(void*)t);
 }
 
 private bool isMultiline(string s)
@@ -585,7 +585,7 @@ private bool isMultiline(string s)
 ///
 /// Example:
 ///     Given `[1, 0, 3]` returns "0, 1, and 3"
-package string stringifyArray(N)(N[] numbers)
+package string prettyPrintArray(N)(N[] numbers)
 if (isOrderingComparable!N)
 {
     if (numbers.length == 0) return "";
