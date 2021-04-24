@@ -165,20 +165,20 @@ package string formatTypeDifferences(TypeInfo expected, TypeInfo received, bool 
     if (TypeInfo_Class tic = cast(TypeInfo_Class) received)
     {
         return formatDifferences(
-            prettyPrintTypeInfo(expected),
+            prettyPrint(expected),
             prettyPrintInheritanceTree(received).indentAllButFirst(not ? 11 : 10),
             not
         );
     }
 
     return formatDifferences(
-        prettyPrintTypeInfo(expected),
-        prettyPrintTypeInfo(received),
+        prettyPrint(expected),
+        prettyPrint(received),
         not
     );
 }
 
-package string prettyPrintTypeInfo(TypeInfo typeInfo)
+private string prettyPrintTypeInfo(TypeInfo typeInfo)
 {
     import std.regex : ctRegex, replaceAll;
 
@@ -482,6 +482,11 @@ package string prettyPrint(T)(T value)
 
     static if (is(T == class) && !__traits(isOverrideFunction, T.toString))
     {
+        if (TypeInfo typeInfo = cast(TypeInfo) value)
+        {
+            rawStringified = prettyPrintTypeInfo(typeInfo);
+        }
+
         rawStringified = prettyPrintClassObject(value);
     }
     else static if (isFloatingPoint!T)
