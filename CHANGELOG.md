@@ -13,6 +13,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Renamed struct `Expectation` to `Expect`.
 - Split `EEException` into two different exceptions. `FailingExpectationException` is thrown upon regular test failures, and `InvalidExpectationException` is thrown when an expectation wasn't constructed properly.
 - When printing source code snippets, lines longer than 120 characters are truncated.
+- `toBeOfType` now shows the received type, rather than the received value.
+- Negated expectations' failure messages now say "Forbidden" instead of "Expected".
+- Failure messages no longer color the received/expected values, and instead color the actual words "Received" and "Expected".
+- `toBeOfType` and `toThrow` will now print an inheritance tree of the received value (or thrown exception) upon failure.
+- Tweaked some failure messages for consistency and readability.
 
 ### Fixed
 - Source code indented with tabs now has its tabs converted to spaces when showing source code snippets. Previously, the tab itself would be printed which sometimes resulted in odd formatting.
