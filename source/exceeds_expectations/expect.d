@@ -220,7 +220,7 @@ public struct Expect(TReceived)
         if (received !is expected)
         {
             fail(
-                "Arguments do not reference the same object (`received !is expected`)."
+                "Arguments do not reference the same object (received is expected == false)."
             );
         }
     }

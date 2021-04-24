@@ -204,7 +204,7 @@ struct ExpectNot(TReceived)
         if (received is expected)
         {
             fail(
-                "Arguments reference the same object (received is expected)"
+                "Arguments reference the same object (received is expected == true)"
             );
         }
     }
