@@ -43,14 +43,13 @@ struct ExpectNot(TReceived)
     }
 
 
-    private void fail(string differences, string description = "")
+    private void fail(string description)
     {
         string locationString = "Failing expectation at " ~ filePath ~ "(" ~ line.to!string ~ ")";
 
         throw new FailingExpectationException(
             description,
             locationString,
-            differences,
             filePath, line
         );
     }
@@ -110,7 +109,7 @@ struct ExpectNot(TReceived)
         if (numPassed >= predicates.length)
         {
             fail(
-                "Received: ".color(fg.light_red) ~ prettyPrint(received),
+                "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~
                 "Received value satisfies all predicates."
             );
         }
@@ -163,7 +162,7 @@ struct ExpectNot(TReceived)
                 );
 
             fail(
-                "Received: ".color(fg.light_red) ~ prettyPrint(received),
+                "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~
                 description
             );
         }
@@ -191,7 +190,7 @@ struct ExpectNot(TReceived)
         if (received.isClose(expected, maxRelDiff, maxAbsDiff))
         {
             fail(
-                formatDifferences(prettyPrint(expected), prettyPrint(received), true) ~ "\n" ~
+                formatDifferences(prettyPrint(expected), prettyPrint(received), true) ~
                 formatApproxDifferences(expected, received, maxRelDiff, maxAbsDiff)
             );
         }
@@ -205,7 +204,6 @@ struct ExpectNot(TReceived)
         if (received is expected)
         {
             fail(
-                "",
                 "Arguments reference the same object (received is expected)"
             );
         }

@@ -15,7 +15,6 @@ public class FailingExpectationException : Exception
     package this(
         const string description,
         const string location,
-        const string differences,
         const string filePath = __FILE__,
         size_t line = __LINE__,
         Throwable next = null
@@ -28,23 +27,11 @@ public class FailingExpectationException : Exception
         message.put('\n');
         message.put(formatCode(readText(filePath), line, 2));
 
-        if (differences != "" || description != "")
+        if (description != "")
         {
             message.put('\n');
-
-            if (differences != "")
-            {
-                message.put(differences);
-                message.put('\n');
-            }
-
-            if (description != "")
-            {
-                message.put(description);
-                message.put('\n');
-            }
-
-            message.put("\n");
+            message.put(description);
+            message.put('\n');
         }
 
         super(message.data, filePath, line, next);

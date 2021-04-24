@@ -58,7 +58,7 @@ unittest
 @("Struct != Struct")
 unittest
 {
-    import std.datetime : Date, SysTime;
+    import std.datetime : Date;
     shouldFail(expect(Date(2020, 3, 25)).toEqual(Date(2020, 2, 17)));
 }
 

@@ -54,14 +54,13 @@ public struct Expect(TReceived)
         }
     }
 
-    private void fail(string differences, string description = "")
+    private void fail(string description)
     {
         string locationString = "Failing expectation at " ~ filePath ~ "(" ~ line.to!string ~ ")";
 
         throw new FailingExpectationException(
             description,
             locationString,
-            differences,
             filePath, line
         );
     }
@@ -148,7 +147,7 @@ public struct Expect(TReceived)
                 );
 
             fail(
-                "Received: ".color(fg.light_red) ~ prettyPrint(received),
+                "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~
                 description
             );
         }
@@ -180,7 +179,7 @@ public struct Expect(TReceived)
         if(numPassed == 0)
         {
             fail(
-                "Received: ".color(fg.light_red) ~ prettyPrint(received),
+                "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~
                 "Received value does not satisfy any predicates."
             );
         }
@@ -207,7 +206,7 @@ public struct Expect(TReceived)
         if (!received.isClose(expected, maxRelDiff, maxAbsDiff))
         {
             fail(
-                formatDifferences(prettyPrint(expected), prettyPrint(received), false) ~ "\n" ~
+                formatDifferences(prettyPrint(expected), prettyPrint(received), false) ~
                 formatApproxDifferences(expected, received, maxRelDiff, maxAbsDiff)
             );
         }
@@ -221,7 +220,6 @@ public struct Expect(TReceived)
         if (received !is expected)
         {
             fail(
-                "",
                 "Arguments do not reference the same object (`received !is expected`)."
             );
         }
@@ -260,7 +258,7 @@ public struct Expect(TReceived)
                     typeid(TExpected),
                     receivedTypeInfo,
                     false,
-                ),
+                ) ~ "\n" ~
                 "Received value does not extend the expected type."
             );
         }

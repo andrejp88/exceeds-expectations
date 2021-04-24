@@ -122,7 +122,7 @@ package string formatDifferences(string expected, string received, bool not)
     string lineLabel2 = not ? "Received:  " : "Received: ";
     string expectedString = lineLabel1.color(fg.green) ~ expected ~ (expected.isMultiline ? "\n" : "");
     string receivedString = lineLabel2.color(fg.light_red) ~ received;
-    return expectedString ~ "\n" ~ receivedString;
+    return expectedString ~ "\n" ~ receivedString ~ "\n";
 }
 
 
