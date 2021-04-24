@@ -120,7 +120,7 @@ package string formatDifferences(string expected, string received, bool not)
 {
     string lineLabel1 = not ? "Forbidden: " : "Expected: ";
     string lineLabel2 = not ? "Received:  " : "Received: ";
-    string expectedString = lineLabel1.color(fg.green) ~ expected ~ (expected.isMultiline ? "\n" : "");
+    string expectedString = lineLabel1.color(fg.green) ~ expected ~ (expected.canFind('\n') ? "\n" : "");
     string receivedString = lineLabel2.color(fg.light_red) ~ received;
     return expectedString ~ "\n" ~ receivedString ~ "\n";
 }
@@ -133,6 +133,16 @@ package string formatApproxDifferences(TReceived, TExpected, F : real)(
     F maxAbsDiff = 0.0
 )
 {
+    static string getOrderOperator(real lhs, real rhs)
+    {
+        if (lhs > rhs)
+            return " > ";
+        else if (lhs < rhs)
+            return " < ";
+        else
+            return " = ";
+    }
+
     immutable real relDiff = fabs((received - expected) / expected);
     immutable real absDiff = fabs(received - expected);
 
@@ -146,28 +156,32 @@ package string formatApproxDifferences(TReceived, TExpected, F : real)(
         " (maxAbsDiff)\n";
 }
 
-private string indentAllButFirst(string text, int numSpaces)
-{
-    return text
-        .splitLines()
-        .enumerate()
-        .map!(
-            idxValuePair => (
-                idxValuePair[0] == 0 ?
-                idxValuePair[1] :
-                ' '.repeat(numSpaces).array.to!string ~ idxValuePair[1]
-            )
-        )
-        .join("\n");
-}
 
 package string formatTypeDifferences(TypeInfo expected, TypeInfo received, bool not)
 {
+    static string indentAllExceptFirst(string text, int numSpaces)
+    {
+        return text
+            .splitLines()
+            .enumerate()
+            .map!(
+                idxValuePair => (
+                    idxValuePair[0] == 0 ?
+                    idxValuePair[1] :
+                    ' '.repeat(numSpaces).array.to!string ~ idxValuePair[1]
+                )
+            )
+            .join("\n");
+    }
+
     if (TypeInfo_Class tic = cast(TypeInfo_Class) received)
     {
         return formatDifferences(
             prettyPrint(expected),
-            prettyPrintInheritanceTree(received).indentAllButFirst(not ? 11 : 10),
+            indentAllExceptFirst(
+                prettyPrintInheritanceTree(received),
+                not ? 11 : 10
+            ),
             not
         );
     }
@@ -177,17 +191,6 @@ package string formatTypeDifferences(TypeInfo expected, TypeInfo received, bool 
         prettyPrint(received),
         not
     );
-}
-
-private string getOrderOperator(L, R)(L lhs, R rhs)
-{
-    return lhs > rhs ? " > " : lhs < rhs ? " < " : " = ";
-}
-
-
-private bool isMultiline(string s)
-{
-    return s.canFind('\n');
 }
 
 
