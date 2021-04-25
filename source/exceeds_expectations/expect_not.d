@@ -55,7 +55,8 @@ struct ExpectNot(TReceived)
     }
 
 
-    /// Throws a [FailingExpectationException] unless `received != expected`.
+    /// Checks that `received != expected` and throws a
+    /// [FailingExpectationException] otherwise.
     public void toEqual(TExpected)(const auto ref TExpected expected)
     if (canCompareForEquality!(TReceived, TExpected))
     {
@@ -69,7 +70,8 @@ struct ExpectNot(TReceived)
         }
     }
 
-    /// Throws a [FailingExpectationException] if `predicate(received)` returns true.
+    /// Checks that `predicate(received)` returns false and throws a
+    /// [FailingExpectationException] otherwise.
     public void toSatisfy(bool delegate(const(TReceived)) predicate)
     {
         completed = true;
@@ -83,7 +85,8 @@ struct ExpectNot(TReceived)
         }
     }
 
-    /// Throws a [FailingExpectationException] if `predicate(received)` returns true for all given predicates.
+    /// Checks that `predicate(received)` returns false for at least one of the
+    /// given `predicates` and throws a [FailingExpectationException] otherwise.
     public void toSatisfyAll(bool delegate(const(TReceived))[] predicates...)
     {
         completed = true;
@@ -116,7 +119,8 @@ struct ExpectNot(TReceived)
         }
     }
 
-    /// Throws a [FailingExpectationException] if `predicate(received)` returns false for any given predicate.
+    /// Checks that `predicate(received)` returns false for all `predicates` and
+    /// throws a [FailingExpectationException] otherwise.
     public void toSatisfyAny(bool delegate(const(TReceived))[] predicates...)
     {
         completed = true;
@@ -171,11 +175,13 @@ struct ExpectNot(TReceived)
     }
 
     /**
-     * Throws a [FailingExpectationException] if `received.isClose(expected, maxRelDiff, maxAbsDiff)`.
+     * Checks that `received.isClose(expected, maxRelDiff, maxAbsDiff)` and
+     * throws a [FailingExpectationException] if it is.
      *
-     * `maxRelDiff` and `maxAbsDiff` have the same default values as in [std.math.isClose].
+     * `maxRelDiff` and `maxAbsDiff` have the same default values as in
+     * [std.math.isClose].
      *
-     * See_Also: std.math.isClose
+     * See_Also: [std.math.isClose]
      */
     public void toApproximatelyEqual(TExpected, F : real)(
         const auto ref TExpected expected,
@@ -197,7 +203,8 @@ struct ExpectNot(TReceived)
         }
     }
 
-    /// Throws a [FailingExpectationException] if `received is expected`.
+    /// Checks that `received !is expected` and throws a
+    /// [FailingExpectationException] otherwise.
     public void toBe(TExpected)(const auto ref TExpected expected)
     {
         completed = true;
@@ -210,8 +217,12 @@ struct ExpectNot(TReceived)
         }
     }
 
-    /// Throws a [FailingExpectationException] if `received` is a sub-type of `TExpected`.
-    /// Will never throw if `received` is null.
+    /** Checks if received is a `TExpected` or a sub-type of it. If it is, a
+     * [FailingExpectationException] is thrown.
+     *
+     * Note: `null` is considered not to be a sub-type of any class or
+     * interface.
+     */
     public void toBeOfType(TExpected)()
     if ((is(TExpected == class) || is(TExpected == interface)) &&
         (is(TReceived == class) || is(TReceived == interface)))
@@ -237,11 +248,18 @@ struct ExpectNot(TReceived)
         }
     }
 
-    /// If `received` throws a `TExpected` (or one of its sub-types),
-    /// a [FailingExpectationException] is thrown.
-    /// If `received` does not throw a `TExpected`, but does throw
-    /// something else, the function exits successfully.
-    /// If `received` doesn't throw anything, the function exits successfully.
+    /**
+     * Calls `received` and catches any exceptions thrown by it. There are three
+     * possible outcomes:
+     *
+     * - `received` throws a `TExpected` or one of its sub-types. A
+     *   [FailingExpectationException] is thrown.
+     *
+     * - `received` doesn't throw a `TExpected`, but does throw something else.
+     *   The expectation passes.
+     *
+     * - `received` doesn't throw anything. The expectation passes.
+     */
     public void toThrow(TExpected : Throwable = Throwable)()
     if (isCallable!TReceived)
     {
