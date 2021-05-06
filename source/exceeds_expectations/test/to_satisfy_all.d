@@ -80,3 +80,16 @@ unittest
         )
     );
 }
+
+@("Failed due to exception")
+unittest
+{
+    int delegate() dg = { throw new Exception("Oops"); };
+
+    shouldFail(
+        expect(dg).toSatisfyAll(
+            result => result() == 4,
+            result => result() != 8,
+        )
+    );
+}

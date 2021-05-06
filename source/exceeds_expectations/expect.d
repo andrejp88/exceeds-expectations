@@ -92,16 +92,35 @@ public struct Expect(TReceived)
     {
         completed = true;
 
-        if (!predicate(received))
+        try
         {
-            fail(
-                "Received: ".color(fg.light_red) ~ prettyPrint(received)
-            );
+            immutable bool result = predicate(received);
+
+            if (!result)
+            {
+                fail(
+                    "Received: ".color(fg.light_red) ~ prettyPrint(received)
+                );
+            }
+        }
+        catch (Throwable e)                             // @suppress(dscanner.suspicious.catch_em_all)
+        {
+            if (
+                cast(FailingExpectationException) e ||
+                cast(InvalidExpectationException) e
+            )
+            {
+                throw e;
+            }
+
+            fail("Something was thrown while evaluating the predicate:\n" ~ prettyPrint(e));
         }
     }
 
     /// Checks that `predicate(received)` returns true for all `predicates` and
     /// throws a [FailingExpectationException] otherwise.
+    ///
+    /// All predicates are evaluated.
     public void toSatisfyAll(bool delegate(const(TReceived))[] predicates...)
     {
         completed = true;
@@ -122,10 +141,29 @@ public struct Expect(TReceived)
         }
 
 
-        auto results = predicates.map!(p => p(received));
+        auto results =
+            predicates
+            .zip(iota(0, predicates.length))
+            .map!((predicateIndexPair) {
+                bool delegate(const(TReceived)) predicate = predicateIndexPair[0];
+                size_t index = predicateIndexPair[1];
+                try
+                {
+                    return predicate(received);
+                }
+                catch (Throwable e)                             // @suppress(dscanner.suspicious.catch_em_all)
+                {
+                    fail(
+                        "Something was thrown while evaluating predicate at index " ~ index.to!string ~ ":\n" ~
+                        prettyPrint(e)
+                    );
+                    return false;
+                }
+            });
+
         immutable size_t numFailures = count!(e => !e)(results);
 
-        if(numFailures > 0)
+        if (numFailures > 0)
         {
             size_t[] failingIndices =
                 results
@@ -157,6 +195,11 @@ public struct Expect(TReceived)
 
     /// Checks that `predicate(received)` returns true for at least one of the
     /// given `predicates` and throws a [FailingExpectationException] otherwise.
+    ///
+    /// All predicates are evaluated.
+    ///
+    /// Fails if something is thrown while evaluating any of the predicates,
+    /// even if another predicate returns true.
     public void toSatisfyAny(bool delegate(const(TReceived))[] predicates...)
     {
         completed = true;
@@ -176,7 +219,26 @@ public struct Expect(TReceived)
             return;
         }
 
-        auto results = predicates.map!(p => p(received));
+        auto results =
+            predicates
+            .zip(iota(0, predicates.length))
+            .map!((predicateIndexPair) {
+                bool delegate(const(TReceived)) predicate = predicateIndexPair[0];
+                size_t index = predicateIndexPair[1];
+                try
+                {
+                    return predicate(received);
+                }
+                catch (Throwable e)                             // @suppress(dscanner.suspicious.catch_em_all)
+                {
+                    fail(
+                        "Something was thrown while evaluating predicate at index " ~ index.to!string ~ ":\n" ~
+                        prettyPrint(e)
+                    );
+                    return false;
+                }
+            });
+
         immutable size_t numPassed = count!(e => e)(results);
 
         if(numPassed == 0)

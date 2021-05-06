@@ -99,12 +99,46 @@ unittest
     expect(4).not.toSatisfy(i => i == 5);
 }
 
+@("toSatisfy, but an exception is thrown")
+unittest
+{
+    int delegate() dg = { throw new Exception("Oops"); };
+
+    shouldFail(
+        expect(dg).not.toSatisfy(predicate => predicate() == 5)
+    );
+}
+
 @("toSatisfy, but does")
 unittest
 {
     shouldFail(expect(4).not.toSatisfy(i => i == 4));
 }
 
+@("toSatisfyAll")
+unittest
+{
+    expect(4).not.toSatisfyAll(i => i == 4, i => i == 5);
+}
+
+@("toSatisfyAll, but does")
+unittest
+{
+    shouldFail(expect(4).not.toSatisfyAll(i => i == 4, i => i <= 5));
+}
+
+@("toSatisfyAll, but an exception is thrown, despite otherwise succeeding")
+unittest
+{
+    int delegate() dg = { throw new Exception("Oops"); };
+
+    shouldFail(
+        expect(dg).not.toSatisfyAll(
+            p => false,
+            p => p() <= 5
+        )
+    );
+}
 
 @("toSatisfyAny")
 unittest
@@ -118,18 +152,17 @@ unittest
     shouldFail(expect(4).not.toSatisfyAny(i => i == 5, i => i == 4));
 }
 
-
-
-@("toSatisfyAll")
+@("toSatisfyAny, but an exception is thrown, despite otherwise succeeding")
 unittest
 {
-    expect(4).not.toSatisfyAll(i => i == 4, i => i == 5);
-}
+    int delegate() dg = { throw new Exception("Oops"); };
 
-@("toSatisfyAll, but does")
-unittest
-{
-    shouldFail(expect(4).not.toSatisfyAll(i => i == 4, i => i <= 5));
+    shouldFail(
+        expect(dg).not.toSatisfyAny(
+            p => false,
+            p => p() <= 5
+        )
+    );
 }
 
 @("toThrow, since it throws the wrong thing")

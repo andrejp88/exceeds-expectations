@@ -43,3 +43,13 @@ unittest
     import std.math : sqrt;
     shouldFail(expect(new A(4, 5, 7)).toSatisfy(a => sqrt(a.x * a.x + a.y * a.y + a.z * a.z) == 9));
 }
+
+@("Failed due to exception")
+unittest
+{
+    int delegate() dg = { throw new Exception("Oops"); };
+
+    shouldFail(
+        expect(dg).toSatisfy(result => result() == 4)
+    );
+}

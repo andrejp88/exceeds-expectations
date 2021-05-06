@@ -72,21 +72,44 @@ struct ExpectNot(TReceived)
 
     /// Checks that `predicate(received)` returns false and throws a
     /// [FailingExpectationException] otherwise.
+    ///
+    /// Fails if an exception is thrown while evaluating the predicate.
     public void toSatisfy(bool delegate(const(TReceived)) predicate)
     {
         completed = true;
 
-        if (predicate(received))
+        try
         {
-            fail(
-                "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~
-                "Received value satisfied the predicate, but was expected not to."
-            );
+            immutable bool result = predicate(received);
+
+            if (result)
+            {
+                fail(
+                    "Received: ".color(fg.light_red) ~ prettyPrint(received)
+                );
+            }
+        }
+        catch (Throwable e)                             // @suppress(dscanner.suspicious.catch_em_all)
+        {
+            if (
+                cast(FailingExpectationException) e ||
+                cast(InvalidExpectationException) e
+            )
+            {
+                throw e;
+            }
+
+            fail("Something was thrown while evaluating the predicate:\n" ~ prettyPrint(e));
         }
     }
 
     /// Checks that `predicate(received)` returns false for at least one of the
     /// given `predicates` and throws a [FailingExpectationException] otherwise.
+    ///
+    /// All predicates are evaluated.
+    ///
+    /// Fails if something is thrown while evaluating any of the predicates,
+    /// even if another predicate returns false.
     public void toSatisfyAll(bool delegate(const(TReceived))[] predicates...)
     {
         completed = true;
@@ -107,7 +130,26 @@ struct ExpectNot(TReceived)
         }
 
 
-        auto results = predicates.map!(p => p(received));
+        auto results =
+            predicates
+            .zip(iota(0, predicates.length))
+            .map!((predicateIndexPair) {
+                bool delegate(const(TReceived)) predicate = predicateIndexPair[0];
+                size_t index = predicateIndexPair[1];
+                try
+                {
+                    return predicate(received);
+                }
+                catch (Throwable e)                             // @suppress(dscanner.suspicious.catch_em_all)
+                {
+                    fail(
+                        "Something was thrown while evaluating predicate at index " ~ index.to!string ~ ":\n" ~
+                        prettyPrint(e)
+                    );
+                    return false;
+                }
+            });
+
         immutable size_t numPassed = count!(e => e)(results);
 
         if (numPassed >= predicates.length)
@@ -121,6 +163,11 @@ struct ExpectNot(TReceived)
 
     /// Checks that `predicate(received)` returns false for all `predicates` and
     /// throws a [FailingExpectationException] otherwise.
+    ///
+    /// All predicates are evaluated.
+    ///
+    /// Fails if something is thrown while evaluating any of the predicates,
+    /// even if none of the predicates return true.
     public void toSatisfyAny(bool delegate(const(TReceived))[] predicates...)
     {
         completed = true;
@@ -140,7 +187,26 @@ struct ExpectNot(TReceived)
             return;
         }
 
-        auto results = predicates.map!(p => p(received));
+        auto results =
+            predicates
+            .zip(iota(0, predicates.length))
+            .map!((predicateIndexPair) {
+                bool delegate(const(TReceived)) predicate = predicateIndexPair[0];
+                size_t index = predicateIndexPair[1];
+                try
+                {
+                    return predicate(received);
+                }
+                catch (Throwable e)                             // @suppress(dscanner.suspicious.catch_em_all)
+                {
+                    fail(
+                        "Something was thrown while evaluating predicate at index " ~ index.to!string ~ ":\n" ~
+                        prettyPrint(e)
+                    );
+                    return false;
+                }
+            });
+
         immutable size_t numPassed = count!(e => e)(results);
 
         if (numPassed > 0)

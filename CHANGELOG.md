@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] · Not Yet Released
+
+### Changed
+- `toSatisfy`, `toSatisfyAll`, and `toSatisfyAny` catch anything that is thrown while evaluating their predicates and throw a `FailingExpectationException` showing the original exception (or error) message. This is also true of their negated counterparts.
+
+
 ## [0.5.0] · 2021-04-25
 
 ### Changed
@@ -95,3 +101,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [0.4.1]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.4.1
 [0.4.2]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.4.2
 [0.5.0]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.5.0
+[0.6.0]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.6.0

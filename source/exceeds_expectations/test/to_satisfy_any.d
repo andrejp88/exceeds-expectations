@@ -92,3 +92,29 @@ unittest
 {
     expect('c').toSatisfyAny(c => c == 'c', c => c == 'd');
 }
+
+@("Failed due to exceptions in all")
+unittest
+{
+    int delegate() dg = { throw new Exception("Oops"); };
+
+    shouldFail(
+        expect(dg).toSatisfyAny(
+            result => result() == 4,
+            result => result() != 8,
+        )
+    );
+}
+
+@("Fails due to an exception in just one, despite others succeeding")
+unittest
+{
+    int delegate() dg = { throw new Exception("Oops"); };
+
+    shouldFail(
+        expect(dg).toSatisfyAny(
+            result => true,
+            result => result() == 4,
+        )
+    );
+}
