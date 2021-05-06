@@ -344,7 +344,9 @@ struct ExpectNot(TReceived)
                     typeid(TExpected),
                     typeid(e),
                     true
-                )
+                ) ~
+                "Details:".color(fg.yellow) ~
+                prettyPrint(e)
             );
         }
     }

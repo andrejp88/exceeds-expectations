@@ -363,7 +363,9 @@ public struct Expect(TReceived)
                     typeid(TExpected),
                     typeid(e),
                     false
-                )
+                ) ~
+                "Details:".color(fg.yellow) ~
+                prettyPrint(e)
             );
         }
 

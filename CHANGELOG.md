@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - `toSatisfy`, `toSatisfyAll`, and `toSatisfyAny` catch anything that is thrown while evaluating their predicates and throw a `FailingExpectationException` showing the original exception (or error) message. This is also true of their negated counterparts.
+- `toThrow` now prints the received throwable's message and stacktrace if it's not the expected type of throwable.
 
 
 ## [0.5.0] · 2021-04-25
