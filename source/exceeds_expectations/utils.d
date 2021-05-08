@@ -116,7 +116,8 @@ unittest
 }
 
 
-/// Returns a string showing the expected and received values. Ends with a line separator.
+/// Returns a string showing the expected and received values. Ends
+/// with a line separator.
 package string formatDifferences(string expected, string received, bool not)
 {
     immutable string lineLabel1 = (not ? "Forbidden: " : "Expected: ").color(fg.green);
@@ -186,19 +187,12 @@ package string formatTypeDifferences(TypeInfo expected, TypeInfo received, bool 
 }
 
 
-/// Given an array of orderable elements,
+/// Converts an array of orderable elements into English.
 ///
-/// Example:
-///     Given `[]` return ""
-///
-/// Example:
-///     Given `[1]` return "1"
-///
-/// Example:
-///     Given `[3, 0]` return "0 and 3"
-///
-/// Example:
-///     Given `[1, 0, 3]` returns "0, 1, and 3"
+/// - Given `[]` returns `""`
+/// - Given `[1]` returns `"1"`
+/// - Given `[3, 0]` returns `"0 and 3"`
+/// - Given `[1, 0, 3]` returns `"0, 1, and 3"`
 package string humanReadableNumbers(N)(N[] numbers)
 if (isOrderingComparable!N)
 {

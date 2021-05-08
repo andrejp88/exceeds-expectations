@@ -7,12 +7,9 @@ import std.exception;
 import std.file : readText;
 
 
-/**
- *  Represents an assertion failure in exceeds_expectations.
- */
+/// Thrown when an expectation fails.
 public class FailingExpectationException : Exception
 {
-    /// Constructs a new FailingExpectationException
     package this(
         const string description,
         const string location,
@@ -41,10 +38,8 @@ public class FailingExpectationException : Exception
 }
 
 
-/**
- *  Thrown when an expectation is used incorrectly. In other words, it indicates
- *  a problem in the test, not a problem in the implementation.
- */
+/// Thrown when an expectation is used incorrectly. It means there is
+/// problem in the test itself, not in what's being tested.
 public class InvalidExpectationException : Exception
 {
     /// Constructs a new InvalidExpectationException

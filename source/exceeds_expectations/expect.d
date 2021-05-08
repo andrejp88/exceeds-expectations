@@ -13,9 +13,7 @@ import std.range;
 import std.traits;
 
 
-/**
- * Begins an expectation.
- */
+/// Begins an expectation.
 public Expect!T expect(T)(const T received, string filePath = __FILE__, size_t line = __LINE__)
 {
     // TODO: Try to make this function auto-ref
@@ -23,9 +21,8 @@ public Expect!T expect(T)(const T received, string filePath = __FILE__, size_t l
 }
 
 
-/**
- * Wrapper whose methods are expectations.
- */
+/// Runs expectations on a given value. Instances must be created
+/// using [expect].
 public struct Expect(TReceived)
 {
     private const(TReceived) received;
@@ -64,7 +61,7 @@ public struct Expect(TReceived)
         );
     }
 
-    /// Negates the expectation. Returns an [ExpectNot].
+    /// Negates the expectation.
     public ExpectNot!TReceived not()
     {
         completed = true; // Because a new expectation is returned, and this one will be discarded.
@@ -117,8 +114,9 @@ public struct Expect(TReceived)
         }
     }
 
-    /// Checks that `predicate(received)` returns true for all `predicates` and
-    /// throws a [FailingExpectationException] otherwise.
+    /// Checks that `predicate(received)` returns true for all
+    /// `predicates` and throws a [FailingExpectationException]
+    /// otherwise.
     ///
     /// All predicates are evaluated.
     public void toSatisfyAll(bool delegate(const(TReceived))[] predicates...)
@@ -193,13 +191,14 @@ public struct Expect(TReceived)
         }
     }
 
-    /// Checks that `predicate(received)` returns true for at least one of the
-    /// given `predicates` and throws a [FailingExpectationException] otherwise.
+    /// Checks that `predicate(received)` returns true for at least
+    /// one of the given `predicates` and throws a
+    /// [FailingExpectationException] otherwise.
     ///
     /// All predicates are evaluated.
     ///
-    /// Fails if something is thrown while evaluating any of the predicates,
-    /// even if another predicate returns true.
+    /// Fails if something is thrown while evaluating any of the
+    /// predicates, even if another predicate returns true.
     public void toSatisfyAny(bool delegate(const(TReceived))[] predicates...)
     {
         completed = true;
@@ -250,15 +249,14 @@ public struct Expect(TReceived)
         }
     }
 
-    /**
-     * Checks that `received.isClose(expected, maxRelDiff, maxAbsDiff)` and
-     * throws a [FailingExpectationException] otherwise.
-     *
-     * `maxRelDiff` and `maxAbsDiff` have the same default values as in
-     * [std.math.isClose].
-     *
-     * See_Also: [std.math.isClose]
-     */
+    /// Checks that `received.isClose(expected, maxRelDiff,
+    /// maxAbsDiff)` and throws a [FailingExpectationException]
+    /// otherwise.
+    ///
+    /// `maxRelDiff` and `maxAbsDiff` have the same default values as
+    /// in [std.math.isClose].
+    ///
+    /// See_Also: [std.math.isClose]
     public void toApproximatelyEqual(TExpected, F : real)(
         const auto ref TExpected expected,
         F maxRelDiff = CommonDefaultFor!(TReceived, TExpected),
@@ -293,9 +291,9 @@ public struct Expect(TReceived)
         }
     }
 
-    /// Checks that received is a `TExpected` or a sub-type of it. Throws a
-    /// [FailingExpectationException] if `received` cannot be cast to
-    /// `TExpected` or if `received is null`.
+    /// Checks that received is a `TExpected` or a sub-type of it.
+    /// Throws a [FailingExpectationException] if `received` cannot be
+    /// cast to `TExpected` or if `received is null`.
     public void toBeOfType(TExpected)()
     if ((is(TExpected == class) || is(TExpected == interface)) &&
         (is(TReceived == class) || is(TReceived == interface)))
@@ -332,19 +330,20 @@ public struct Expect(TReceived)
         }
     }
 
-    /**
-     * Calls `received` and catches any exceptions thrown by it. There are three
-     * possible outcomes:
-     *
-     * - `received` throws a `TExpected` or one of its sub-types. The
-     *   expectation passes.
-     *
-     * - `received` doesn't throw a `TExpected`, but does throw something else.
-     *   A [FailingExpectationException] is thrown.
-     *
-     * - `received` doesn't throw anything. A [FailingExpectationException] is
-     *   thrown.
-     */
+    /// Calls `received` and catches any exceptions thrown by it. If
+    /// it doesn't catch `TExpected` or a sub-type, the expectation
+    /// fails.
+    ///
+    /// There are three possible outcomes:
+    ///
+    /// - `received` throws a `TExpected` or one of its sub-types. The
+    ///   expectation passes.
+    ///
+    /// - `received` doesn't throw a `TExpected`, but does throw
+    ///   something else. A [FailingExpectationException] is thrown.
+    ///
+    /// - `received` doesn't throw anything. A
+    ///   [FailingExpectationException] is thrown.
     public void toThrow(TExpected : Throwable = Throwable)()
     if (isCallable!TReceived)
     {

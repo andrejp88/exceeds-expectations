@@ -9,10 +9,11 @@ import std.string;
 import std.traits;
 
 
-/// Prints the given value in a nice, human readable format. If receiving a
-/// string, it will output the string with bold double quotes indicating the
-/// start and end of the string. If the returned string had line breaks, it is
-/// guaranteed to also start and end with a line break.
+/// Prints the given value in a nice, human readable format. If
+/// receiving a string, it will output the string with bold double
+/// quotes indicating the start and end of the string. If the returned
+/// string has line breaks in the middle, it's guaranteed to also
+/// start and end with a line break.
 package string prettyPrint(T)(T value)
 out(result; !(result.canFind('\n')) || (result.endsWith("\n") && result.startsWith("\n")))
 {
