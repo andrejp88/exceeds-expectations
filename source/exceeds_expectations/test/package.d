@@ -18,3 +18,16 @@ package void shouldFail(lazy void dg, string file = __FILE__, int line = __LINE_
         debug(SHOW_MESSAGES) writeln(e.message);
     }
 }
+
+package void shouldBeInvalid(lazy void dg, string file = __FILE__, int line = __LINE__)
+{
+    try
+    {
+        dg();
+        assert(false, "\nInvalid expectation wasn't caught: " ~ file ~ "(" ~ line.to!string ~ ")");
+    }
+    catch (InvalidExpectationException e)
+    {
+        debug(SHOW_MESSAGES) writeln(e.message);
+    }
+}

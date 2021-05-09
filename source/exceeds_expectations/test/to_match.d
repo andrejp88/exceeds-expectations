@@ -79,19 +79,7 @@ unittest
 @("Throw an InvalidExpectationException if the regex is invalid")
 unittest
 {
-    try
-    {
-        expect("botanical in berkshire, zoological in zyzzx").toMatch(`[a-z`);
-    }
-    catch (InvalidExpectationException e)
-    {
-        debug (SHOW_MESSAGES)
-        {
-            import std.stdio : writeln;
-            writeln(e.message);
-        }
-        return;
-    }
-
-    assert(false, "Expected to catch an InvalidExpectationException but didn't.");
+    shouldBeInvalid(
+        expect("botanical in berkshire, zoological in zyzzx").toMatch(`[a-z`)
+    );
 }

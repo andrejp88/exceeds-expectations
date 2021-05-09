@@ -270,21 +270,9 @@ unittest
 @("toMatch throws an InvalidExpectationException if the regex is invalid")
 unittest
 {
-    try
-    {
-        expect("botanical in berkshire, zoological in zyzzx").not.toMatch(`[a-z`);
-    }
-    catch (InvalidExpectationException e)
-    {
-        debug (SHOW_MESSAGES)
-        {
-            import std.stdio : writeln;
-            writeln(e.message);
-        }
-        return;
-    }
-
-    assert(false, "Expected to catch an InvalidExpectationException but didn't.");
+    shouldBeInvalid(
+        expect("botanical in berkshire, zoological in zyzzx").not.toMatch(`[a-z`)
+    );
 }
 
 @("Double negative should not be allowed")
