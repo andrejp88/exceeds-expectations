@@ -37,42 +37,42 @@ unittest
 @("Complex regex success")
 unittest
 {
-    expect("botanical in berkshire, zoological in zyzzx").toMatch(`(?<!botanical) in (?=[xyz]{5})`);
+    expect("botanical in berkshire, zoological in zzyzx").toMatch(`(?<!botanical) in (?=[xyz]{5})`);
 }
 
 @("Complex regex failure")
 unittest
 {
     shouldFail(
-        expect("botanical in zyzzx, zoological in berkshire").toMatch(`(?<!botanical) in (?=[xyz]{5})`)
+        expect("botanical in zzyzx, zoological in berkshire").toMatch(`(?<!botanical) in (?=[xyz]{5})`)
     );
 }
 
 @("Multiline regex success")
 unittest
 {
-    expect("botanical in berkshire,\nzoological in zyzzx").toMatch(`^[a-z]+ in (?=[xyz]{5})`, "m");
+    expect("botanical in berkshire,\nzoological in zzyzx").toMatch(`^[a-z]+ in (?=[xyz]{5})`, "m");
 }
 
 @("Multiline regex failure")
 unittest
 {
     shouldFail(
-        expect("botanical in berkshire,\nzoological in zyzzx").toMatch(`^[a-z]+ in (?=[xyz]{5})`)
+        expect("botanical in berkshire,\nzoological in zzyzx").toMatch(`^[a-z]+ in (?=[xyz]{5})`)
     );
 }
 
 @("Case-insensitive regex success")
 unittest
 {
-    expect("botanical in berkshire, zoological in zyzzx").toMatch(`BERKSHIRE`, "i");
+    expect("botanical in berkshire, zoological in zzyzx").toMatch(`BERKSHIRE`, "i");
 }
 
 @("Case-insensitive regex failure")
 unittest
 {
     shouldFail(
-        expect("botanical in berkshire, zoological in zyzzx").toMatch(`BERKSHIRE`)
+        expect("botanical in berkshire, zoological in zzyzx").toMatch(`BERKSHIRE`)
     );
 }
 
@@ -80,6 +80,6 @@ unittest
 unittest
 {
     shouldBeInvalid(
-        expect("botanical in berkshire, zoological in zyzzx").toMatch(`[a-z`)
+        expect("botanical in berkshire, zoological in zzyzx").toMatch(`[a-z`)
     );
 }
