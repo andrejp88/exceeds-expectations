@@ -9,6 +9,8 @@ import std.conv;
 import std.file;
 import std.math;
 import std.range;
+import std.regex;
+import std.string;
 import std.traits;
 
 
@@ -347,6 +349,58 @@ struct ExpectNot(TReceived)
                 ) ~
                 "Details:".color(fg.yellow) ~
                 prettyPrint(e)
+            );
+        }
+    }
+
+    /// Fails if `received` matches the regular expression `pattern`.
+    public void toMatch(TExpected)(TExpected pattern, string flags = "")
+    if (isSomeString!TReceived && isSomeString!TExpected)
+    {
+        completed = true;
+
+        try
+        {
+            auto re = regex(pattern, flags);
+            auto matchResult = matchFirst(received, re);
+
+            if (!matchResult.empty)
+            {
+                string expectedString = prettyPrint(pattern);
+                if (flags != "")
+                {
+                    expectedString ~= " with flags " ~ prettyPrint(flags);
+                }
+
+                // Highlight line-by-line because the output looks buggy if the highlighting contains a line break
+                string rawStringified =
+                    matchResult.pre ~
+                    matchResult.hit.splitLines.map!(line => line.color(bg.yellow)).join('\n') ~
+                    matchResult.post;
+
+                immutable bool isMultiline = received.canFind('\n');
+
+                fail(
+                    formatDifferences(
+                        expectedString,
+                        `"`.color(fg.init, bg.init, mode.bold) ~
+                        (isMultiline ? ("\n" ~ rawStringified.stripLeft("\n").stripRight("\n") ~ "\n") : rawStringified) ~
+                        `"`.color(fg.init, bg.init, mode.bold),
+                        true
+                    )
+                );
+            }
+        }
+        catch (RegexException e)
+        {
+            throw new InvalidExpectationException(
+                "toMatch received an invalid regular expression pattern at " ~
+                filePath ~ "(" ~ line.to!string ~ "): \n\n" ~
+                formatCode(readText(filePath), line, 2) ~ "\n" ~
+                "Details:".color(fg.yellow) ~ prettyPrint(e),
+                filePath,
+                line,
+                e
             );
         }
     }

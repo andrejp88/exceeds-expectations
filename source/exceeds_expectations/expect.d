@@ -10,6 +10,7 @@ import std.conv;
 import std.file;
 import std.math;
 import std.range;
+import std.regex;
 import std.traits;
 
 
@@ -375,5 +376,47 @@ public struct Expect(TReceived)
                 false
             )
         );
+    }
+
+
+    /// Checks that `received` matches the regular expression `pattern`.
+    public void toMatch(TExpected)(TExpected pattern, string flags = "")
+    if (isSomeString!TReceived && isSomeString!TExpected)
+    {
+        completed = true;
+
+        try
+        {
+            auto re = regex(pattern, flags);
+
+            if (matchFirst(received, re).empty)
+            {
+                string expectedString = prettyPrint(pattern);
+                if (flags != "")
+                {
+                    expectedString ~= " with flags " ~ prettyPrint(flags);
+                }
+
+                fail(
+                    formatDifferences(
+                        prettyPrint(pattern),
+                        prettyPrint(received),
+                        false
+                    )
+                );
+            }
+        }
+        catch (RegexException e)
+        {
+            throw new InvalidExpectationException(
+                "toMatch received an invalid regular expression pattern at " ~
+                filePath ~ "(" ~ line.to!string ~ "): \n\n" ~
+                formatCode(readText(filePath), line, 2) ~ "\n" ~
+                "Details:".color(fg.yellow) ~ prettyPrint(e),
+                filePath,
+                line,
+                e
+            );
+        }
     }
 }

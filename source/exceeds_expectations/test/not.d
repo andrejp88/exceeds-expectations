@@ -1,7 +1,9 @@
 module exceeds_expectations.test.not;
 
 import exceeds_expectations;
+import exceeds_expectations.exceptions;
 import exceeds_expectations.test;
+
 
 @("toEqual")
 unittest
@@ -207,6 +209,82 @@ unittest
     shouldFail(
         expect({ throw new CustomException("Test"); }).not.toThrow
     );
+}
+
+@("toMatch simple")
+unittest
+{
+    expect("botanical in berkshire, zoological in zyzzx").not.toMatch(`zyzzx.*berkshire`);
+}
+
+@("toMatch simple, but does")
+unittest
+{
+    shouldFail(
+        expect("botanical in berkshire, zoological in zyzzx").not.toMatch(`berkshire.*zyzzx`)
+    );
+}
+
+@("toMatch complex")
+unittest
+{
+    expect("botanical in berkshire, zoological in zyzzx").not.toMatch(`(?<=zy)z{3}(?=x)`);
+}
+
+@("toMatch complex, but does")
+unittest
+{
+    shouldFail(
+        expect("botanical in berkshire, zoological in zyzzx").not.toMatch(`(?<=zy)z{2}(?=x)`)
+    );
+}
+
+@("toMatch multiline")
+unittest
+{
+    expect("botanical in berkshire, zoological in zyzzx").not.toMatch(`berkshire.*\n.*zyzzx`, "ms");
+}
+
+@("toMatch multiline, but does")
+unittest
+{
+    shouldFail(
+        expect("botanical in berkshire,\nzoological in zyzzx").not.toMatch(`berkshire.*\n.*zyzzx`, "ms")
+    );
+}
+
+@("toMatch case-insensitive")
+unittest
+{
+    expect("botanical in berkshire, zoological in zyzzx").not.toMatch(`ZYZZX`);
+}
+
+@("toMatch case-insensitive, but does")
+unittest
+{
+    shouldFail(
+        expect("botanical in berkshire, zoological in zyzzx").not.toMatch(`ZYZZX`, "i")
+    );
+}
+
+@("toMatch throws an InvalidExpectationException if the regex is invalid")
+unittest
+{
+    try
+    {
+        expect("botanical in berkshire, zoological in zyzzx").not.toMatch(`[a-z`);
+    }
+    catch (InvalidExpectationException e)
+    {
+        debug (SHOW_MESSAGES)
+        {
+            import std.stdio : writeln;
+            writeln(e.message);
+        }
+        return;
+    }
+
+    assert(false, "Expected to catch an InvalidExpectationException but didn't.");
 }
 
 @("Double negative should not be allowed")
