@@ -70,7 +70,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [0.3.0] · 2021-02-28
 
 ### Changed
-- Strings are now enclosed by double quotes in order to improve readability of empty strings and multi-line strings.
+- Strings are now enclosed by double quotes in order to improve readability of empty strings and multiline strings.
 
 ### Fixed
 - The documentation of `toBeOfType` now correctly refers to `TExpected` instead of `TActual`.

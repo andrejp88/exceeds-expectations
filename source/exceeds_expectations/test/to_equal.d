@@ -97,7 +97,7 @@ unittest
     shouldFail(expect("non-empty").toEqual(""));
 }
 
-@("multi-line strings")
+@("multiline strings")
 unittest
 {
     shouldFail(expect(`

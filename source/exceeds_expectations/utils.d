@@ -122,9 +122,10 @@ package string formatDifferences(string expected, string received, bool not)
 {
     immutable string lineLabel1 = (not ? "Forbidden: " : "Expected: ").color(fg.green);
     immutable string lineLabel2 = (not ? "Received:  " : "Received: ").color(fg.light_red);
-    string expectedString = lineLabel1 ~ expected ~ (expected.canFind('\n') ? "\n" : "");
-    string receivedString = lineLabel2 ~ received;
-    return expectedString ~ "\n" ~ receivedString ~ "\n";
+    return (
+        lineLabel1 ~ expected ~ "\n" ~
+        lineLabel2 ~ received ~ "\n"
+    );
 }
 
 

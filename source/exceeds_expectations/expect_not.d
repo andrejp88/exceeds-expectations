@@ -373,19 +373,16 @@ struct ExpectNot(TReceived)
                 }
 
                 // Highlight line-by-line because the output looks buggy if the highlighting contains a line break
-                string rawStringified =
+                string highlightedReceived = (
                     matchResult.pre ~
                     matchResult.hit.splitLines.map!(line => line.color(bg.yellow)).join('\n') ~
-                    matchResult.post;
-
-                immutable bool isMultiline = received.canFind('\n');
+                    matchResult.post
+                );
 
                 fail(
                     formatDifferences(
                         expectedString,
-                        `"`.color(fg.init, bg.init, mode.bold) ~
-                        (isMultiline ? ("\n" ~ rawStringified.stripLeft("\n").stripRight("\n") ~ "\n") : rawStringified) ~
-                        `"`.color(fg.init, bg.init, mode.bold),
+                        prettyPrint(highlightedReceived),
                         true
                     )
                 );
