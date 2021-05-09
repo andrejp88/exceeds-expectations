@@ -1,7 +1,6 @@
 module exceeds_expectations.test.to_match;
 
 import exceeds_expectations;
-import exceeds_expectations.exceptions;
 import exceeds_expectations.test;
 
 

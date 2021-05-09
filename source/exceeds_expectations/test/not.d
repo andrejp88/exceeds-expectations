@@ -1,7 +1,6 @@
 module exceeds_expectations.test.not;
 
 import exceeds_expectations;
-import exceeds_expectations.exceptions;
 import exceeds_expectations.test;
 
 
