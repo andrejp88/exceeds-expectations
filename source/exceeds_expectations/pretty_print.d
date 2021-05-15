@@ -41,6 +41,30 @@ out(result; !(result.canFind('\n')) || (result.endsWith("\n") && result.startsWi
             `"`.color(fg.init, bg.init, mode.bold)
         );
     }
+    else static if (isArray!T)
+    {
+        alias E = ElementType!T;
+        auto elements = value.map!((E e) {
+            static if (isSomeString!E)
+            {
+                return `"` ~ e ~ `"`;
+            }
+            else
+            {
+                return prettyPrint(e);
+            }
+        });
+
+        rawStringified = (
+            "[" ~
+                (
+                    elements.any!(e => e.canFind("\n")) ?
+                    elements.map!(e => indent(e, 4)).join() :
+                    elements.join(", ")
+                ) ~
+            "]"
+        );
+    }
     else
     {
         rawStringified = value.to!string;
@@ -52,9 +76,113 @@ out(result; !(result.canFind('\n')) || (result.endsWith("\n") && result.startsWi
 }
 
 
+package string prettyPrintHighlightedArray(T)(T arr, size_t[2][] ranges = [])
+if (isArray!T)
+in (ranges.all!(e => e[1] > e[0]), "All ranges must have the second element greater than the first.")
+{
+    alias E = ElementType!T;
+
+    static string printRange(E[] arr)
+    {
+        auto elements = arr.map!((E e) {
+            static if (isSomeString!E)
+            {
+                return `"` ~ e ~ `"`;
+            }
+            else
+            {
+                return prettyPrint(e);
+            }
+        });
+
+        return (
+            elements.any!(e => e.canFind("\n")) ?
+            elements.map!(e => indent(e, 4)).join() :
+            elements.join(", ")
+        );
+    }
+
+    size_t[2][] rangesSortedByMin = sort!((a, b) => a[0] < b[0])(ranges).array;
+    size_t[2][] mergedRanges;
+
+    foreach (size_t i, size_t[2] range; rangesSortedByMin)
+    {
+        if (
+            i != 0 &&
+            range[0] < mergedRanges[$][1] &&
+            range[1] > mergedRanges[$][1]
+        )
+        {
+            mergedRanges[$][1] = range[1];
+        }
+        else
+        {
+            mergedRanges ~= range;
+        }
+    }
+
+    Appender!string result;
+    result.put('[');
+
+    size_t lastEnding = 0;
+    string[] chunks;
+    foreach (size_t i, size_t[2] range; mergedRanges)
+    {
+        if (range[0] != 0)
+        {
+            chunks ~= printRange(arr[lastEnding .. range[0]]);
+        }
+
+        chunks ~=
+            printRange(arr[range[0] .. range[1]]).color(bg.yellow)
+            .splitLines()
+            .map!(e => e.color(bg.yellow))
+            .join("\n");
+
+        lastEnding = range[1];
+
+        if ((i + 1) == mergedRanges.length && range[1] != arr.length)
+        {
+            chunks ~= printRange(arr[range[1] .. $]);
+        }
+    }
+
+    result.put(chunks.join(chunks.any!(c => c.canFind('\n')) ? "" : ", "));
+    result.put(']');
+
+    immutable string rawStringified = result.data;
+    immutable bool isMultiline = rawStringified.canFind('\n');
+
+    return isMultiline ? ("\n" ~ (rawStringified.stripLeft("\n").stripRight("\n")) ~ "\n") : rawStringified;
+}
+
+private string[] planets = ["☿", "♀", "♁", "♂", "♃", "♄", "⛢", "♆"];
+
+@("prettyPrintHighlightedArray - ranges may be empty")
+unittest
+{
+    import core.exception : AssertError;
+
+    expect({ prettyPrintHighlightedArray(planets); }).not.toThrow;
+}
+
+@("prettyPrintHighlightedArray - second item of each pair must be greater than the first item")
+unittest
+{
+    import core.exception : AssertError;
+
+    expect({ prettyPrintHighlightedArray(planets, [[0, 1]]); }).not.toThrow;
+    expect({ prettyPrintHighlightedArray(planets, [[1, 0]]); }).toThrow!AssertError;
+    expect({ prettyPrintHighlightedArray(planets, [[0, 2]]); }).not.toThrow;
+    expect({ prettyPrintHighlightedArray(planets, [[9, 9]]); }).toThrow!AssertError;
+    expect({ prettyPrintHighlightedArray(planets, [[5, 6], [3, 4], [1, 2]]); }).not.toThrow;
+    expect({ prettyPrintHighlightedArray(planets, [[5, 6], [3, 4], [2, 1]]); }).toThrow!AssertError;
+}
+
 
 private string prettyPrintClassObject(T)(const T object)
 if (is(T == class))
+out(result; result.endsWith("\n") && !(result.startsWith("\n")))
 {
     import std.range : Appender;
 
@@ -74,7 +202,7 @@ if (is(T == class))
         output.put(";\n");
     }
 
-    output.put("}");
+    output.put("}\n");
 
     return output.data;
 }
@@ -384,4 +512,17 @@ unittest
         "<: exceeds_expectations.pretty_print.ICC\n" ~
         "   <: exceeds_expectations.pretty_print.IC"
     );
+}
+
+
+private string indent(string text, int numSpaces)
+{
+    return text
+        .splitLines(Yes.keepTerminator)
+        .map!(
+            line => (
+                ' '.repeat(numSpaces).array.to!string ~ line
+            )
+        )
+        .join();
 }

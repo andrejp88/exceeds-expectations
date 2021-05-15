@@ -401,4 +401,37 @@ struct ExpectNot(TReceived)
             );
         }
     }
+
+    /// Fails if `received` contains the expected element or sub-range.
+    public void toContain(TExpected)(TExpected expected)
+    if (__traits(compiles, received.countUntil(expected)))
+    {
+        completed = true;
+
+        immutable ptrdiff_t index = received.countUntil(expected);
+
+        if (index != -1)
+        {
+            static if (is(ElementType!TExpected == ElementType!TReceived))
+            {
+                fail(
+                    "Forbidden sub-range: ".color(fg.green) ~
+                    prettyPrint(expected) ~ "\n" ~
+
+                    "Received:            ".color(fg.red) ~
+                    prettyPrintHighlightedArray(received, [[index, index + expected.length]]) ~ "\n",
+                );
+            }
+            else
+            {
+                fail(
+                    "Forbidden element: ".color(fg.green) ~
+                    prettyPrint(expected) ~ "\n" ~
+
+                    "Received:          ".color(fg.red) ~
+                    prettyPrintHighlightedArray(received, [[index, index + 1]]) ~ "\n",
+                );
+            }
+        }
+    }
 }

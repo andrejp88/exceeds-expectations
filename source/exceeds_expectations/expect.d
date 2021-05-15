@@ -419,4 +419,29 @@ public struct Expect(TReceived)
             );
         }
     }
+
+    /// Checks that received contains the expected element or sub-range.
+    public void toContain(TExpected)(TExpected expected)
+    if (__traits(compiles, received.canFind(expected)))
+    {
+        completed = true;
+
+        if (!received.canFind(expected))
+        {
+            static if (is(ElementType!TExpected == ElementType!TReceived))
+            {
+                fail(
+                    "Expected sub-range: ".color(fg.green) ~ prettyPrint(expected) ~ "\n" ~
+                    "Received:           ".color(fg.red) ~ prettyPrint(received) ~ "\n",
+                );
+            }
+            else
+            {
+                fail(
+                    "Expected element: ".color(fg.green) ~ prettyPrint(expected) ~ "\n" ~
+                    "Received:         ".color(fg.red) ~ prettyPrint(received) ~ "\n",
+                );
+            }
+        }
+    }
 }
