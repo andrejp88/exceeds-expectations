@@ -14,10 +14,18 @@ import std.traits;
 /// quotes indicating the start and end of the string. If the returned
 /// string has line breaks in the middle, it's guaranteed to also
 /// start and end with a line break.
-package string prettyPrint(T)(T value)
+package string prettyPrint(T)(T value, bool skipColoring = false)
 out(result; !(result.canFind('\n')) || (result.endsWith("\n") && result.startsWith("\n")))
 {
     string rawStringified;
+
+    alias ColorFunc = typeof(&color);
+
+    ColorFunc customColor = (
+        skipColoring ?
+        ((str, c, b, m) => str) :
+        &color
+    );
 
     static if (is(T == class) && !__traits(isOverrideFunction, T.toString))
     {
@@ -36,24 +44,15 @@ out(result; !(result.canFind('\n')) || (result.endsWith("\n") && result.startsWi
     else static if (isSomeString!T)
     {
         rawStringified = (
-            `"`.color(fg.init, bg.init, mode.bold) ~
+            customColor(`"`, fg.init, bg.init, mode.bold) ~
             value ~
-            `"`.color(fg.init, bg.init, mode.bold)
+            customColor(`"`, fg.init, bg.init, mode.bold)
         );
     }
     else static if (isArray!T)
     {
         alias E = ElementType!T;
-        auto elements = value.map!((E e) {
-            static if (isSomeString!E)
-            {
-                return `"` ~ e ~ `"`;
-            }
-            else
-            {
-                return prettyPrint(e);
-            }
-        });
+        auto elements = value.map!(e => prettyPrint(e, true));
 
         rawStringified = (
             "[" ~
@@ -84,16 +83,7 @@ in (ranges.all!(e => e[1] > e[0]), "All ranges must have the second element grea
 
     static string printRange(E[] arr)
     {
-        auto elements = arr.map!((E e) {
-            static if (isSomeString!E)
-            {
-                return `"` ~ e ~ `"`;
-            }
-            else
-            {
-                return prettyPrint(e);
-            }
-        });
+        auto elements = arr.map!(e => prettyPrint(e, true));
 
         return (
             elements.any!(e => e.canFind("\n")) ?
