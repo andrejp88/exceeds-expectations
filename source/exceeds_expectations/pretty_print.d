@@ -52,7 +52,16 @@ out(result; !(result.canFind('\n')) || (result.endsWith("\n") && result.startsWi
     else static if (isArray!T)
     {
         alias E = ElementType!T;
-        auto elements = value.map!(e => prettyPrint(e, true));
+        static if (isStaticArray!T)
+        {
+            E[] slice = value[];
+        }
+        else
+        {
+            E[] slice = value;
+        }
+
+        auto elements = slice.map!(e => prettyPrint(e, true));
 
         rawStringified = (
             "[" ~
