@@ -102,23 +102,7 @@ in (ranges.all!(e => e[1] > e[0]), "All ranges must have the second element grea
     }
 
     size_t[2][] rangesSortedByMin = sort!((a, b) => a[0] < b[0])(ranges).array;
-    size_t[2][] mergedRanges;
-
-    foreach (size_t i, size_t[2] range; rangesSortedByMin)
-    {
-        if (
-            i != 0 &&
-            range[0] < mergedRanges[$][1] &&
-            range[1] > mergedRanges[$][1]
-        )
-        {
-            mergedRanges[$][1] = range[1];
-        }
-        else
-        {
-            mergedRanges ~= range;
-        }
-    }
+    size_t[2][] mergedRanges = mergeOverlappingRanges(rangesSortedByMin);
 
     Appender!string result;
     result.put('[');
@@ -176,6 +160,48 @@ unittest
     expect({ prettyPrintHighlightedArray(planets, [[9, 9]]); }).toThrow!AssertError;
     expect({ prettyPrintHighlightedArray(planets, [[5, 6], [3, 4], [1, 2]]); }).not.toThrow;
     expect({ prettyPrintHighlightedArray(planets, [[5, 6], [3, 4], [2, 1]]); }).toThrow!AssertError;
+}
+
+private size_t[2][] mergeOverlappingRanges(const size_t[2][] input)
+in (input.isSorted!((a, b) => a[0] < b[0]), "mergeOverlappingRanges expects the input to be sorted")
+out (result; result.length <= input.length)
+{
+    size_t[2][] result;
+
+    foreach (size_t i, size_t[2] range; input)
+    {
+        if (
+            i != 0 &&
+            range[0] < result[$ - 1][1]
+        )
+        {
+            if (range[1] > result[$ - 1][1])
+            {
+                result[$ - 1][1] = range[1];
+            }
+        }
+        else
+        {
+            result ~= range;
+        }
+    }
+
+    return result;
+}
+
+@("mergeOverlappingRanges")
+unittest
+{
+    size_t[2][] empty;
+    expect(mergeOverlappingRanges(empty)).toEqual(empty);
+    expect(mergeOverlappingRanges([[1, 3], [5, 7]])).toEqual([[1, 3], [5, 7]]);
+    expect(mergeOverlappingRanges([[1, 5], [4, 7]])).toEqual([[1, 7]]);
+    expect(mergeOverlappingRanges([[1, 5], [5, 7]])).toEqual([[1, 5], [5, 7]]);
+    expect(mergeOverlappingRanges([[0, 2], [1, 3], [2, 4], [3, 5]])).toEqual([[0, 5]]);
+    expect(mergeOverlappingRanges([[0, 10], [1, 8], [4, 5]])).toEqual([[0, 10]]);
+    expect(mergeOverlappingRanges([[0, 10], [5, 10]])).toEqual([[0, 10]]);
+    expect(mergeOverlappingRanges([[0, 10], [0, 6]])).toEqual([[0, 10]]);
+    expect(mergeOverlappingRanges([[0, 10], [0, 14]])).toEqual([[0, 14]]);
 }
 
 
