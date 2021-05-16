@@ -63,13 +63,13 @@ out(result; (!result.endsWith("\n") && !result.startsWith("\n")))
         auto elements = slice.map!(e => prettyPrint(e, true));
 
         rawStringified = (
-            "[\n" ~
+            "[" ~
                 (
                     elements.any!(e => e.canFind("\n")) ?
-                    elements.map!(e => indent(e, 4)).join("\n") :
+                    ("\n" ~ elements.map!(e => indent(e, 4)).join("\n") ~ "\n") :
                     elements.join(", ")
                 ) ~
-            "\n]"
+            "]"
         );
     }
     else
@@ -102,10 +102,6 @@ out (result; !result.endsWith("\n") && !result.startsWith("\n"))
     size_t[2][] rangesSortedByMin = sort!((a, b) => a[0] < b[0])(ranges).array;
     size_t[2][] mergedRanges = mergeOverlappingRanges(rangesSortedByMin);
 
-    Appender!string result;
-    result.put('[');
-    result.put('\n');
-
     size_t lastEnding = 0;
     string[] chunks;
     foreach (size_t i, size_t[2] range; mergedRanges)
@@ -113,7 +109,6 @@ out (result; !result.endsWith("\n") && !result.startsWith("\n"))
         if (range[0] != 0)
         {
             chunks ~= printRange(arr[lastEnding .. range[0]]);
-            chunks ~= "\n";
         }
 
         chunks ~=
@@ -122,21 +117,21 @@ out (result; !result.endsWith("\n") && !result.startsWith("\n"))
             .map!(e => e.color(bg.yellow))
             .join("\n");
 
-        chunks ~= "\n";
-
         lastEnding = range[1];
 
         if ((i + 1) == mergedRanges.length && range[1] != arr.length)
         {
             chunks ~= printRange(arr[range[1] .. $]);
-            chunks ~= "\n";
         }
     }
 
-    result.put(chunks.join(chunks.any!(c => c.canFind('\n')) ? "" : ", "));
-    result.put(']');
+    immutable bool isMultiline = chunks.any!(c => c.canFind('\n'));
+    string[] result;
+    result ~= "[";
+    result ~= chunks.join(isMultiline ? "\n" : ", ");
+    result ~= "]";
 
-    return result.data;
+    return result.join(isMultiline ? "\n" : "");
 }
 
 private string[] planets = ["☿", "♀", "♁", "♂", "♃", "♄", "⛢", "♆"];
