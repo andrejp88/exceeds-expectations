@@ -79,7 +79,10 @@ public struct Expect(TReceived)
         if (received != expected)
         {
             fail(
-                formatDifferences(prettyPrint(expected), prettyPrint(received), false)
+                formatFailureMessage(
+                    "Expected", prettyPrint(expected),
+                    "Received", prettyPrint(received),
+                )
             );
         }
     }
@@ -304,10 +307,9 @@ public struct Expect(TReceived)
         if (received is null)
         {
             fail(
-                formatDifferences(
-                    prettyPrint(typeid(TExpected)),
-                    "null",
-                    false
+                formatFailureMessage(
+                    "Expected", prettyPrint(typeid(TExpected)),
+                    "Received", "null"
                 )
             );
         }
@@ -364,16 +366,15 @@ public struct Expect(TReceived)
                     typeid(e),
                     false
                 ) ~
-                "Details:".color(fg.yellow) ~
+                "Details:".color(fg.yellow) ~ "\n" ~
                 prettyPrint(e)
             );
         }
 
         fail(
-            formatDifferences(
-                prettyPrint(typeid(TExpected)),
-                "Nothing was thrown",
-                false
+            formatFailureMessage(
+                "Expected", prettyPrint(typeid(TExpected)),
+                "Received", "Nothing was thrown"
             )
         );
     }
@@ -398,10 +399,9 @@ public struct Expect(TReceived)
                 }
 
                 fail(
-                    formatDifferences(
-                        prettyPrint(pattern),
-                        prettyPrint(received),
-                        false
+                    formatFailureMessage(
+                        "Expected", prettyPrint(pattern),
+                        "Received", prettyPrint(received),
                     )
                 );
             }
@@ -412,7 +412,7 @@ public struct Expect(TReceived)
                 "toMatch received an invalid regular expression pattern at " ~
                 filePath ~ "(" ~ line.to!string ~ "): \n\n" ~
                 formatCode(readText(filePath), line, 2) ~ "\n" ~
-                "Details:".color(fg.yellow) ~ prettyPrint(e),
+                "Details:".color(fg.yellow) ~ "\n" ~ prettyPrint(e),
                 filePath,
                 line,
                 e
@@ -430,17 +430,17 @@ public struct Expect(TReceived)
         {
             static if (is(ElementType!TExpected == ElementType!TReceived))
             {
-                fail(
-                    "Expected sub-range: ".color(fg.green) ~ prettyPrint(expected) ~ "\n" ~
-                    "Received:           ".color(fg.red) ~ prettyPrint(received) ~ "\n",
-                );
+                fail(formatFailureMessage(
+                    "Expected sub-range", prettyPrint(expected),
+                    "Received", prettyPrint(received),
+                ));
             }
             else
             {
-                fail(
-                    "Expected element: ".color(fg.green) ~ prettyPrint(expected) ~ "\n" ~
-                    "Received:         ".color(fg.red) ~ prettyPrint(received) ~ "\n",
-                );
+                fail(formatFailureMessage(
+                    "Expected element", prettyPrint(expected),
+                    "Received", prettyPrint(received),
+                ));
             }
         }
     }

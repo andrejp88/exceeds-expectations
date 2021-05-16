@@ -11,11 +11,10 @@ import std.traits;
 
 /// Prints the given value in a nice, human readable format. If
 /// receiving a string, it will output the string with bold double
-/// quotes indicating the start and end of the string. If the returned
-/// string has line breaks in the middle, it's guaranteed to also
-/// start and end with a line break.
+/// quotes indicating the start and end of the string. The returned
+/// string will never start nor end with a line break.
 package string prettyPrint(T)(T value, bool skipColoring = false)
-out(result; !(result.canFind('\n')) || (result.endsWith("\n") && result.startsWith("\n")))
+out(result; (!result.endsWith("\n") && !result.startsWith("\n")))
 {
     string rawStringified;
 
@@ -78,9 +77,7 @@ out(result; !(result.canFind('\n')) || (result.endsWith("\n") && result.startsWi
         rawStringified = value.to!string;
     }
 
-    immutable bool isMultiline = rawStringified.canFind('\n');
-
-    return isMultiline ? ("\n" ~ rawStringified.stripLeft("\n").stripRight("\n") ~ "\n") : rawStringified;
+    return rawStringified.strip("\n");
 }
 
 

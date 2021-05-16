@@ -64,9 +64,10 @@ struct ExpectNot(TReceived)
 
         if (received == expected)
         {
-            fail(
-                formatDifferences(prettyPrint(expected), prettyPrint(received), true)
-            );
+            fail(formatFailureMessage(
+                "Forbidden", prettyPrint(expected),
+                "Received", prettyPrint(received),
+            ));
         }
     }
 
@@ -347,7 +348,7 @@ struct ExpectNot(TReceived)
                     typeid(e),
                     true
                 ) ~
-                "Details:".color(fg.yellow) ~
+                "Details:".color(fg.yellow) ~ "\n" ~
                 prettyPrint(e)
             );
         }
@@ -379,13 +380,10 @@ struct ExpectNot(TReceived)
                     matchResult.post
                 );
 
-                fail(
-                    formatDifferences(
-                        expectedString,
-                        prettyPrint(highlightedReceived),
-                        true
-                    )
-                );
+                fail(formatFailureMessage(
+                    "Forbidden", expectedString,
+                    "Received", prettyPrint(highlightedReceived),
+                ));
             }
         }
         catch (RegexException e)
@@ -394,7 +392,7 @@ struct ExpectNot(TReceived)
                 "toMatch received an invalid regular expression pattern at " ~
                 filePath ~ "(" ~ line.to!string ~ "): \n\n" ~
                 formatCode(readText(filePath), line, 2) ~ "\n" ~
-                "Details:".color(fg.yellow) ~ prettyPrint(e),
+                "Details:".color(fg.yellow) ~ "\n" ~ prettyPrint(e),
                 filePath,
                 line,
                 e

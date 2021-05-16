@@ -128,6 +128,197 @@ package string formatDifferences(string expected, string received, bool not)
     );
 }
 
+package string formatFailureMessage(string[] args...)
+out(result; result.endsWith("\n") || result == "")
+{
+    if (args.length == 0)
+    {
+        return "";
+    }
+
+    Appender!string result;
+
+    size_t longestLabelLength = size_t.max;
+
+    if (args.length >= 2)
+    {
+        longestLabelLength =
+            args
+            .chunks(2)
+            .filter!(e => e.length == 2)
+            .filter!(e => !(e[1].canFind('\n')))
+            .map!(e => e[0])
+            .maxElement!(e => e.length)("")
+            .length;
+    }
+
+    foreach (size_t i, string[] chunk; args.chunks(2).array)
+    {
+        if (chunk.length == 2)
+        {
+            fg labelColor = (
+                i == 0 ?
+                fg.green : (
+                    i == 1 ?
+                    fg.red :
+                    fg.yellow
+                )
+            );
+
+            result.put((chunk[0] ~ ":").color(labelColor));
+
+            immutable bool isValueMultiline = chunk[1].canFind('\n');
+
+            if (isValueMultiline)
+            {
+                result.put('\n');
+            }
+            else
+            {
+                assert(longestLabelLength != size_t.max, "Ended up with very long longestLabelLength");
+                assert(longestLabelLength >= chunk[0].length, "Longest label is not the longest for some reason");
+                size_t labelPadding = longestLabelLength - chunk[0].length;
+                result.put(repeat(' ', labelPadding + 1));
+            }
+
+            result.put(chunk[1]);
+
+            if (isValueMultiline) result.put('\n');
+        }
+        else
+        {
+            result.put(chunk[0]);
+        }
+
+        result.put('\n');
+    }
+
+    return result.data;
+}
+
+@("formatFailureMessage empty")
+unittest
+{
+    expect(formatFailureMessage()).toEqual("");
+}
+
+@("formatFailureMessage simple message")
+unittest
+{
+    expect(formatFailureMessage("I didn't expect a kind of Spanish Inquisition"))
+        .toEqual("I didn't expect a kind of Spanish Inquisition\n");
+}
+
+@("formatFailureMessage one labeled row")
+unittest
+{
+    expect(formatFailureMessage("Expected", "Not The Spanish Inquisition")).toEqual(
+        "Expected:".color(fg.green) ~ " Not The Spanish Inquisition\n"
+    );
+}
+
+@("formatFailureMessage one labeled row and one unlabeled row")
+unittest
+{
+    expect(formatFailureMessage(
+        "Expected", "Not The Spanish Inquisition",
+        "Our chief weapon is surprise"
+    )).toEqual(
+        "Expected:".color(fg.green) ~ " Not The Spanish Inquisition\n" ~
+        "Our chief weapon is surprise\n"
+    );
+}
+
+@("formatFailureMessage two labeled rows with uneven labels")
+unittest
+{
+    expect(formatFailureMessage(
+        "Forbidden", "The Spanish Inquisition",
+        "Received", "The Spanish Inquisition"
+    )).toEqual(
+        "Forbidden:".color(fg.green) ~ " The Spanish Inquisition\n" ~
+        "Received:".color(fg.red) ~ "  The Spanish Inquisition\n"
+    );
+}
+
+@("formatFailureMessage six labelled rows")
+unittest
+{
+    expect(formatFailureMessage(
+        "Forbidden", "The Spanish Inquisition",
+        "Received", "The Spanish Inquisition",
+        "Chief Weapon 1", "Surprise",
+        "Chief Weapon 2", "Fear",
+        "Chief Weapon 3", "Ruthless efficiency",
+        "Chief Weapon 4", "An almost fanatical devotion to the Pope",
+    )).toEqual(
+        "Forbidden:".color(fg.green ) ~ "      The Spanish Inquisition\n" ~
+        "Received:".color(fg.red   ) ~ "       The Spanish Inquisition\n" ~
+        "Chief Weapon 1:".color(fg.yellow) ~ " Surprise\n" ~
+        "Chief Weapon 2:".color(fg.yellow) ~ " Fear\n" ~
+        "Chief Weapon 3:".color(fg.yellow) ~ " Ruthless efficiency\n" ~
+        "Chief Weapon 4:".color(fg.yellow) ~ " An almost fanatical devotion to the Pope\n"
+    );
+}
+
+@("formatFailureMessage six labelled rows and an unlabelled row")
+unittest
+{
+    expect(formatFailureMessage(
+        "Forbidden", "The Spanish Inquisition",
+        "Received", "The Spanish Inquisition",
+        "Chief Weapon 1", "Surprise",
+        "Chief Weapon 2", "Fear",
+        "Chief Weapon 3", "Ruthless efficiency",
+        "Chief Weapon 4", "An almost fanatical devotion to the Pope",
+        "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again."
+    )).toEqual(
+        "Forbidden:".color(fg.green ) ~ "      The Spanish Inquisition\n" ~
+        "Received:".color(fg.red   ) ~ "       The Spanish Inquisition\n" ~
+        "Chief Weapon 1:".color(fg.yellow) ~ " Surprise\n" ~
+        "Chief Weapon 2:".color(fg.yellow) ~ " Fear\n" ~
+        "Chief Weapon 3:".color(fg.yellow) ~ " Ruthless efficiency\n" ~
+        "Chief Weapon 4:".color(fg.yellow) ~ " An almost fanatical devotion to the Pope\n" ~
+        "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again.\n"
+    );
+}
+
+@("formatFailureMessage with all multi-line values and an unlabelled line")
+unittest
+{
+    expect(formatFailureMessage(
+        "Forbidden", "The\nSpanish\nInquisition",
+        "Received", "The\nSpanish\nInquisition",
+        "Chief Weapons", "Surprise\nFear\nRuthless efficiency\nAn almost fanatical devotion to the Pope",
+        "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again."
+    )).toEqual(
+        "Forbidden:".color(fg.green ) ~ "\nThe\nSpanish\nInquisition\n\n" ~
+        "Received:".color(fg.red   ) ~ "\nThe\nSpanish\nInquisition\n\n" ~
+        "Chief Weapons:".color(fg.yellow) ~ "\nSurprise\nFear\nRuthless efficiency\nAn almost fanatical devotion to the Pope\n\n" ~
+        "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again.\n"
+    );
+}
+
+@("formatFailureMessage with some multi-line values, some single-line values, and an unlabelled line")
+unittest
+{
+    expect(formatFailureMessage(
+        "Forbidden", "The Spanish Inquisition",
+        "Received", "The Spanish Inquisition",
+        "Chief Weapons", "Surprise\nFear\nRuthless efficiency\nAn almost fanatical devotion to the Pope",
+        "Filler single-line", "This line has the longest label which all other single-line labels should obey.",
+        "Filler multiple-line", "This is the longest label, but since it's value\nhas multiple lines, it's not taken into account.",
+        "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again."
+    )).toEqual(
+        "Forbidden:".color(fg.green ) ~ "          The Spanish Inquisition\n" ~
+        "Received:".color(fg.red   ) ~ "           The Spanish Inquisition\n" ~
+        "Chief Weapons:".color(fg.yellow) ~ "\nSurprise\nFear\nRuthless efficiency\nAn almost fanatical devotion to the Pope\n\n" ~
+        "Filler single-line:".color(fg.yellow) ~ " This line has the longest label which all other single-line labels should obey.\n" ~
+        "Filler multiple-line:".color(fg.yellow) ~ "\nThis is the longest label, but since it's value\nhas multiple lines, it's not taken into account.\n\n" ~
+        "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again.\n"
+    );
+}
+
 
 package string formatApproxDifferences(TReceived, TExpected, F : real)(
     const auto ref TExpected expected,
