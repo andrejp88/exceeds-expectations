@@ -412,23 +412,23 @@ struct ExpectNot(TReceived)
         {
             static if (is(ElementType!TExpected == ElementType!TReceived))
             {
-                fail(
-                    "Forbidden sub-range: ".color(fg.green) ~
-                    prettyPrint(expected) ~ "\n" ~
+                fail(formatFailureMessage(
+                    "Forbidden sub-range",
+                    prettyPrint(expected),
 
-                    "Received:            ".color(fg.red) ~
-                    prettyPrintHighlightedArray(received, [[index, index + expected.length]]) ~ "\n",
-                );
+                    "Received",
+                    prettyPrintHighlightedArray(received, [[index, index + expected.length]]),
+                ));
             }
             else
             {
-                fail(
-                    "Forbidden element: ".color(fg.green) ~
-                    prettyPrint(expected) ~ "\n" ~
+                fail(formatFailureMessage(
+                    "Forbidden element",
+                    prettyPrint(expected),
 
-                    "Received:          ".color(fg.red) ~
-                    prettyPrintHighlightedArray(received, [[index, index + 1]]) ~ "\n",
-                );
+                    "Received",
+                    prettyPrintHighlightedArray(received, [[index, index + 1]]),
+                ));
             }
         }
     }
