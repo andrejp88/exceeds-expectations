@@ -274,10 +274,15 @@ public struct Expect(TReceived)
 
         if (!received.isClose(expected, maxRelDiff, maxAbsDiff))
         {
-            fail(
-                formatDifferences(prettyPrint(expected), prettyPrint(received), false) ~
-                formatApproxDifferences(expected, received, maxRelDiff, maxAbsDiff)
-            );
+            immutable real relDiff = fabs((received - expected) / expected);
+            immutable real absDiff = fabs(received - expected);
+
+            fail(formatFailureMessage(
+                "Expected", prettyPrint(expected),
+                "Received", prettyPrint(received),
+                "Relative Difference", prettyPrintComparison(relDiff, maxRelDiff) ~ " (maxRelDiff)",
+                "Absolute Difference", prettyPrintComparison(absDiff, maxAbsDiff) ~ " (maxAbsDiff)",
+            ));
         }
     }
 

@@ -551,3 +551,19 @@ private string indent(string text, int numSpaces)
         )
         .join();
 }
+
+
+package string prettyPrintComparison(real lhs, real rhs)
+{
+    static string getOrderOperator(real lhs, real rhs)
+    {
+        if (lhs > rhs)
+            return " > ";
+        else if (lhs < rhs)
+            return " < ";
+        else
+            return " = ";
+    }
+
+    return prettyPrint(lhs) ~ getOrderOperator(lhs, rhs) ~ prettyPrint(rhs);
+}

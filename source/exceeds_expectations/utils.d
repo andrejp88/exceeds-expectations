@@ -320,37 +320,6 @@ unittest
 }
 
 
-package string formatApproxDifferences(TReceived, TExpected, F : real)(
-    const auto ref TExpected expected,
-    const auto ref TReceived received,
-    F maxRelDiff = CommonDefaultFor!(TReceived, TExpected),
-    F maxAbsDiff = 0.0
-)
-{
-    static string getOrderOperator(real lhs, real rhs)
-    {
-        if (lhs > rhs)
-            return " > ";
-        else if (lhs < rhs)
-            return " < ";
-        else
-            return " = ";
-    }
-
-    immutable real relDiff = fabs((received - expected) / expected);
-    immutable real absDiff = fabs(received - expected);
-
-    return
-        "Relative Difference: ".color(fg.yellow) ~
-        prettyPrint(relDiff) ~ getOrderOperator(relDiff, maxRelDiff) ~ prettyPrint(maxRelDiff) ~
-        " (maxRelDiff)\n" ~
-
-        "Absolute Difference: ".color(fg.yellow) ~
-        prettyPrint(absDiff) ~ getOrderOperator(absDiff, maxAbsDiff) ~ prettyPrint(maxAbsDiff) ~
-        " (maxAbsDiff)\n";
-}
-
-
 package string formatTypeDifferences(TypeInfo expected, TypeInfo received, bool not)
 {
     static string indentAllExceptFirst(string text, int numSpaces)
