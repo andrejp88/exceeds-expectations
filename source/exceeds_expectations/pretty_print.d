@@ -63,13 +63,13 @@ out(result; (!result.endsWith("\n") && !result.startsWith("\n")))
         auto elements = slice.map!(e => prettyPrint(e, true));
 
         rawStringified = (
-            "[" ~
+            "[\n" ~
                 (
                     elements.any!(e => e.canFind("\n")) ?
-                    elements.map!(e => indent(e, 4)).join() :
+                    elements.map!(e => indent(e, 4)).join("\n") :
                     elements.join(", ")
                 ) ~
-            "]"
+            "\n]"
         );
     }
     else
@@ -84,6 +84,7 @@ out(result; (!result.endsWith("\n") && !result.startsWith("\n")))
 package string prettyPrintHighlightedArray(T)(T arr, size_t[2][] ranges = [])
 if (isArray!T)
 in (ranges.all!(e => e[1] > e[0]), "All ranges must have the second element greater than the first.")
+out (result; !result.endsWith("\n") && !result.startsWith("\n"))
 {
     alias E = ElementType!T;
 
@@ -93,7 +94,7 @@ in (ranges.all!(e => e[1] > e[0]), "All ranges must have the second element grea
 
         return (
             elements.any!(e => e.canFind("\n")) ?
-            elements.map!(e => indent(e, 4)).join() :
+            elements.map!(e => indent(e, 4)).join("\n") :
             elements.join(", ")
         );
     }
@@ -103,6 +104,7 @@ in (ranges.all!(e => e[1] > e[0]), "All ranges must have the second element grea
 
     Appender!string result;
     result.put('[');
+    result.put('\n');
 
     size_t lastEnding = 0;
     string[] chunks;
@@ -111,6 +113,7 @@ in (ranges.all!(e => e[1] > e[0]), "All ranges must have the second element grea
         if (range[0] != 0)
         {
             chunks ~= printRange(arr[lastEnding .. range[0]]);
+            chunks ~= "\n";
         }
 
         chunks ~=
@@ -119,21 +122,21 @@ in (ranges.all!(e => e[1] > e[0]), "All ranges must have the second element grea
             .map!(e => e.color(bg.yellow))
             .join("\n");
 
+        chunks ~= "\n";
+
         lastEnding = range[1];
 
         if ((i + 1) == mergedRanges.length && range[1] != arr.length)
         {
             chunks ~= printRange(arr[range[1] .. $]);
+            chunks ~= "\n";
         }
     }
 
     result.put(chunks.join(chunks.any!(c => c.canFind('\n')) ? "" : ", "));
     result.put(']');
 
-    immutable string rawStringified = result.data;
-    immutable bool isMultiline = rawStringified.canFind('\n');
-
-    return isMultiline ? ("\n" ~ (rawStringified.stripLeft("\n").stripRight("\n")) ~ "\n") : rawStringified;
+    return result.data;
 }
 
 private string[] planets = ["☿", "♀", "♁", "♂", "♃", "♄", "⛢", "♆"];
