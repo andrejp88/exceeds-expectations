@@ -449,4 +449,25 @@ public struct Expect(TReceived)
             }
         }
     }
+
+    /// Checks that received contains at least one element satisfying
+    /// the predicate `expected`.
+    public void toContain(TExpected)(TExpected predicate)
+    if (
+        isCallable!predicate &&
+        is(ReturnType!predicate == bool) &&
+        (Parameters!predicate.length == 1) &&
+        isImplicitlyConvertible!(ElementType!TReceived, Parameters!predicate[0])
+    )
+    {
+        completed = true;
+
+        if (!received.any!predicate())
+        {
+            fail(
+                "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~
+                "None of the elements in the received array satisfy the predicate."
+            );
+        }
+    }
 }
