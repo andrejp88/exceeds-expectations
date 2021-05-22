@@ -451,7 +451,7 @@ public struct Expect(TReceived)
     }
 
     /// Checks that received contains at least one element satisfying
-    /// the predicate `expected`.
+    /// the predicate.
     public void toContain(TExpected)(TExpected predicate)
     if (
         isCallable!predicate &&
@@ -462,7 +462,7 @@ public struct Expect(TReceived)
     {
         completed = true;
 
-        if (!received.any!predicate())
+        if (!received.any!predicate)
         {
             fail(
                 "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~

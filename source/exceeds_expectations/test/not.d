@@ -359,6 +359,20 @@ unittest
     );
 }
 
+@("toContain predicate")
+unittest
+{
+    expect(iota(20).array).not.toContain((int e) => e < 0);
+}
+
+@("toContain predicate, but does")
+unittest
+{
+    shouldFail(
+        expect(iota(20).array).not.toContain((int e) => e % 2 == 0)
+    );
+}
+
 @("Double negative should not be allowed")
 unittest
 {

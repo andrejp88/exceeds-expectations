@@ -437,4 +437,37 @@ struct ExpectNot(TReceived)
             }
         }
     }
+
+    /// Fails if `received` satisfies the predicate.
+    public void toContain(TExpected)(TExpected predicate)
+    if (
+        isCallable!predicate &&
+        is(ReturnType!predicate == bool) &&
+        (Parameters!predicate.length == 1) &&
+        isImplicitlyConvertible!(ElementType!TReceived, Parameters!predicate[0])
+    )
+    {
+        completed = true;
+
+        if (received.any!predicate)
+        {
+            import std.stdio : writeln;
+
+            size_t[] failingIndices;
+
+            foreach (size_t index, ElementType!TReceived element; received)
+            {
+                if (predicate(element))
+                {
+                    failingIndices ~= index;
+                }
+            }
+
+            size_t[2][] failingRanges = failingIndices.map!(e => cast(size_t[2])[e, e + 1]).array;
+            fail(
+                "Received: ".color(fg.light_red) ~ prettyPrintHighlightedArray(received, failingRanges) ~ "\n" ~
+                "Some elements satisfy the predicate."
+            );
+        }
+    }
 }
