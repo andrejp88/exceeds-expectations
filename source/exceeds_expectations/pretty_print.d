@@ -106,7 +106,7 @@ out (result; !result.endsWith("\n") && !result.startsWith("\n"))
     string[] chunks;
     foreach (size_t i, size_t[2] range; mergedRanges)
     {
-        if (range[0] != 0)
+        if (range[0] != lastEnding)
         {
             chunks ~= printRange(arr[lastEnding .. range[0]]);
         }
