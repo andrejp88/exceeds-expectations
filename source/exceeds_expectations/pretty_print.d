@@ -125,6 +125,11 @@ out (result; !result.endsWith("\n") && !result.startsWith("\n"))
         }
     }
 
+    if (mergedRanges.length == 0)
+    {
+        chunks ~= printRange(arr);
+    }
+
     immutable bool isMultiline = chunks.any!(c => c.canFind('\n'));
     string[] result;
     result ~= "[";
