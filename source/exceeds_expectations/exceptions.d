@@ -1,6 +1,6 @@
 module exceeds_expectations.exceptions;
 
-import exceeds_expectations.utils;
+import exceeds_expectations.pretty_print;
 import std.algorithm;
 import std.array;
 import std.exception;

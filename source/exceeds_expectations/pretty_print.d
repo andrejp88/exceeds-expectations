@@ -292,3 +292,202 @@ package string prettyPrintComparison(real lhs, real rhs)
 
     return prettyPrint(lhs) ~ getOrderOperator(lhs, rhs) ~ prettyPrint(rhs);
 }
+
+
+package string formatCode(string source, size_t focusLine, size_t radius)
+in (
+    focusLine != 0,
+    "focusLine must be at least 1"
+)
+in (
+    focusLine < source.splitLines.length,
+    "focusLine must not be larger than the last line in the source (" ~
+    focusLine.to!string ~ " > " ~ source.splitLines.length.to!string ~ ")"
+)
+in (
+    source.splitLines.length > 0, "source may not be empty"
+)
+{
+    const string[] sourceLines = source[$ - 1] == '\n' ? source.splitLines ~ "" : source.splitLines;
+    immutable size_t sourceLength = sourceLines.length;
+    immutable size_t firstFocusLineIndex = focusLine - 1;
+    immutable size_t lastFocusLineIndex =
+        sourceLines[firstFocusLineIndex..$].countUntil!(e => e.canFind(';')) + firstFocusLineIndex;
+
+    immutable size_t firstLineIndex =
+        firstFocusLineIndex.to!int - radius.to!int < 0 ?
+        0 :
+        firstFocusLineIndex - radius;
+
+    immutable size_t lastLineIndex =
+        lastFocusLineIndex + radius >= sourceLength ?
+        sourceLength - 1 :
+        lastFocusLineIndex + radius;
+
+    return
+        sourceLines[firstLineIndex .. lastLineIndex + 1]
+        .map!convertTabsToSpaces
+        .zip(iota(firstLineIndex, lastLineIndex + 1))
+        .map!((tup) {
+            immutable string lineContents = (tup[1] + 1).to!string.padLeft(' ', 4).to!string ~ " | " ~ tup[0];
+            return
+                tup[1] >= firstFocusLineIndex && tup[1] <= lastFocusLineIndex ?
+                lineContents.color(fg.yellow) :
+                truncate(lineContents, 120);
+        })
+        .join('\n') ~ "\n";
+}
+
+
+private string convertTabsToSpaces(string line)
+{
+    if (line.length == 0 || line[0] != '\t')
+    {
+        return line;
+    }
+    else
+    {
+        return "    " ~ convertTabsToSpaces(line[1..$]);
+    }
+}
+
+
+private string truncate(string line, int length)
+in(length >= 0, "Cannot truncate line to length " ~ length.to!string)
+{
+    if (line.length > length)
+    {
+        return line[0 .. length - 4] ~ " ...".color(fg.light_black);
+    }
+
+    return line;
+}
+
+/// Returns a string showing the expected and received values. Ends
+/// with a line separator.
+package string formatDifferences(string expected, string received, bool not)
+{
+    immutable string lineLabel1 = (not ? "Forbidden: " : "Expected: ").color(fg.green);
+    immutable string lineLabel2 = (not ? "Received:  " : "Received: ").color(fg.light_red);
+    return (
+        lineLabel1 ~ expected ~ "\n" ~
+        lineLabel2 ~ received ~ "\n"
+    );
+}
+
+package string formatFailureMessage(string[] args...)
+out(result; result.endsWith("\n") || result == "")
+{
+    if (args.length == 0)
+    {
+        return "";
+    }
+
+    Appender!string result;
+
+    size_t longestLabelLength = size_t.max;
+
+    if (args.length >= 2)
+    {
+        longestLabelLength =
+            args
+            .chunks(2)
+            .filter!(e => e.length == 2)
+            .filter!(e => !(e[1].canFind('\n')))
+            .map!(e => e[0])
+            .maxElement!(e => e.length)("")
+            .length;
+    }
+
+    foreach (size_t i, string[] chunk; args.chunks(2).array)
+    {
+        if (chunk.length == 2)
+        {
+            fg labelColor = (
+                i == 0 ?
+                fg.green : (
+                    i == 1 ?
+                    fg.red :
+                    fg.yellow
+                )
+            );
+
+            result.put((chunk[0] ~ ":").color(labelColor));
+
+            immutable bool isValueMultiline = chunk[1].canFind('\n');
+
+            if (isValueMultiline)
+            {
+                result.put('\n');
+            }
+            else
+            {
+                assert(longestLabelLength != size_t.max, "Ended up with very long longestLabelLength");
+                assert(longestLabelLength >= chunk[0].length, "Longest label is not the longest for some reason");
+                size_t labelPadding = longestLabelLength - chunk[0].length;
+                result.put(repeat(' ', labelPadding + 1));
+            }
+
+            result.put(chunk[1]);
+
+            if (isValueMultiline) result.put('\n');
+        }
+        else
+        {
+            result.put(chunk[0]);
+        }
+
+        result.put('\n');
+    }
+
+    return result.data;
+}
+
+
+package string formatTypeDifferences(TypeInfo expected, TypeInfo received, bool not)
+{
+    static string indentAllExceptFirst(string text, int numSpaces)
+    {
+        return text
+            .splitLines()
+            .enumerate()
+            .map!(
+                idxValuePair => (
+                    idxValuePair[0] == 0 ?
+                    idxValuePair[1] :
+                    ' '.repeat(numSpaces).array.to!string ~ idxValuePair[1]
+                )
+            )
+            .join("\n");
+    }
+
+    return formatDifferences(
+        prettyPrint(expected),
+        indentAllExceptFirst(
+            prettyPrintInheritanceTree(received),
+            not ? 11 : 10
+        ),
+        not
+    );
+}
+
+
+/// Converts an array of orderable elements into English.
+///
+/// - Given `[]` returns `""`
+/// - Given `[1]` returns `"1"`
+/// - Given `[3, 0]` returns `"0 and 3"`
+/// - Given `[1, 0, 3]` returns `"0, 1, and 3"`
+package string humanReadableNumbers(N)(N[] numbers)
+if (isOrderingComparable!N)
+{
+    if (numbers.length == 0) return "";
+
+    auto strings = numbers.sort.map!(e => e.to!string);
+
+    return (
+        strings.length == 1 ? strings[0] :
+        strings.length == 2 ? strings.join(" and ") :
+        strings[0 .. $ - 1].join(", ") ~ ", and " ~ strings[$ - 1]
+    );
+}

@@ -1,5 +1,6 @@
 module exceeds_expectations_test.pretty_print;
 
+import exceeds_expectations;
 import exceeds_expectations.pretty_print;
 
 
@@ -281,5 +282,170 @@ unittest
         "   <: exceeds_expectations.pretty_print.I3\n" ~
         "<: exceeds_expectations.pretty_print.ICC\n" ~
         "   <: exceeds_expectations.pretty_print.IC"
+    );
+}
+
+
+@("convertTabsToSpaces — empty line")
+unittest
+{
+    expect(convertTabsToSpaces("")).toEqual("");
+}
+
+@("convertTabsToSpaces — no indentation")
+unittest
+{
+    expect(convertTabsToSpaces("Test\tHello World\t\t  ")).toEqual("Test\tHello World\t\t  ");
+}
+
+@("convertTabsToSpaces — tabs indentation")
+unittest
+{
+    expect(convertTabsToSpaces("\t\t\tTest\tHello World\t\t  ")).toEqual("            Test\tHello World\t\t  ");
+}
+
+
+
+
+@("truncate empty line")
+unittest
+{
+    expect(truncate("", 80)).toEqual("");
+}
+
+@("truncate non-empty line to a given length")
+unittest
+{
+    expect(truncate("abcdefghijklmnopqrstuvwxyz", 10)).toEqual("abcdef" ~ " ...".color(fg.light_black));
+}
+
+@("truncate — edge cases")
+unittest
+{
+    expect(truncate("abcdefghij", 10)).toEqual("abcdefghij");
+    expect(truncate("abcdefghijk", 10)).toEqual("abcdef" ~ " ...".color(fg.light_black));
+}
+
+
+@("formatFailureMessage empty")
+unittest
+{
+    expect(formatFailureMessage()).toEqual("");
+}
+
+@("formatFailureMessage simple message")
+unittest
+{
+    expect(formatFailureMessage("I didn't expect a kind of Spanish Inquisition"))
+        .toEqual("I didn't expect a kind of Spanish Inquisition\n");
+}
+
+@("formatFailureMessage one labeled row")
+unittest
+{
+    expect(formatFailureMessage("Expected", "Not The Spanish Inquisition")).toEqual(
+        "Expected:".color(fg.green) ~ " Not The Spanish Inquisition\n"
+    );
+}
+
+@("formatFailureMessage one labeled row and one unlabeled row")
+unittest
+{
+    expect(formatFailureMessage(
+        "Expected", "Not The Spanish Inquisition",
+        "Our chief weapon is surprise"
+    )).toEqual(
+        "Expected:".color(fg.green) ~ " Not The Spanish Inquisition\n" ~
+        "Our chief weapon is surprise\n"
+    );
+}
+
+@("formatFailureMessage two labeled rows with uneven labels")
+unittest
+{
+    expect(formatFailureMessage(
+        "Forbidden", "The Spanish Inquisition",
+        "Received", "The Spanish Inquisition"
+    )).toEqual(
+        "Forbidden:".color(fg.green) ~ " The Spanish Inquisition\n" ~
+        "Received:".color(fg.red) ~ "  The Spanish Inquisition\n"
+    );
+}
+
+@("formatFailureMessage six labelled rows")
+unittest
+{
+    expect(formatFailureMessage(
+        "Forbidden", "The Spanish Inquisition",
+        "Received", "The Spanish Inquisition",
+        "Chief Weapon 1", "Surprise",
+        "Chief Weapon 2", "Fear",
+        "Chief Weapon 3", "Ruthless efficiency",
+        "Chief Weapon 4", "An almost fanatical devotion to the Pope",
+    )).toEqual(
+        "Forbidden:".color(fg.green ) ~ "      The Spanish Inquisition\n" ~
+        "Received:".color(fg.red   ) ~ "       The Spanish Inquisition\n" ~
+        "Chief Weapon 1:".color(fg.yellow) ~ " Surprise\n" ~
+        "Chief Weapon 2:".color(fg.yellow) ~ " Fear\n" ~
+        "Chief Weapon 3:".color(fg.yellow) ~ " Ruthless efficiency\n" ~
+        "Chief Weapon 4:".color(fg.yellow) ~ " An almost fanatical devotion to the Pope\n"
+    );
+}
+
+@("formatFailureMessage six labelled rows and an unlabelled row")
+unittest
+{
+    expect(formatFailureMessage(
+        "Forbidden", "The Spanish Inquisition",
+        "Received", "The Spanish Inquisition",
+        "Chief Weapon 1", "Surprise",
+        "Chief Weapon 2", "Fear",
+        "Chief Weapon 3", "Ruthless efficiency",
+        "Chief Weapon 4", "An almost fanatical devotion to the Pope",
+        "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again."
+    )).toEqual(
+        "Forbidden:".color(fg.green ) ~ "      The Spanish Inquisition\n" ~
+        "Received:".color(fg.red   ) ~ "       The Spanish Inquisition\n" ~
+        "Chief Weapon 1:".color(fg.yellow) ~ " Surprise\n" ~
+        "Chief Weapon 2:".color(fg.yellow) ~ " Fear\n" ~
+        "Chief Weapon 3:".color(fg.yellow) ~ " Ruthless efficiency\n" ~
+        "Chief Weapon 4:".color(fg.yellow) ~ " An almost fanatical devotion to the Pope\n" ~
+        "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again.\n"
+    );
+}
+
+@("formatFailureMessage with all multi-line values and an unlabelled line")
+unittest
+{
+    expect(formatFailureMessage(
+        "Forbidden", "The\nSpanish\nInquisition",
+        "Received", "The\nSpanish\nInquisition",
+        "Chief Weapons", "Surprise\nFear\nRuthless efficiency\nAn almost fanatical devotion to the Pope",
+        "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again."
+    )).toEqual(
+        "Forbidden:".color(fg.green ) ~ "\nThe\nSpanish\nInquisition\n\n" ~
+        "Received:".color(fg.red   ) ~ "\nThe\nSpanish\nInquisition\n\n" ~
+        "Chief Weapons:".color(fg.yellow) ~ "\nSurprise\nFear\nRuthless efficiency\nAn almost fanatical devotion to the Pope\n\n" ~
+        "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again.\n"
+    );
+}
+
+@("formatFailureMessage with some multi-line values, some single-line values, and an unlabelled line")
+unittest
+{
+    expect(formatFailureMessage(
+        "Forbidden", "The Spanish Inquisition",
+        "Received", "The Spanish Inquisition",
+        "Chief Weapons", "Surprise\nFear\nRuthless efficiency\nAn almost fanatical devotion to the Pope",
+        "Filler single-line", "This line has the longest label which all other single-line labels should obey.",
+        "Filler multiple-line", "This is the longest label, but since it's value\nhas multiple lines, it's not taken into account.",
+        "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again."
+    )).toEqual(
+        "Forbidden:".color(fg.green ) ~ "          The Spanish Inquisition\n" ~
+        "Received:".color(fg.red   ) ~ "           The Spanish Inquisition\n" ~
+        "Chief Weapons:".color(fg.yellow) ~ "\nSurprise\nFear\nRuthless efficiency\nAn almost fanatical devotion to the Pope\n\n" ~
+        "Filler single-line:".color(fg.yellow) ~ " This line has the longest label which all other single-line labels should obey.\n" ~
+        "Filler multiple-line:".color(fg.yellow) ~ "\nThis is the longest label, but since it's value\nhas multiple lines, it's not taken into account.\n\n" ~
+        "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again.\n"
     );
 }
