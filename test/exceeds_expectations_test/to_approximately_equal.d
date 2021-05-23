@@ -1,7 +1,7 @@
-module exceeds_expectations.test.to_approximately_equal;
+module exceeds_expectations_test.to_approximately_equal;
 
 import exceeds_expectations;
-import exceeds_expectations.test;
+import exceeds_expectations_test;
 
 @("double toApproximatelyEqual double")
 unittest

@@ -1,7 +1,7 @@
-module exceeds_expectations.test.to_satisfy_any;
+module exceeds_expectations_test.to_satisfy_any;
 
 import exceeds_expectations;
-import exceeds_expectations.test;
+import exceeds_expectations_test;
 
 
 @("Integer 1/1")

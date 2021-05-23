@@ -8,8 +8,10 @@ dependency "colorize" version="~>1.0"
 
 configuration "unittest" {
     dependency "silly" version="*"
+    sourcePaths "test"
+    importPaths "test"
 }
 
 configuration "library" {
-    excludedSourceFiles "test/*"
+    excludedSourceFiles "test"
 }

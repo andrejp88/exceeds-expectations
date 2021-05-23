@@ -1,7 +1,7 @@
-module exceeds_expectations.test.not;
+module exceeds_expectations_test.not;
 
 import exceeds_expectations;
-import exceeds_expectations.test;
+import exceeds_expectations_test;
 import std.range;
 
 

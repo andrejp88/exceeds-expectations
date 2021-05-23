@@ -1,7 +1,7 @@
-module exceeds_expectations.test.to_be_of_type;
+module exceeds_expectations_test.to_be_of_type;
 
 import exceeds_expectations;
-import exceeds_expectations.test;
+import exceeds_expectations_test;
 
 
 @("Class can cast to its interface")

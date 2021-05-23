@@ -1,7 +1,7 @@
-module exceeds_expectations.test.to_match;
+module exceeds_expectations_test.to_match;
 
 import exceeds_expectations;
-import exceeds_expectations.test;
+import exceeds_expectations_test;
 
 
 @("Full RegExp match")

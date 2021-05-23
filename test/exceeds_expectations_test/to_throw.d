@@ -1,7 +1,7 @@
-module exceeds_expectations.test.to_throw;
+module exceeds_expectations_test.to_throw;
 
 import exceeds_expectations.expect;
-import exceeds_expectations.test;
+import exceeds_expectations_test;
 
 
 @("Succeed if expecting a super-type")
