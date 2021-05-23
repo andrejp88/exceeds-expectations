@@ -140,7 +140,7 @@ out (result; !result.endsWith("\n") && !result.startsWith("\n"))
 }
 
 
-private size_t[2][] mergeOverlappingRanges(const size_t[2][] input)
+package size_t[2][] mergeOverlappingRanges(const size_t[2][] input)
 in (input.isSorted!((a, b) => a[0] < b[0]), "mergeOverlappingRanges expects the input to be sorted")
 out (result; result.length <= input.length)
 {
@@ -210,7 +210,7 @@ private string[] fieldTypeStrings(T)()
 }
 
 
-private string prettyPrintTypeInfo(TypeInfo typeInfo)
+package string prettyPrintTypeInfo(TypeInfo typeInfo)
 {
     import std.regex : ctRegex, replaceAll;
 
@@ -339,7 +339,7 @@ in (
 }
 
 
-private string convertTabsToSpaces(string line)
+package string convertTabsToSpaces(string line)
 {
     if (line.length == 0 || line[0] != '\t')
     {
@@ -352,7 +352,7 @@ private string convertTabsToSpaces(string line)
 }
 
 
-private string truncate(string line, int length)
+package string truncate(string line, int length)
 in(length >= 0, "Cannot truncate line to length " ~ length.to!string)
 {
     if (line.length > length)

@@ -1,7 +1,7 @@
-module exceeds_expectations_test.expect.to_contain;
+module exceeds_expectations.test.expect.to_contain;
 
 import exceeds_expectations;
-import exceeds_expectations_test;
+import exceeds_expectations.test;
 import std.algorithm;
 import std.range;
 

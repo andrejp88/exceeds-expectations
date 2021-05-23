@@ -1,4 +1,4 @@
-module exceeds_expectations_test;
+module exceeds_expectations.test;
 
 import exceeds_expectations.exceptions;
 

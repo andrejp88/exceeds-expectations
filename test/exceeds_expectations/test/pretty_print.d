@@ -1,5 +1,6 @@
-module exceeds_expectations_test.pretty_print;
+module exceeds_expectations.test.pretty_print;
 
+import colorize;
 import exceeds_expectations;
 import exceeds_expectations.pretty_print;
 
@@ -53,23 +54,23 @@ private enum int testEnumConst = 4;
 @("prettyPrintTypeInfo — class")
 unittest
 {
-    expect(prettyPrintTypeInfo(typeid(TestClass))).toEqual("exceeds_expectations.pretty_print.TestClass");
-    expect(prettyPrintTypeInfo(TestClass.classinfo)).toEqual("exceeds_expectations.pretty_print.TestClass");
-    expect(prettyPrintTypeInfo(typeid(new TestClass()))).toEqual("exceeds_expectations.pretty_print.TestClass");
-    expect(prettyPrintTypeInfo((new TestClass()).classinfo)).toEqual("exceeds_expectations.pretty_print.TestClass");
+    expect(prettyPrintTypeInfo(typeid(TestClass))).toEqual("exceeds_expectations.test.pretty_print.TestClass");
+    expect(prettyPrintTypeInfo(TestClass.classinfo)).toEqual("exceeds_expectations.test.pretty_print.TestClass");
+    expect(prettyPrintTypeInfo(typeid(new TestClass()))).toEqual("exceeds_expectations.test.pretty_print.TestClass");
+    expect(prettyPrintTypeInfo((new TestClass()).classinfo)).toEqual("exceeds_expectations.test.pretty_print.TestClass");
 }
 
 @("prettyPrintTypeInfo — interface")
 unittest
 {
-    expect(prettyPrintTypeInfo(TestInterface.classinfo)).toEqual("exceeds_expectations.pretty_print.TestInterface");
+    expect(prettyPrintTypeInfo(TestInterface.classinfo)).toEqual("exceeds_expectations.test.pretty_print.TestInterface");
 }
 
 @("prettyPrintTypeInfo — struct")
 unittest
 {
-    expect(prettyPrintTypeInfo(typeid(TestStruct))).toEqual("exceeds_expectations.pretty_print.TestStruct");
-    expect(prettyPrintTypeInfo(typeid(TestStruct()))).toEqual("exceeds_expectations.pretty_print.TestStruct");
+    expect(prettyPrintTypeInfo(typeid(TestStruct))).toEqual("exceeds_expectations.test.pretty_print.TestStruct");
+    expect(prettyPrintTypeInfo(typeid(TestStruct()))).toEqual("exceeds_expectations.test.pretty_print.TestStruct");
 }
 
 @("prettyPrintTypeInfo — int")
@@ -88,23 +89,23 @@ unittest
 unittest
 {
     expect(prettyPrintTypeInfo(typeid(int[3]))).toEqual("int[3]");
-    expect(prettyPrintTypeInfo(typeid(TestClass[3]))).toEqual("exceeds_expectations.pretty_print.TestClass[3]");
-    expect(prettyPrintTypeInfo(typeid(TestInterface[3]))).toEqual("exceeds_expectations.pretty_print.TestInterface[3]");
+    expect(prettyPrintTypeInfo(typeid(TestClass[3]))).toEqual("exceeds_expectations.test.pretty_print.TestClass[3]");
+    expect(prettyPrintTypeInfo(typeid(TestInterface[3]))).toEqual("exceeds_expectations.test.pretty_print.TestInterface[3]");
 }
 
 @("prettyPrintTypeInfo — dynamic array")
 unittest
 {
     expect(prettyPrintTypeInfo(typeid(int[]))).toEqual("int[]");
-    expect(prettyPrintTypeInfo(typeid(TestClass[]))).toEqual("exceeds_expectations.pretty_print.TestClass[]");
-    expect(prettyPrintTypeInfo(typeid(TestInterface[]))).toEqual("exceeds_expectations.pretty_print.TestInterface[]");
+    expect(prettyPrintTypeInfo(typeid(TestClass[]))).toEqual("exceeds_expectations.test.pretty_print.TestClass[]");
+    expect(prettyPrintTypeInfo(typeid(TestInterface[]))).toEqual("exceeds_expectations.test.pretty_print.TestInterface[]");
 }
 
 @("prettyPrintTypeInfo — enum")
 unittest
 {
-    expect(prettyPrintTypeInfo(typeid(TestEnum))).toEqual("exceeds_expectations.pretty_print.TestEnum");
-    expect(prettyPrintTypeInfo(typeid(TestEnum.TestEnumValue))).toEqual("exceeds_expectations.pretty_print.TestEnum");
+    expect(prettyPrintTypeInfo(typeid(TestEnum))).toEqual("exceeds_expectations.test.pretty_print.TestEnum");
+    expect(prettyPrintTypeInfo(typeid(TestEnum.TestEnumValue))).toEqual("exceeds_expectations.test.pretty_print.TestEnum");
     expect(prettyPrintTypeInfo(typeid(testEnumConst))).toEqual("int");
 }
 
@@ -113,24 +114,24 @@ unittest
 {
     expect(prettyPrintTypeInfo(typeid(int[string]))).toEqual("int[string]");
     expect(prettyPrintTypeInfo(typeid(TestClass[TestInterface]))).toEqual(
-        "exceeds_expectations.pretty_print.TestClass[exceeds_expectations.pretty_print.TestInterface]"
+        "exceeds_expectations.test.pretty_print.TestClass[exceeds_expectations.test.pretty_print.TestInterface]"
     );
     expect(prettyPrintTypeInfo(typeid(TestInterface[TestClass]))).toEqual(
-        "exceeds_expectations.pretty_print.TestInterface[exceeds_expectations.pretty_print.TestClass]"
+        "exceeds_expectations.test.pretty_print.TestInterface[exceeds_expectations.test.pretty_print.TestClass]"
     );
 }
 
 @("prettyPrintTypeInfo — pointer")
 unittest
 {
-    expect(prettyPrintTypeInfo(typeid(TestStruct*))).toEqual("exceeds_expectations.pretty_print.TestStruct*");
+    expect(prettyPrintTypeInfo(typeid(TestStruct*))).toEqual("exceeds_expectations.test.pretty_print.TestStruct*");
 }
 
 @("prettyPrintTypeInfo — function")
 unittest
 {
     expect(prettyPrintTypeInfo(typeid(TestClass function(TestInterface ti)))).toEqual(
-        "exceeds_expectations.pretty_print.TestClass function(exceeds_expectations.pretty_print.TestInterface)*"
+        "exceeds_expectations.test.pretty_print.TestClass function(exceeds_expectations.test.pretty_print.TestInterface)*"
     );
 
     static int testFn(float x) { return 0; }
@@ -140,7 +141,7 @@ unittest
 
     TestStruct* function(int[string]) testFnVar = (aa) => new TestStruct();
     expect(prettyPrintTypeInfo(typeid(testFnVar))).toEqual(
-        "exceeds_expectations.pretty_print.TestStruct* function(int[string])*"
+        "exceeds_expectations.test.pretty_print.TestStruct* function(int[string])*"
     );
 
     expect(prettyPrintTypeInfo(typeid((string s) => 3))).toEqual("int function(string) pure nothrow @nogc @safe*");
@@ -150,7 +151,7 @@ unittest
 unittest
 {
     expect(prettyPrintTypeInfo(typeid(TestClass delegate(TestInterface ti)))).toEqual(
-        "exceeds_expectations.pretty_print.TestClass delegate(exceeds_expectations.pretty_print.TestInterface)"
+        "exceeds_expectations.test.pretty_print.TestClass delegate(exceeds_expectations.test.pretty_print.TestInterface)"
     );
 
     int y = 4;
@@ -161,7 +162,7 @@ unittest
 
     string[string] delegate(TestInterface[]) testDgVar = (arr) => ["hello": "world"];
     expect(prettyPrintTypeInfo(typeid(testDgVar))).toEqual(
-        "string[string] delegate(exceeds_expectations.pretty_print.TestInterface[])"
+        "string[string] delegate(exceeds_expectations.test.pretty_print.TestInterface[])"
     );
 
     immutable int z = 5;
@@ -176,7 +177,7 @@ unittest
     // import std.typecons : tuple, Tuple;
     import std.meta : AliasSeq;
     expect(prettyPrintTypeInfo(typeid(AliasSeq!(string, int, TestStruct*)))).toEqual(
-        "(string, int, exceeds_expectations.pretty_print.TestStruct*)"
+        "(string, int, exceeds_expectations.test.pretty_print.TestStruct*)"
     );
 }
 
@@ -188,7 +189,7 @@ private interface Interface1 {}
 unittest
 {
     expect(prettyPrintInheritanceTree(typeid(Class1))).toEqual(
-        "exceeds_expectations.pretty_print.Class1"
+        "exceeds_expectations.test.pretty_print.Class1"
     );
 }
 
@@ -196,7 +197,7 @@ unittest
 unittest
 {
     expect(prettyPrintInheritanceTree(typeid(Interface1))).toEqual(
-        "exceeds_expectations.pretty_print.Interface1"
+        "exceeds_expectations.test.pretty_print.Interface1"
     );
 }
 
@@ -206,8 +207,8 @@ private class Class2 : Class1 {}
 unittest
 {
     expect(prettyPrintInheritanceTree(typeid(Class2))).toEqual(
-        "exceeds_expectations.pretty_print.Class2\n" ~
-        "<: exceeds_expectations.pretty_print.Class1"
+        "exceeds_expectations.test.pretty_print.Class2\n" ~
+        "<: exceeds_expectations.test.pretty_print.Class1"
     );
 }
 
@@ -217,8 +218,8 @@ private class Class3 : Interface1 {}
 unittest
 {
     expect(prettyPrintInheritanceTree(typeid(Class3))).toEqual(
-        "exceeds_expectations.pretty_print.Class3\n" ~
-        "<: exceeds_expectations.pretty_print.Interface1"
+        "exceeds_expectations.test.pretty_print.Class3\n" ~
+        "<: exceeds_expectations.test.pretty_print.Interface1"
     );
 }
 
@@ -229,9 +230,9 @@ private class Class4 : Interface1, Interface2 {}
 unittest
 {
     expect(prettyPrintInheritanceTree(typeid(Class4))).toEqual(
-        "exceeds_expectations.pretty_print.Class4\n" ~
-        "<: exceeds_expectations.pretty_print.Interface1\n" ~
-        "<: exceeds_expectations.pretty_print.Interface2"
+        "exceeds_expectations.test.pretty_print.Class4\n" ~
+        "<: exceeds_expectations.test.pretty_print.Interface1\n" ~
+        "<: exceeds_expectations.test.pretty_print.Interface2"
     );
 }
 
@@ -241,9 +242,9 @@ private class Class5 : Class1, Interface1 {}
 unittest
 {
     expect(prettyPrintInheritanceTree(typeid(Class5))).toEqual(
-        "exceeds_expectations.pretty_print.Class5\n" ~
-        "<: exceeds_expectations.pretty_print.Class1\n" ~
-        "<: exceeds_expectations.pretty_print.Interface1"
+        "exceeds_expectations.test.pretty_print.Class5\n" ~
+        "<: exceeds_expectations.test.pretty_print.Class1\n" ~
+        "<: exceeds_expectations.test.pretty_print.Interface1"
     );
 }
 
@@ -253,9 +254,9 @@ private class Class6 : Class2 {}
 unittest
 {
     expect(prettyPrintInheritanceTree(typeid(Class6))).toEqual(
-        "exceeds_expectations.pretty_print.Class6\n" ~
-        "<: exceeds_expectations.pretty_print.Class2\n" ~
-        "   <: exceeds_expectations.pretty_print.Class1"
+        "exceeds_expectations.test.pretty_print.Class6\n" ~
+        "<: exceeds_expectations.test.pretty_print.Class2\n" ~
+        "   <: exceeds_expectations.test.pretty_print.Class1"
     );
 }
 
@@ -276,12 +277,12 @@ private class CAC2 : CA, IC, I2 {}
 unittest
 {
     expect(prettyPrintInheritanceTree(typeid(CBC3C))).toEqual(
-        "exceeds_expectations.pretty_print.CBC3C\n" ~
-        "<: exceeds_expectations.pretty_print.CB3\n" ~
-        "   <: exceeds_expectations.pretty_print.IB\n" ~
-        "   <: exceeds_expectations.pretty_print.I3\n" ~
-        "<: exceeds_expectations.pretty_print.ICC\n" ~
-        "   <: exceeds_expectations.pretty_print.IC"
+        "exceeds_expectations.test.pretty_print.CBC3C\n" ~
+        "<: exceeds_expectations.test.pretty_print.CB3\n" ~
+        "   <: exceeds_expectations.test.pretty_print.IB\n" ~
+        "   <: exceeds_expectations.test.pretty_print.I3\n" ~
+        "<: exceeds_expectations.test.pretty_print.ICC\n" ~
+        "   <: exceeds_expectations.test.pretty_print.IC"
     );
 }
 

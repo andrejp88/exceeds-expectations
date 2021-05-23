@@ -1,7 +1,7 @@
-module exceeds_expectations_test.expect_not.to_satisfy_all;
+module exceeds_expectations.test.expect_not.to_satisfy_all;
 
 import exceeds_expectations;
-import exceeds_expectations_test;
+import exceeds_expectations.test;
 
 
 @("toSatisfyAll")
