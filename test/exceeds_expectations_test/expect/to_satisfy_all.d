@@ -1,4 +1,4 @@
-module exceeds_expectations_test.to_satisfy_all;
+module exceeds_expectations_test.expect.to_satisfy_all;
 
 import exceeds_expectations;
 import exceeds_expectations_test;

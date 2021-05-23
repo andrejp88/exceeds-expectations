@@ -1,6 +1,6 @@
-module exceeds_expectations_test.to_throw;
+module exceeds_expectations_test.expect.to_throw;
 
-import exceeds_expectations.expect;
+import exceeds_expectations;
 import exceeds_expectations_test;
 
 

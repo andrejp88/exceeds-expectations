@@ -1,4 +1,4 @@
-module exceeds_expectations_test.to_equal;
+module exceeds_expectations_test.expect.to_equal;
 
 import exceeds_expectations;
 import exceeds_expectations_test;

@@ -1,9 +1,9 @@
-module exceeds_expectations_test.to_be;
+module exceeds_expectations_test.expect.to_be;
 
 import exceeds_expectations;
 import exceeds_expectations_test;
-
 import std.conv;
+
 
 @("Class is Class")
 unittest

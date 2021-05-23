@@ -1,4 +1,4 @@
-module exceeds_expectations_test.to_be_of_type;
+module exceeds_expectations_test.expect.to_be_of_type;
 
 import exceeds_expectations;
 import exceeds_expectations_test;
