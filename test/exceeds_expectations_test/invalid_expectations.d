@@ -1,4 +1,4 @@
-module exceeds_expectations_test.misc;
+module exceeds_expectations_test.invalid_expectations;
 
 import exceeds_expectations;
 import exceeds_expectations_test;
@@ -10,4 +10,10 @@ unittest
     shouldBeInvalid(
         expect(2)
     );
+}
+
+@("Double negative should fail to compile")
+unittest
+{
+    static assert(!__traits(compiles, expect(4).not.not));
 }
