@@ -464,10 +464,39 @@ struct ExpectNot(TReceived)
             }
 
             size_t[2][] failingRanges = failingIndices.map!(e => cast(size_t[2])[e, e + 1]).array;
+
             fail(
                 "Received: ".color(fg.light_red) ~ prettyPrintHighlightedArray(received, failingRanges) ~ "\n" ~
                 "Some elements satisfy the predicate."
             );
+        }
+    }
+
+
+    /// Fails if all elements in `received` are equal to `expected`.
+    public void toContainOnly(TExpected)(TExpected expected)
+    {
+        completed = true;
+
+        if (all!(e => e == expected)(received))
+        {
+            size_t[] failingIndices;
+
+            foreach (size_t index, ElementType!TReceived element; received)
+            {
+                if (element != expected)
+                {
+                    failingIndices ~= index;
+                }
+            }
+
+            size_t[2][] failingRanges = failingIndices.map!(e => cast(size_t[2])[e, e + 1]).array;
+
+            fail(formatFailureMessage(
+                "Forbidden", prettyPrint(expected),
+                "Received", prettyPrintHighlightedArray(received, failingRanges),
+                "Every element in the received range is equal to the forbidden value."
+            ));
         }
     }
 }

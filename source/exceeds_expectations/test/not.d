@@ -373,6 +373,37 @@ unittest
     );
 }
 
+@("toContainOnly, (single element)")
+unittest
+{
+    int[] arr = [1];
+    expect(arr).not.toContainOnly(0);
+}
+
+@("toContainOnly, (single element) but does")
+unittest
+{
+    int[] arr = [1];
+
+    shouldFail(
+        expect(arr).not.toContainOnly(1)
+    );
+}
+
+@("toContainOnly, (multiple elements)")
+unittest
+{
+    expect(repeat(999).take(20).array ~ [998]).not.toContainOnly(999);
+}
+
+@("toContainOnly, (multiple elements) but does")
+unittest
+{
+    shouldFail(
+        expect(repeat(999).take(20).array).not.toContainOnly(999)
+    );
+}
+
 @("Double negative should not be allowed")
 unittest
 {

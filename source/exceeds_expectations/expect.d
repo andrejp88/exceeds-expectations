@@ -450,7 +450,7 @@ public struct Expect(TReceived)
         }
     }
 
-    /// Checks that received contains at least one element satisfying
+    /// Checks that `received` contains at least one element satisfying
     /// the predicate.
     public void toContain(TExpected)(TExpected predicate)
     if (
@@ -468,6 +468,33 @@ public struct Expect(TReceived)
                 "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~
                 "None of the elements in the received array satisfy the predicate."
             );
+        }
+    }
+
+
+    /// Checks that all elements in `received` are equal to `expected`.
+    public void toContainOnly(TExpected)(TExpected expected)
+    {
+        completed = true;
+
+        if (!all!(e => e == expected)(received))
+        {
+            size_t[] failingIndices;
+
+            foreach (size_t index, ElementType!TReceived element; received)
+            {
+                if (element != expected)
+                {
+                    failingIndices ~= index;
+                }
+            }
+
+            size_t[2][] failingRanges = failingIndices.map!(e => cast(size_t[2])[e, e + 1]).array;
+
+            fail(formatFailureMessage(
+                "Expected", prettyPrint(expected),
+                "Received", prettyPrintHighlightedArray(received, failingRanges),
+            ));
         }
     }
 }

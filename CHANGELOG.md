@@ -8,7 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 - `toMatch` for comparing a string against an expected regular expression.
-- `toContain` for checking that an array contains a given element on sequence of elements.
+- `toContain` for checking that an array contains a given element, sequence of elements, or an element matching a predicate.
+- `toContainOnly` for checking that every element in an array is equal to a given value.
 
 ### Changed
 - `toSatisfy`, `toSatisfyAll`, and `toSatisfyAny` catch anything that is thrown while evaluating their predicates and throw a `FailingExpectationException` showing the original exception (or error) message. This is also true of their negated counterparts.
