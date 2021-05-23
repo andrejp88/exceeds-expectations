@@ -35,3 +35,17 @@ unittest
         expect(repeat(999).take(20).array ~ [998]).toContainOnly(999)
     );
 }
+
+@("predicate success")
+unittest
+{
+    expect(iota(0, 20, 2).array).toContainOnly((int e) => e % 2 == 0);
+}
+
+@("predicate success")
+unittest
+{
+    shouldFail(
+        expect([2, 4, 5, 6, 7, 8, 10]).toContainOnly((int e) => e % 2 == 0)
+    );
+}

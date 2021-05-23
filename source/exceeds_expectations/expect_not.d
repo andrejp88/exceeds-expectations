@@ -475,28 +475,40 @@ struct ExpectNot(TReceived)
 
     /// Fails if all elements in `received` are equal to `expected`.
     public void toContainOnly(TExpected)(TExpected expected)
+    if (
+        __traits(compiles, rvalueOf!(ElementType!TReceived) == expected)
+    )
     {
         completed = true;
 
         if (all!(e => e == expected)(received))
         {
-            size_t[] failingIndices;
-
-            foreach (size_t index, ElementType!TReceived element; received)
-            {
-                if (element != expected)
-                {
-                    failingIndices ~= index;
-                }
-            }
-
-            size_t[2][] failingRanges = failingIndices.map!(e => cast(size_t[2])[e, e + 1]).array;
-
             fail(formatFailureMessage(
                 "Forbidden", prettyPrint(expected),
-                "Received", prettyPrintHighlightedArray(received, failingRanges),
+                "Received", prettyPrint(received),
                 "Every element in the received range is equal to the forbidden value."
             ));
+        }
+    }
+
+
+    /// Fails if all elements in `received` satisfy `predicate`.
+    public void toContainOnly(TExpected)(TExpected predicate)
+    if (
+        isCallable!predicate &&
+        is(ReturnType!predicate == bool) &&
+        (Parameters!predicate.length == 1) &&
+        isImplicitlyConvertible!(ElementType!TReceived, Parameters!predicate[0])
+    )
+    {
+        completed = true;
+
+        if (received.all!predicate)
+        {
+            fail(
+                "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~
+                "All elements in the received array satisfy the predicate."
+            );
         }
     }
 }
