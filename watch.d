@@ -16,14 +16,16 @@ import std.string;
 void main(string[] args)
 {
     FileWatch sourceWatcher = FileWatch("source/", true);
+    FileWatch testWatcher = FileWatch("test/", true);
 
     runTests(args);
 
     while (true)
     {
         FileChangeEvent[] sourceChanges = sourceWatcher.getEvents();
+        FileChangeEvent[] testChanges = testWatcher.getEvents();
 
-        if (sourceChanges.length > 0)
+        if (sourceChanges.length > 0 || testChanges.length > 0)
         {
             runTests(args);
         }
