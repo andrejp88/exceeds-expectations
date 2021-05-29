@@ -26,7 +26,7 @@ package void shouldBeInvalid(lazy void dg, string file = __FILE__, int line = __
         dg();
         assert(false, "\nInvalid expectation wasn't caught: " ~ file ~ "(" ~ line.to!string ~ ")");
     }
-    catch (InvalidExpectationException e)
+    catch (InvalidExpectationError e)
     {
         debug(SHOW_MESSAGES) writeln(e.message);
     }

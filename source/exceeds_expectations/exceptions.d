@@ -41,9 +41,8 @@ public class FailingExpectationError : AssertError
 
 /// Thrown when an expectation is used incorrectly. It means there is
 /// problem in the test itself, not in what's being tested.
-public class InvalidExpectationException : Exception
+public class InvalidExpectationError : Error
 {
-    /// Constructs a new InvalidExpectationException
     package this(const string message, const string filePath = __FILE__, size_t line = __LINE__, Throwable next = null)
     @safe pure nothrow
     {

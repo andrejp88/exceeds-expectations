@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Structs are now pretty-printed using the same format as class objects.
 - The pretty-print format for classes and structs now includes the keyword `class` or `struct`.
 - `FailingExpectationException` is now `FailingExpectationError` and extends `AssertError`. (#22)
+- `InvalidExpectationException` is now `InvalidExpectationError` and extends `Error`.
 
 ### Fixed
 - Text with yellow background highlighting no longer appears unreadable in most dark terminal themes. (#24)

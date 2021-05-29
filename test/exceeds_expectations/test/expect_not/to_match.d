@@ -60,7 +60,7 @@ unittest
     );
 }
 
-@("toMatch throws an InvalidExpectationException if the regex is invalid")
+@("toMatch throws an InvalidExpectationError if the regex is invalid")
 unittest
 {
     shouldBeInvalid(

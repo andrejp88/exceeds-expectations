@@ -4,7 +4,7 @@ import exceeds_expectations;
 import exceeds_expectations.test;
 
 
-@("Throw an InvalidExpectationException if except called but assertion not completed")
+@("Throw an InvalidExpectationError if except called but assertion not completed")
 unittest
 {
     shouldBeInvalid(

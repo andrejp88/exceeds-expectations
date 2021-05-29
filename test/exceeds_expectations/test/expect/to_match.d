@@ -75,7 +75,7 @@ unittest
     );
 }
 
-@("Throw an InvalidExpectationException if the regex is invalid")
+@("Throw an InvalidExpectationError if the regex is invalid")
 unittest
 {
     shouldBeInvalid(

@@ -33,7 +33,7 @@ struct ExpectNot(TReceived)
     {
         if (!completed)
         {
-            throw new InvalidExpectationException(
+            throw new InvalidExpectationError(
                 "`expect` was called but no assertion was made at " ~
                 filePath ~ "(" ~ line.to!string ~ "): \n\n" ~
                 formatCode(readText(filePath), line, 2) ~ "\n",
@@ -95,7 +95,7 @@ struct ExpectNot(TReceived)
         {
             if (
                 cast(FailingExpectationError) e ||
-                cast(InvalidExpectationException) e
+                cast(InvalidExpectationError) e
             )
             {
                 throw e;
@@ -119,7 +119,7 @@ struct ExpectNot(TReceived)
 
         if (predicates.length == 0)
         {
-            throw new InvalidExpectationException(
+            throw new InvalidExpectationError(
                 "Missing predicates at " ~ filePath ~ "(" ~ line.to!string ~ "): \n" ~
                 "\n" ~ formatCode(readText(filePath), line, 2) ~ "\n",
                 filePath, line
@@ -177,7 +177,7 @@ struct ExpectNot(TReceived)
 
         if (predicates.length == 0)
         {
-            throw new InvalidExpectationException(
+            throw new InvalidExpectationError(
                 "Missing predicates at " ~ filePath ~ "(" ~ line.to!string ~ "): \n" ~
                 "\n" ~ formatCode(readText(filePath), line, 2) ~ "\n",
                 filePath, line
@@ -391,7 +391,7 @@ struct ExpectNot(TReceived)
         }
         catch (RegexException e)
         {
-            throw new InvalidExpectationException(
+            throw new InvalidExpectationError(
                 "toMatch received an invalid regular expression pattern at " ~
                 filePath ~ "(" ~ line.to!string ~ "): \n\n" ~
                 formatCode(readText(filePath), line, 2) ~ "\n" ~

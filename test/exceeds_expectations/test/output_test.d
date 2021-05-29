@@ -168,7 +168,7 @@ private void callCatchPrint(lazy void dg, string file = __FILE__, int line = __L
         writeln(e.message);
         writeln("----------- END -----------");
     }
-    catch (InvalidExpectationException e)
+    catch (InvalidExpectationError e)
     {
         writeln("---------- BEGIN ----------");
         writeln(e.message);
