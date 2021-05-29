@@ -381,7 +381,7 @@ struct ExpectNot(TReceived)
                 // Highlight line-by-line because the output looks buggy if the highlighting contains a line break
                 string highlightedReceived = (
                     matchResult.pre ~
-                    matchResult.hit.splitLines.map!(line => line.color(bg.yellow)).join('\n') ~
+                    matchResult.hit.splitLines.map!(line => line.color(fg.black, bg.yellow)).join('\n') ~
                     matchResult.post
                 );
 

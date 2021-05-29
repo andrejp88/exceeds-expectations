@@ -116,9 +116,9 @@ out (result; !result.endsWith("\n") && !result.startsWith("\n"))
         }
 
         chunks ~=
-            printRange(arr[range[0] .. range[1]]).color(bg.yellow)
+            printRange(arr[range[0] .. range[1]]).color(fg.black, bg.yellow)
             .splitLines()
-            .map!(e => e.color(bg.yellow))
+            .map!(e => e.color(fg.black, bg.yellow))
             .join("\n");
 
         lastEnding = range[1];
