@@ -10,30 +10,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `toBe` shows prints difference between received and expected values (like toEqual) if it received non-reference types.
 - Structs are now pretty-printed using the same format as class objects.
 - The pretty-print format for classes and structs now includes the keyword `class` or `struct`.
-- Fixed highlighted output appearing unreadable in some color schemes.
+
+### Fixed
+- Text with yellow background highlighting no longer appears unreadable in most dark terminal themes. (#24)
 
 
 ## [0.6.0] · 2021-05-23
 
 ### Added
-- `toMatch` for comparing a string against an expected regular expression.
-- `toContain` for checking that an array contains a given element, sequence of elements, or an element matching a predicate.
-- `toContainOnly` for checking that every element in an array is equal to a given value, or matches a given predicate.
+- `toMatch` for comparing a string against an expected regular expression. (#14)
+- `toContain` for checking that an array contains a given element, sequence of elements, or an element matching a predicate. (#8)
+- `toContainOnly` for checking that every element in an array is equal to a given value, or matches a given predicate. (#8)
 
 ### Changed
-- `toSatisfy`, `toSatisfyAll`, and `toSatisfyAny` catch anything that is thrown while evaluating their predicates and throw a `FailingExpectationException` showing the original exception (or error) message. This is also true of their negated counterparts.
-- `toThrow` now prints the received throwable's message and stacktrace if it's not the expected type of throwable.
+- `toSatisfy`, `toSatisfyAll`, and `toSatisfyAny` catch anything that is thrown while evaluating their predicates and throw a `FailingExpectationException` showing the original exception (or error) message. This is also true of their negated counterparts. (#19)
+- `toThrow` now prints the received throwable's message and stacktrace if it's not the expected type of throwable. (#21)
 
 
 ## [0.5.0] · 2021-04-25
 
 ### Changed
-- Updated `toApproximatelyEqual` to use `std.math.isClose` instead of the deprecated `std.math.approxEqual`.
-- Code excerpts are now loaded from source files only when an expectation fails, and not at compile time for every expectation. This means `stringImportPaths "."` and `dflags "-J."` are no longer needed in the project's dub configuration file.
-- Moved the logic for negated expecations to their own struct.
+- Updated `toApproximatelyEqual` to use `std.math.isClose` instead of the deprecated `std.math.approxEqual`. (#12)
+- Code excerpts are now loaded from source files only when an expectation fails, and not at compile time for every expectation. This means `stringImportPaths "."` and `dflags "-J."` are no longer needed in the project's dub configuration file. (#15)
+- Moved the logic for negated expecations to their own struct. (#16)
 - Renamed struct `Expectation` to `Expect`.
-- Split `EEException` into two different exceptions. `FailingExpectationException` is thrown upon regular test failures, and `InvalidExpectationException` is thrown when an expectation wasn't constructed properly.
-- When printing source code snippets, lines longer than 120 characters are truncated.
+- Split `EEException` into two different exceptions. `FailingExpectationException` is thrown upon regular test failures, and `InvalidExpectationException` is thrown when an expectation wasn't constructed properly. (#4)
+- When printing source code snippets, lines longer than 120 characters are truncated. (#7)
 - `toBeOfType` now shows the received type, rather than the received value.
 - Negated expectations' failure messages now say "Forbidden" instead of "Expected".
 - Failure messages no longer color the received/expected values, and instead color the actual words "Received" and "Expected".
@@ -41,7 +43,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Tweaked some failure messages for consistency and readability.
 
 ### Fixed
-- Source code indented with tabs now has its tabs converted to spaces when showing source code snippets. Previously, the tab itself would be printed which sometimes resulted in odd formatting.
+- Source code indented with tabs now has its tabs converted to spaces when showing source code snippets. Previously, the tab itself would be printed which sometimes resulted in odd formatting. (#2)
 
 ### Docs
 - Improved wording in doc comments.
@@ -64,13 +66,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [0.4.0] · 2021-04-11
 
 ### Added
-- `toThrow` method for checking that a block of code throws a certain exception.
+- `toThrow` method for checking that a block of code throws a certain exception. (#9)
 
 ### Changed
 - The library is now split up into a few different packages. The old import still works, but only imports `expect` and `Expectation` (which should be the only things of interest for now, anyway).
 
 ### Fixed
-- This library's dependency on "silly" should no longer interfere with users' own dependencies on silly.
+- This library's dependency on "silly" should no longer interfere with users' own dependencies on silly. (#11)
 
 ### Docs
 - Add screenshots to the readme showing what a failing test outputs and demonstrating the IDE autocompletion works.
