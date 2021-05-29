@@ -419,7 +419,7 @@ out(result; result.endsWith("\n") || result == "")
                 i == 0 ?
                 fg.green : (
                     i == 1 ?
-                    fg.red :
+                    fg.light_red :
                     fg.yellow
                 )
             );
