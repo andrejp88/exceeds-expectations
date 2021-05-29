@@ -33,7 +33,11 @@ out(result; (!result.endsWith("\n") && !result.startsWith("\n")))
             rawStringified = prettyPrintTypeInfo(typeInfo);
         }
 
-        rawStringified = prettyPrintClassObject(value);
+        rawStringified = prettyPrintObjectFields(value);
+    }
+    else static if (is(T == struct) && !__traits(hasMember, T, "toString"))
+    {
+        rawStringified = prettyPrintObjectFields(value);
     }
     else static if (isFloatingPoint!T)
     {
@@ -168,8 +172,11 @@ out (result; result.length <= input.length)
 }
 
 
-private string prettyPrintClassObject(T)(const T object)
-if (is(T == class))
+private string prettyPrintObjectFields(T)(const T object)
+if (
+    is(T == class) ||
+    is(T == struct)
+)
 out(result; result.endsWith("\n") && !(result.startsWith("\n")))
 {
     import std.range : Appender;
