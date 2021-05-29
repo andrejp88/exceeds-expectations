@@ -183,6 +183,11 @@ out(result; result.endsWith("\n") && !(result.startsWith("\n")))
 
     Appender!string output;
 
+    output.put(
+        is(T == class) ? "class " :
+        is(T == struct) ? "struct " :
+        ""
+    );
     output.put(T.stringof);
     output.put(" {\n");
 
