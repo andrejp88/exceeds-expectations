@@ -10,7 +10,7 @@ It gets along well with IDE autocompletion:
 
 Failing tests show clear and informative messages:
 
-![Console output of a failing expectation showing the expected value, the received value, and a snippet of code surrounding the expectation.](https://gitlab.com/andrej88/exceeds-expectations/-/raw/v0.6.0/readme-resources/toequals-failure.png)
+![Console output of a failing expectation showing the expected value, the received value, and a snippet of code surrounding the expectation.](https://gitlab.com/andrej88/exceeds-expectations/-/raw/v0.6.0/readme-resources/tomatch-failure.png)
 
 ## Usage
 
