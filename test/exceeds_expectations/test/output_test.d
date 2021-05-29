@@ -162,7 +162,7 @@ private void callCatchPrint(lazy void dg, string file = __FILE__, int line = __L
         dg();
         assert(false, "Test should have failed but didn't at " ~ file ~ ":" ~ line.to!string);
     }
-    catch (FailingExpectationException e)
+    catch (FailingExpectationError e)
     {
         writeln("---------- BEGIN ----------");
         writeln(e.message);

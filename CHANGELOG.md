@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `toBe` shows prints difference between received and expected values (like toEqual) if it received non-reference types.
 - Structs are now pretty-printed using the same format as class objects.
 - The pretty-print format for classes and structs now includes the keyword `class` or `struct`.
+- `FailingExpectationException` is now `FailingExpectationError` and extends `AssertError`. (#22)
 
 ### Fixed
 - Text with yellow background highlighting no longer appears unreadable in most dark terminal themes. (#24)

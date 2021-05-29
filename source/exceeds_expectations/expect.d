@@ -55,7 +55,7 @@ public struct Expect(TReceived)
     {
         string locationString = "Failing expectation at " ~ filePath ~ "(" ~ line.to!string ~ ")";
 
-        throw new FailingExpectationException(
+        throw new FailingExpectationError(
             description,
             locationString,
             filePath, line
@@ -69,8 +69,8 @@ public struct Expect(TReceived)
         return ExpectNot!TReceived(received, filePath, line);
     }
 
-    /// Checks that `received == expected` and throws
-    /// [FailingExpectationException] otherwise.
+    /// Checks that `received == expected` and throws a
+    /// [FailingExpectationError] otherwise.
     public void toEqual(TExpected)(const auto ref TExpected expected)
     if (canCompareForEquality!(TReceived, TExpected))
     {
@@ -88,7 +88,7 @@ public struct Expect(TReceived)
     }
 
     /// Checks that `predicate(received)` returns true and throws a
-    /// [FailingExpectationException] otherwise.
+    /// [FailingExpectationError] otherwise.
     public void toSatisfy(bool delegate(const(TReceived)) predicate)
     {
         completed = true;
@@ -107,7 +107,7 @@ public struct Expect(TReceived)
         catch (Throwable e)                             // @suppress(dscanner.suspicious.catch_em_all)
         {
             if (
-                cast(FailingExpectationException) e ||
+                cast(FailingExpectationError) e ||
                 cast(InvalidExpectationException) e
             )
             {
@@ -119,8 +119,7 @@ public struct Expect(TReceived)
     }
 
     /// Checks that `predicate(received)` returns true for all
-    /// `predicates` and throws a [FailingExpectationException]
-    /// otherwise.
+    /// `predicates` and throws a [FailingExpectationError] otherwise.
     ///
     /// All predicates are evaluated.
     public void toSatisfyAll(bool delegate(const(TReceived))[] predicates...)
@@ -197,7 +196,7 @@ public struct Expect(TReceived)
 
     /// Checks that `predicate(received)` returns true for at least
     /// one of the given `predicates` and throws a
-    /// [FailingExpectationException] otherwise.
+    /// [FailingExpectationError] otherwise.
     ///
     /// All predicates are evaluated.
     ///
@@ -254,8 +253,7 @@ public struct Expect(TReceived)
     }
 
     /// Checks that `received.isClose(expected, maxRelDiff,
-    /// maxAbsDiff)` and throws a [FailingExpectationException]
-    /// otherwise.
+    /// maxAbsDiff)` and throws a [FailingExpectationError] otherwise.
     ///
     /// `maxRelDiff` and `maxAbsDiff` have the same default values as
     /// in [std.math.isClose].
@@ -287,8 +285,8 @@ public struct Expect(TReceived)
     }
 
     /// Checks that `received is expected` and throws a
-    /// [FailingExpectationException] otherwise. If you want to check
-    /// for equality (`received == expected`), use [toEqual].
+    /// [FailingExpectationError] otherwise. If you want to check for
+    /// equality (`received == expected`), use [toEqual].
     public void toBe(TExpected)(const auto ref TExpected expected)
     {
         completed = true;
@@ -312,7 +310,7 @@ public struct Expect(TReceived)
     }
 
     /// Checks that received is a `TExpected` or a sub-type of it.
-    /// Throws a [FailingExpectationException] if `received` cannot be
+    /// Throws a [FailingExpectationError] if `received` cannot be
     /// cast to `TExpected` or if `received is null`.
     public void toBeOfType(TExpected)()
     if ((is(TExpected == class) || is(TExpected == interface)) &&
@@ -359,10 +357,10 @@ public struct Expect(TReceived)
     ///   expectation passes.
     ///
     /// - `received` doesn't throw a `TExpected`, but does throw
-    ///   something else. A [FailingExpectationException] is thrown.
+    ///   something else. A [FailingExpectationError] is thrown.
     ///
     /// - `received` doesn't throw anything. A
-    ///   [FailingExpectationException] is thrown.
+    ///   [FailingExpectationError] is thrown.
     public void toThrow(TExpected : Throwable = Throwable)()
     if (isCallable!TReceived)
     {

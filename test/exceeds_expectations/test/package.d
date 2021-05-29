@@ -13,7 +13,7 @@ package void shouldFail(lazy void dg, string file = __FILE__, int line = __LINE_
         dg();
         assert(false, "\nExpectation was supposed to fail but didn't: " ~ file ~ "(" ~ line.to!string ~ ")");
     }
-    catch (FailingExpectationException e)
+    catch (FailingExpectationError e)
     {
         debug(SHOW_MESSAGES) writeln(e.message);
     }

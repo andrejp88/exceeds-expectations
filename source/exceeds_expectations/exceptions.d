@@ -1,5 +1,6 @@
 module exceeds_expectations.exceptions;
 
+import core.exception : AssertError;
 import exceeds_expectations.pretty_print;
 import std.algorithm;
 import std.array;
@@ -8,7 +9,7 @@ import std.file : readText;
 
 
 /// Thrown when an expectation fails.
-public class FailingExpectationException : Exception
+public class FailingExpectationError : AssertError
 {
     package this(
         const string description,

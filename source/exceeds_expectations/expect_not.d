@@ -47,7 +47,7 @@ struct ExpectNot(TReceived)
     {
         string locationString = "Failing expectation at " ~ filePath ~ "(" ~ line.to!string ~ ")";
 
-        throw new FailingExpectationException(
+        throw new FailingExpectationError(
             description,
             locationString,
             filePath, line
@@ -56,7 +56,7 @@ struct ExpectNot(TReceived)
 
 
     /// Checks that `received != expected` and throws a
-    /// [FailingExpectationException] otherwise.
+    /// [FailingExpectationError] otherwise.
     public void toEqual(TExpected)(const auto ref TExpected expected)
     if (canCompareForEquality!(TReceived, TExpected))
     {
@@ -72,7 +72,7 @@ struct ExpectNot(TReceived)
     }
 
     /// Checks that `predicate(received)` returns false and throws a
-    /// [FailingExpectationException] otherwise.
+    /// [FailingExpectationError] otherwise.
     ///
     /// Fails if an exception is thrown while evaluating the
     /// predicate.
@@ -94,7 +94,7 @@ struct ExpectNot(TReceived)
         catch (Throwable e)                             // @suppress(dscanner.suspicious.catch_em_all)
         {
             if (
-                cast(FailingExpectationException) e ||
+                cast(FailingExpectationError) e ||
                 cast(InvalidExpectationException) e
             )
             {
@@ -107,7 +107,7 @@ struct ExpectNot(TReceived)
 
     /// Checks that `predicate(received)` returns false for at least
     /// one of the given `predicates` and throws a
-    /// [FailingExpectationException] otherwise.
+    /// [FailingExpectationError] otherwise.
     ///
     /// All predicates are evaluated.
     ///
@@ -165,8 +165,7 @@ struct ExpectNot(TReceived)
     }
 
     /// Checks that `predicate(received)` returns false for all
-    /// `predicates` and throws a [FailingExpectationException]
-    /// otherwise.
+    /// `predicates` and throws a [FailingExpectationError] otherwise.
     ///
     /// All predicates are evaluated.
     ///
@@ -245,8 +244,7 @@ struct ExpectNot(TReceived)
     }
 
     /// Checks that `received.isClose(expected, maxRelDiff,
-    /// maxAbsDiff)` and throws a [FailingExpectationException] if it
-    /// is.
+    /// maxAbsDiff)` and throws a [FailingExpectationError] if it is.
     ///
     /// `maxRelDiff` and `maxAbsDiff` have the same default values as
     /// in [std.math.isClose].
@@ -278,7 +276,7 @@ struct ExpectNot(TReceived)
     }
 
     /// Checks that `received !is expected` and throws a
-    /// [FailingExpectationException] otherwise.
+    /// [FailingExpectationError] otherwise.
     public void toBe(TExpected)(const auto ref TExpected expected)
     {
         completed = true;
@@ -292,7 +290,7 @@ struct ExpectNot(TReceived)
     }
 
     /// Checks that received is not a `TExpected` nor a sub-type of
-    /// it. Throws a [FailingExpectationException] if `received` can
+    /// it. Throws a [FailingExpectationError] if `received` can
     /// be cast to `TExpected`.
     ///
     /// Note: `null` is considered not to be a sub-type of any class
@@ -328,7 +326,7 @@ struct ExpectNot(TReceived)
     /// There are three possible outcomes:
     ///
     /// - `received` throws a `TExpected` or one of its sub-types. A
-    ///   [FailingExpectationException] is thrown.
+    ///   [FailingExpectationError] is thrown.
     ///
     /// - `received` doesn't throw a `TExpected`, but does throw
     ///   something else. The expectation passes.
