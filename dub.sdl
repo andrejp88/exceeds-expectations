@@ -15,3 +15,8 @@ configuration "unittest" {
 configuration "library" {
     excludedSourceFiles "test"
 }
+
+configuration "output_test" {
+    targetType "executable"
+    mainSourceFile "test/exceeds_expectations/test/output_test.d"
+}
