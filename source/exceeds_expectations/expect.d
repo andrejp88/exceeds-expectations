@@ -287,16 +287,27 @@ public struct Expect(TReceived)
     }
 
     /// Checks that `received is expected` and throws a
-    /// [FailingExpectationException] otherwise.
+    /// [FailingExpectationException] otherwise. If you want to check
+    /// for equality (`received == expected`), use [toEqual].
     public void toBe(TExpected)(const auto ref TExpected expected)
     {
         completed = true;
 
         if (received !is expected)
         {
-            fail(
-                "Arguments do not reference the same object (received is expected == false)."
-            );
+            if (hasIndirections!TExpected || hasIndirections!TReceived)
+            {
+                fail(
+                    "Arguments do not reference the same object ((received is expected) == false)."
+                );
+            }
+            else
+            {
+                fail(formatFailureMessage(
+                    "Expected", prettyPrint(expected),
+                    "Received", prettyPrint(received),
+                ));
+            }
         }
     }
 
