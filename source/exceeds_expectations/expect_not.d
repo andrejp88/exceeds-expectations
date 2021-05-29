@@ -486,7 +486,7 @@ struct ExpectNot(TReceived)
             fail(formatFailureMessage(
                 "Forbidden", prettyPrint(expected),
                 "Received", prettyPrint(received),
-                "Every element in the received range is equal to the forbidden value."
+                "The received range contains only the forbidden value."
             ));
         }
     }
