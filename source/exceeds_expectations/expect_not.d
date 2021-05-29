@@ -87,7 +87,7 @@ struct ExpectNot(TReceived)
             if (result)
             {
                 fail(
-                    "Received: ".color(fg.light_red) ~ prettyPrint(received)
+                    "Received: ".color(fg.red) ~ prettyPrint(received)
                 );
             }
         }
@@ -158,7 +158,7 @@ struct ExpectNot(TReceived)
         if (numPassed >= predicates.length)
         {
             fail(
-                "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~
+                "Received: ".color(fg.red) ~ prettyPrint(received) ~ "\n" ~
                 "Received value satisfied all predicates, but was expected to fail at least one."
             );
         }
@@ -237,7 +237,7 @@ struct ExpectNot(TReceived)
                 ) ~ ", but was expected not to satisfy any.";
 
             fail(
-                "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~
+                "Received: ".color(fg.red) ~ prettyPrint(received) ~ "\n" ~
                 description
             );
         }
@@ -466,7 +466,7 @@ struct ExpectNot(TReceived)
             size_t[2][] failingRanges = failingIndices.map!(e => cast(size_t[2])[e, e + 1]).array;
 
             fail(
-                "Received: ".color(fg.light_red) ~ prettyPrintHighlightedArray(received, failingRanges) ~ "\n" ~
+                "Received: ".color(fg.red) ~ prettyPrintHighlightedArray(received, failingRanges) ~ "\n" ~
                 "Some elements satisfy the predicate."
             );
         }
@@ -506,7 +506,7 @@ struct ExpectNot(TReceived)
         if (received.all!predicate)
         {
             fail(
-                "Received: ".color(fg.light_red) ~ prettyPrint(received) ~ "\n" ~
+                "Received: ".color(fg.red) ~ prettyPrint(received) ~ "\n" ~
                 "All elements in the received array satisfy the predicate."
             );
         }

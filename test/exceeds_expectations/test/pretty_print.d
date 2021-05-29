@@ -369,7 +369,7 @@ unittest
         "Received", "The Spanish Inquisition"
     )).toEqual(
         "Forbidden:".color(fg.green) ~ " The Spanish Inquisition\n" ~
-        "Received:".color(fg.light_red) ~ "  The Spanish Inquisition\n"
+        "Received:".color(fg.red) ~ "  The Spanish Inquisition\n"
     );
 }
 
@@ -385,7 +385,7 @@ unittest
         "Chief Weapon 4", "An almost fanatical devotion to the Pope",
     )).toEqual(
         "Forbidden:".color(fg.green ) ~ "      The Spanish Inquisition\n" ~
-        "Received:".color(fg.light_red   ) ~ "       The Spanish Inquisition\n" ~
+        "Received:".color(fg.red   ) ~ "       The Spanish Inquisition\n" ~
         "Chief Weapon 1:".color(fg.yellow) ~ " Surprise\n" ~
         "Chief Weapon 2:".color(fg.yellow) ~ " Fear\n" ~
         "Chief Weapon 3:".color(fg.yellow) ~ " Ruthless efficiency\n" ~
@@ -406,7 +406,7 @@ unittest
         "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again."
     )).toEqual(
         "Forbidden:".color(fg.green ) ~ "      The Spanish Inquisition\n" ~
-        "Received:".color(fg.light_red   ) ~ "       The Spanish Inquisition\n" ~
+        "Received:".color(fg.red   ) ~ "       The Spanish Inquisition\n" ~
         "Chief Weapon 1:".color(fg.yellow) ~ " Surprise\n" ~
         "Chief Weapon 2:".color(fg.yellow) ~ " Fear\n" ~
         "Chief Weapon 3:".color(fg.yellow) ~ " Ruthless efficiency\n" ~
@@ -425,7 +425,7 @@ unittest
         "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again."
     )).toEqual(
         "Forbidden:".color(fg.green ) ~ "\nThe\nSpanish\nInquisition\n\n" ~
-        "Received:".color(fg.light_red   ) ~ "\nThe\nSpanish\nInquisition\n\n" ~
+        "Received:".color(fg.red   ) ~ "\nThe\nSpanish\nInquisition\n\n" ~
         "Chief Weapons:".color(fg.yellow) ~ "\nSurprise\nFear\nRuthless efficiency\nAn almost fanatical devotion to the Pope\n\n" ~
         "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again.\n"
     );
@@ -443,7 +443,7 @@ unittest
         "Amongst our weapons... Amongst our weaponry... are such elements as fear, surprise... I'll come in again."
     )).toEqual(
         "Forbidden:".color(fg.green ) ~ "          The Spanish Inquisition\n" ~
-        "Received:".color(fg.light_red   ) ~ "           The Spanish Inquisition\n" ~
+        "Received:".color(fg.red   ) ~ "           The Spanish Inquisition\n" ~
         "Chief Weapons:".color(fg.yellow) ~ "\nSurprise\nFear\nRuthless efficiency\nAn almost fanatical devotion to the Pope\n\n" ~
         "Filler single-line:".color(fg.yellow) ~ " This line has the longest label which all other single-line labels should obey.\n" ~
         "Filler multiple-line:".color(fg.yellow) ~ "\nThis is the longest label, but since it's value\nhas multiple lines, it's not taken into account.\n\n" ~

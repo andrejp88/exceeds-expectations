@@ -380,7 +380,7 @@ in(length >= 0, "Cannot truncate line to length " ~ length.to!string)
 package string formatDifferences(string expected, string received, bool not)
 {
     immutable string lineLabel1 = (not ? "Forbidden: " : "Expected: ").color(fg.green);
-    immutable string lineLabel2 = (not ? "Received:  " : "Received: ").color(fg.light_red);
+    immutable string lineLabel2 = (not ? "Received:  " : "Received: ").color(fg.red);
     return (
         lineLabel1 ~ expected ~ "\n" ~
         lineLabel2 ~ received ~ "\n"
@@ -416,12 +416,9 @@ out(result; result.endsWith("\n") || result == "")
         if (chunk.length == 2)
         {
             fg labelColor = (
-                i == 0 ?
-                fg.green : (
-                    i == 1 ?
-                    fg.light_red :
-                    fg.yellow
-                )
+                i == 0 ? fg.green :
+                i == 1 ? fg.red :
+                fg.yellow
             );
 
             result.put((chunk[0] ~ ":").color(labelColor));
