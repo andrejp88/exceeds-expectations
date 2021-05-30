@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.7.1 · Not Yet Released
+## [0.7.1] · 2021-05-30
 
 ### Changed
 - `not.toMatch` now highlights all matches in the received text. (#28)
@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Source code snippets can now highlight the last line in the file without crashing.
 
 
-## [0.7.0] · 2020-05-29
+## [0.7.0] · 2021-05-29
 
 ### Changed
 - `toBe` shows prints difference between received and expected values (like toEqual) if it received non-reference types.
@@ -131,3 +131,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [0.5.0]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.5.0
 [0.6.0]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.6.0
 [0.7.0]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.7.0
+[0.7.1]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.7.1
