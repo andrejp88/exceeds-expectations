@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - `not.toMatch` now highlights all matches in the received text. (#28)
 
+### Fixed
+- Source code snippets can now highlight the last line in the file without crashing.
+
 
 ## [0.7.0] · 2020-05-29
 

@@ -312,9 +312,9 @@ in (
     "focusLine must be at least 1"
 )
 in (
-    focusLine < source.splitLines.length,
+    focusLine < source.splitLines.length + 1,
     "focusLine must not be larger than the last line in the source (" ~
-    focusLine.to!string ~ " > " ~ source.splitLines.length.to!string ~ ")"
+    focusLine.to!string ~ " > " ~ (source.splitLines.length + 1).to!string ~ ")"
 )
 in (
     source.splitLines.length > 0, "source may not be empty"
