@@ -107,6 +107,8 @@ public void main(string[] args)
         callCatchPrint(expect("zzyzx\n8293498234").toMatch(`[xyz]{6}\n\d+`));
         callCatchPrint(expect("zzyzx").not.toMatch(`[xyz]{5}`));
         callCatchPrint(expect("zzyzx\n8293498234").not.toMatch(`x\n8`));
+        callCatchPrint(expect("write a sentence without using the letter e.").not.toMatch(`e`));
+        callCatchPrint(expect("linseed oil").not.toMatch(`L`, "i"));
     }
 
     // Contain

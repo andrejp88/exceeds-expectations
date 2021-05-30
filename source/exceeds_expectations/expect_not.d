@@ -366,28 +366,33 @@ struct ExpectNot(TReceived)
         try
         {
             auto re = regex(pattern, flags);
-            auto matchResult = matchFirst(received, re);
 
-            if (!matchResult.empty)
+            if (matchFirst(received, re).empty) return;
+
+            string expectedString = prettyPrint(pattern);
+            if (flags != "")
             {
-                string expectedString = prettyPrint(pattern);
-                if (flags != "")
-                {
-                    expectedString ~= " with flags " ~ prettyPrint(flags);
-                }
+                expectedString ~= " with flags " ~ prettyPrint(flags);
+            }
+
+            string highlightMatches(string input)
+            {
+                auto match = matchFirst(input, re);
+
+                if (match.empty) return input;
 
                 // Highlight line-by-line because the output looks buggy if the highlighting contains a line break
-                string highlightedReceived = (
-                    matchResult.pre ~
-                    matchResult.hit.splitLines.map!(line => line.color(fg.black, bg.yellow)).join('\n') ~
-                    matchResult.post
+                return (
+                    match.pre ~
+                    match.hit.splitLines.map!(line => line.color(fg.black, bg.yellow)).join('\n') ~
+                    highlightMatches(match.post)
                 );
-
-                fail(formatFailureMessage(
-                    "Forbidden", expectedString,
-                    "Received", prettyPrint(highlightedReceived),
-                ));
             }
+
+            fail(formatFailureMessage(
+                "Forbidden", expectedString,
+                "Received", prettyPrint(highlightMatches(received)),
+            ));
         }
         catch (RegexException e)
         {
