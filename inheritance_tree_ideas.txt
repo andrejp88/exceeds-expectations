@@ -1,0 +1,79 @@
+[38;5;2mExpected:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I2
+[38;5;1mReceived:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;3mDetails:[0;0;0m
+exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;8m<:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CB3
+[38;5;8m   <:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IB
+[38;5;8m      <:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I3
+[38;5;8m<:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.ICC
+[38;5;8m   <:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IC
+
+[38;5;2mExpected:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I2
+[38;5;1mReceived:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;3mDetails:[0;0;0m
+[38;5;8mclass[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;8m<: class[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CB3
+[38;5;8m   <: interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IB
+[38;5;8m      <: interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I3
+[38;5;8m<: interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.ICC
+[38;5;8m   <: interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IC
+
+[38;5;2mExpected:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I2
+[38;5;1mReceived:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;3mDetails:[0;0;0m
+exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;8m├[0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CB3
+[38;5;8m│└[0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IB
+[38;5;8m│ └[0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I3
+[38;5;8m└[0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.ICC
+[38;5;8m └[0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IC
+
+[38;5;2mExpected:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I2
+[38;5;1mReceived:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;3mDetails:[0;0;0m
+exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;8m├ [0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CB3
+[38;5;8m│ └ [0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IB
+[38;5;8m│   └ [0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I3
+[38;5;8m└ [0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.ICC
+[38;5;8m  └ [0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IC
+
+[38;5;2mExpected:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I2
+[38;5;1mReceived:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;3mDetails:[0;0;0m
+exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;8m├─[0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CB3
+[38;5;8m│ └─[0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IB
+[38;5;8m│   └─[0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I3
+[38;5;8m└─[0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.ICC
+[38;5;8m  └─[0;0;0mexceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IC
+
+[38;5;2mExpected:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I2
+[38;5;1mReceived:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;3mDetails:[0;0;0m
+[38;5;8mclass[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;8m├ class[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CB3
+[38;5;8m│ └ interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IB
+[38;5;8m│   └ interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I3
+[38;5;8m└ interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.ICC
+[38;5;8m  └ interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IC
+
+[38;5;2mExpected:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I2
+[38;5;1mReceived:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;3mDetails:[0;0;0m
+[38;5;8mclass[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;8m├─class[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CB3
+[38;5;8m│ └─interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IB
+[38;5;8m│   └─interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I3
+[38;5;8m└─interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.ICC
+[38;5;8m  └─interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IC
+
+[38;5;2mExpected:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I2
+[38;5;1mReceived:[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;3mDetails:[0;0;0m
+[38;5;8mclass[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CBC3C
+[38;5;8m      ├ class[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.CB3
+[38;5;8m      │       └ interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IB
+[38;5;8m      │                   └ interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.I3
+[38;5;8m      └ interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.ICC
+[38;5;8m                  └ interface[0;0;0m exceeds_expectations.test.expect.to_be_of_type.__unittest_L37_C1.IC
