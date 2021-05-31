@@ -303,9 +303,13 @@ public struct Expect(TReceived)
         }
     }
 
-    /// Succeeds if received is a `TExpected` or a sub-type of it.
+    /// Succeeds if `received` is a `TExpected` or a sub-type of it.
     /// Throws a [FailingExpectationError] if `received` cannot be
     /// cast to `TExpected` or if `received is null`.
+    ///
+    /// Note: `null` is considered not to be a sub-type of any class
+    /// or interface, so if `null` is received, the expectation always
+    /// fails.
     public void toBeOfType(TExpected)()
     if ((is(TExpected == class) || is(TExpected == interface)) &&
         (is(TReceived == class) || is(TReceived == interface)))
