@@ -69,25 +69,24 @@ public struct Expect(TReceived)
         return ExpectNot!TReceived(received, filePath, line);
     }
 
-    /// Checks that `received == expected` and throws a
+    /// Succeeds if `received == expected`. Throws a
     /// [FailingExpectationError] otherwise.
     public void toEqual(TExpected)(const auto ref TExpected expected)
     if (canCompareForEquality!(TReceived, TExpected))
     {
         completed = true;
 
-        if (received != expected)
-        {
-            fail(
-                formatFailureMessage(
-                    "Expected", prettyPrint(expected),
-                    "Received", prettyPrint(received),
-                )
-            );
-        }
+        if (received == expected) return;
+
+        fail(
+            formatFailureMessage(
+                "Expected", prettyPrint(expected),
+                "Received", prettyPrint(received),
+            )
+        );
     }
 
-    /// Checks that `predicate(received)` returns true and throws a
+    /// Succeeds if `predicate(received)` returns true. Throws a
     /// [FailingExpectationError] otherwise.
     public void toSatisfy(bool delegate(const(TReceived)) predicate)
     {
@@ -95,14 +94,11 @@ public struct Expect(TReceived)
 
         try
         {
-            immutable bool result = predicate(received);
+            if (predicate(received)) return;
 
-            if (!result)
-            {
-                fail(
-                    "Received: ".color(fg.red) ~ prettyPrint(received)
-                );
-            }
+            fail(
+                "Received: ".color(fg.red) ~ prettyPrint(received)
+            );
         }
         catch (Throwable e)                             // @suppress(dscanner.suspicious.catch_em_all)
         {
@@ -118,8 +114,8 @@ public struct Expect(TReceived)
         }
     }
 
-    /// Checks that `predicate(received)` returns true for all
-    /// `predicates` and throws a [FailingExpectationError] otherwise.
+    /// Succeeds if `predicate(received)` returns true for all
+    /// `predicates`. Throws a [FailingExpectationError] otherwise.
     ///
     /// All predicates are evaluated.
     public void toSatisfyAll(bool delegate(const(TReceived))[] predicates...)
@@ -164,44 +160,43 @@ public struct Expect(TReceived)
 
         immutable size_t numFailures = count!(e => !e)(results);
 
-        if (numFailures > 0)
-        {
-            size_t[] failingIndices =
-                results
-                .zip(iota(0, results.length))
-                .filter!(tup => !tup[0])
-                .map!(tup => tup[1])
-                .array;
+        if (numFailures == 0) return;
 
-            immutable string description =
-                numFailures == predicates.length ?
-                "Received value did not satisfy any predicates, but was expected to satisfy all." :
+        size_t[] failingIndices =
+            results
+            .zip(iota(0, results.length))
+            .filter!(tup => !tup[0])
+            .map!(tup => tup[1])
+            .array;
+
+        immutable string description =
+            numFailures == predicates.length ?
+            "Received value did not satisfy any predicates, but was expected to satisfy all." :
+            (
+                "Received value did not satisfy " ~
                 (
-                    "Received value did not satisfy " ~
                     (
-                        (
-                            numFailures == 1 ?
-                            "predicate at index " :
-                            "predicates at indices "
-                        ) ~ humanReadableNumbers(failingIndices) ~ ", but was expected to satisfy all."
-                    )
-                );
-
-            fail(
-                "Received: ".color(fg.red) ~ prettyPrint(received) ~ "\n" ~
-                description
+                        numFailures == 1 ?
+                        "predicate at index " :
+                        "predicates at indices "
+                    ) ~ humanReadableNumbers(failingIndices) ~ ", but was expected to satisfy all."
+                )
             );
-        }
+
+        fail(
+            "Received: ".color(fg.red) ~ prettyPrint(received) ~ "\n" ~
+            description
+        );
     }
 
-    /// Checks that `predicate(received)` returns true for at least
-    /// one of the given `predicates` and throws a
+    /// Succeeds if `predicate(received)` returns true for at least
+    /// one of the given `predicates`. Throws a
     /// [FailingExpectationError] otherwise.
     ///
     /// All predicates are evaluated.
     ///
-    /// Fails if something is thrown while evaluating any of the
-    /// predicates, even if another predicate returns true.
+    /// If any predicate throws, the expectation will fail, even if
+    /// other predicates returned true.
     public void toSatisfyAny(bool delegate(const(TReceived))[] predicates...)
     {
         completed = true;
@@ -243,17 +238,16 @@ public struct Expect(TReceived)
 
         immutable size_t numPassed = count!(e => e)(results);
 
-        if(numPassed == 0)
-        {
-            fail(
-                "Received: ".color(fg.red) ~ prettyPrint(received) ~ "\n" ~
-                "Received value did not satisfy any predicates, but was expected to satisfy at least one."
-            );
-        }
+        if (numPassed > 0) return;
+
+        fail(
+            "Received: ".color(fg.red) ~ prettyPrint(received) ~ "\n" ~
+            "Received value did not satisfy any predicates, but was expected to satisfy at least one."
+        );
     }
 
-    /// Checks that `received.isClose(expected, maxRelDiff,
-    /// maxAbsDiff)` and throws a [FailingExpectationError] otherwise.
+    /// Succeeds if `received.isClose(expected, maxRelDiff,
+    /// maxAbsDiff)`. Throws a [FailingExpectationError] otherwise.
     ///
     /// `maxRelDiff` and `maxAbsDiff` have the same default values as
     /// in [std.math.isClose].
@@ -270,46 +264,46 @@ public struct Expect(TReceived)
     {
         completed = true;
 
-        if (!received.isClose(expected, maxRelDiff, maxAbsDiff))
-        {
-            immutable real relDiff = fabs((received - expected) / expected);
-            immutable real absDiff = fabs(received - expected);
+        if (received.isClose(expected, maxRelDiff, maxAbsDiff)) return;
 
-            fail(formatFailureMessage(
-                "Expected", prettyPrint(expected),
-                "Received", prettyPrint(received),
-                "Relative Difference", prettyPrintComparison(relDiff, maxRelDiff) ~ " (maxRelDiff)",
-                "Absolute Difference", prettyPrintComparison(absDiff, maxAbsDiff) ~ " (maxAbsDiff)",
-            ));
-        }
+        immutable real relDiff = fabs((received - expected) / expected);
+        immutable real absDiff = fabs(received - expected);
+
+        fail(formatFailureMessage(
+            "Expected", prettyPrint(expected),
+            "Received", prettyPrint(received),
+            "Relative Difference", prettyPrintComparison(relDiff, maxRelDiff) ~ " (maxRelDiff)",
+            "Absolute Difference", prettyPrintComparison(absDiff, maxAbsDiff) ~ " (maxAbsDiff)",
+        ));
     }
 
-    /// Checks that `received is expected` and throws a
-    /// [FailingExpectationError] otherwise. If you want to check for
-    /// equality (`received == expected`), use [toEqual].
+    /// Succeeds if `received is expected`. Throws a
+    /// [FailingExpectationError] otherwise.
+    ///
+    /// This checks for *identity*, not *equality*. If `received ==
+    /// expected` is desired, use [toEqual].
     public void toBe(TExpected)(const auto ref TExpected expected)
     {
         completed = true;
 
-        if (received !is expected)
+        if (received is expected) return;
+
+        if (hasIndirections!TExpected || hasIndirections!TReceived)
         {
-            if (hasIndirections!TExpected || hasIndirections!TReceived)
-            {
-                fail(
-                    "Arguments do not reference the same object ((received is expected) == false)."
-                );
-            }
-            else
-            {
-                fail(formatFailureMessage(
-                    "Expected", prettyPrint(expected),
-                    "Received", prettyPrint(received),
-                ));
-            }
+            fail(
+                "Arguments do not reference the same object ((received is expected) == false)."
+            );
+        }
+        else
+        {
+            fail(formatFailureMessage(
+                "Expected", prettyPrint(expected),
+                "Received", prettyPrint(received),
+            ));
         }
     }
 
-    /// Checks that received is a `TExpected` or a sub-type of it.
+    /// Succeeds if received is a `TExpected` or a sub-type of it.
     /// Throws a [FailingExpectationError] if `received` cannot be
     /// cast to `TExpected` or if `received is null`.
     public void toBeOfType(TExpected)()
@@ -328,28 +322,29 @@ public struct Expect(TReceived)
             );
         }
 
-        if (!cast(TExpected) received)
+        if (cast(TExpected) received) return;
+
+        static if (is(TReceived == interface))
+        {
+            TypeInfo receivedTypeInfo = typeid(cast(Object) received);
+        }
+        else
         {
             TypeInfo receivedTypeInfo = typeid(received);
-
-            static if (is(TReceived == interface))
-            {
-                receivedTypeInfo = typeid(cast(Object) received);
-            }
-
-            fail(
-                formatTypeDifferences(
-                    typeid(TExpected),
-                    receivedTypeInfo,
-                    false,
-                )
-            );
         }
+
+        fail(
+            formatTypeDifferences(
+                typeid(TExpected),
+                receivedTypeInfo,
+                false,
+            )
+        );
     }
 
-    /// Calls `received` and catches any exceptions thrown by it. If
-    /// it doesn't catch `TExpected` or a sub-type, the expectation
-    /// fails.
+    /// Calls `received` and catches any exceptions thrown by it.
+    /// Succeeds if it catches `TExpected` or a sub-type. Throws a
+    /// [FailingExpectationError] otherwise.
     ///
     /// There are three possible outcomes:
     ///
@@ -394,7 +389,8 @@ public struct Expect(TReceived)
     }
 
 
-    /// Checks that `received` matches the regular expression `pattern`.
+    /// Succeeds if `received` matches the regular expression
+    /// `pattern`. Throws a [FailingExpectationError] otherwise.
     public void toMatch(TExpected)(TExpected pattern, string flags = "")
     if (isSomeString!TReceived && isSomeString!TExpected)
     {
@@ -404,21 +400,20 @@ public struct Expect(TReceived)
         {
             auto re = regex(pattern, flags);
 
-            if (matchFirst(received, re).empty)
-            {
-                string expectedString = prettyPrint(pattern);
-                if (flags != "")
-                {
-                    expectedString ~= " with flags " ~ prettyPrint(flags);
-                }
+            if (!matchFirst(received, re).empty) return;
 
-                fail(
-                    formatFailureMessage(
-                        "Expected", prettyPrint(pattern),
-                        "Received", prettyPrint(received),
-                    )
-                );
+            string expectedString = prettyPrint(pattern);
+            if (flags != "")
+            {
+                expectedString ~= " with flags " ~ prettyPrint(flags);
             }
+
+            fail(
+                formatFailureMessage(
+                    "Expected", prettyPrint(pattern),
+                    "Received", prettyPrint(received),
+                )
+            );
         }
         catch (RegexException e)
         {
@@ -434,33 +429,37 @@ public struct Expect(TReceived)
         }
     }
 
-    /// Checks that received contains the expected element or sub-range.
+    /// Succeeds if `received` contains the `expected` element or
+    /// sub-range, or at least one element satisfying the given
+    /// predicate.
+    ///
+    /// The predicate overload takes a function whose return type is
+    /// `bool`, and whose single parameter is of a type that
+    /// `received`'s elements can implicitly convert to.
     public void toContain(TExpected)(TExpected expected)
     if (__traits(compiles, received.canFind(expected)))
     {
         completed = true;
 
-        if (!received.canFind(expected))
+        if (received.canFind(expected)) return;
+
+        static if (is(ElementType!TExpected == ElementType!TReceived))
         {
-            static if (is(ElementType!TExpected == ElementType!TReceived))
-            {
-                fail(formatFailureMessage(
-                    "Expected sub-range", prettyPrint(expected),
-                    "Received", prettyPrint(received),
-                ));
-            }
-            else
-            {
-                fail(formatFailureMessage(
-                    "Expected element", prettyPrint(expected),
-                    "Received", prettyPrint(received),
-                ));
-            }
+            fail(formatFailureMessage(
+                "Expected sub-range", prettyPrint(expected),
+                "Received", prettyPrint(received),
+            ));
+        }
+        else
+        {
+            fail(formatFailureMessage(
+                "Expected element", prettyPrint(expected),
+                "Received", prettyPrint(received),
+            ));
         }
     }
 
-    /// Checks that `received` contains at least one element satisfying
-    /// the predicate.
+    /// ditto
     public void toContain(TExpected)(TExpected predicate)
     if (
         isCallable!predicate &&
@@ -471,17 +470,21 @@ public struct Expect(TReceived)
     {
         completed = true;
 
-        if (!received.any!predicate)
-        {
-            fail(
-                "Received: ".color(fg.red) ~ prettyPrint(received) ~ "\n" ~
-                "None of the elements in the received array satisfy the predicate."
-            );
-        }
+        if (received.any!predicate) return;
+
+        fail(
+            "Received: ".color(fg.red) ~ prettyPrint(received) ~ "\n" ~
+            "None of the elements in the received array satisfy the predicate."
+        );
     }
 
 
-    /// Checks that all elements in `received` are equal to `expected`.
+    /// Succeeds if all elements in `received` are equal to
+    /// `expected`, or satisfy `predicate`.
+    ///
+    /// The predicate overload takes a function whose return type is
+    /// `bool`, and whose single parameter is of a type that
+    /// `received`'s elements can implicitly convert to.
     public void toContainOnly(TExpected)(TExpected expected)
     if (
         __traits(compiles, rvalueOf!(ElementType!TReceived) == expected)
@@ -489,29 +492,28 @@ public struct Expect(TReceived)
     {
         completed = true;
 
-        if (!all!(e => e == expected)(received))
+        if (all!(e => e == expected)(received)) return;
+
+        size_t[] failingIndices;
+
+        foreach (size_t index, ElementType!TReceived element; received)
         {
-            size_t[] failingIndices;
-
-            foreach (size_t index, ElementType!TReceived element; received)
+            if (element != expected)
             {
-                if (element != expected)
-                {
-                    failingIndices ~= index;
-                }
+                failingIndices ~= index;
             }
-
-            size_t[2][] failingRanges = failingIndices.map!(e => cast(size_t[2])[e, e + 1]).array;
-
-            fail(formatFailureMessage(
-                "Expected", prettyPrint(expected),
-                "Received", prettyPrintHighlightedArray(received, failingRanges),
-            ));
         }
+
+        size_t[2][] failingRanges = failingIndices.map!(e => cast(size_t[2])[e, e + 1]).array;
+
+        fail(formatFailureMessage(
+            "Expected", prettyPrint(expected),
+            "Received", prettyPrintHighlightedArray(received, failingRanges),
+        ));
     }
 
 
-    /// Checks that all elements in `received` satisfy `predicate`.
+    /// ditto
     public void toContainOnly(TExpected)(TExpected predicate)
     if (
         isCallable!predicate &&
@@ -522,24 +524,23 @@ public struct Expect(TReceived)
     {
         completed = true;
 
-        if (!received.all!predicate)
+        if (received.all!predicate) return;
+
+        size_t[] failingIndices;
+
+        foreach (size_t index, ElementType!TReceived element; received)
         {
-            size_t[] failingIndices;
-
-            foreach (size_t index, ElementType!TReceived element; received)
+            if (!predicate(element))
             {
-                if (!predicate(element))
-                {
-                    failingIndices ~= index;
-                }
+                failingIndices ~= index;
             }
-
-            size_t[2][] failingRanges = failingIndices.map!(e => cast(size_t[2])[e, e + 1]).array;
-
-            fail(
-                "Received: ".color(fg.red) ~ prettyPrintHighlightedArray(received, failingRanges) ~ "\n" ~
-                "Some elements in the received array do not satisfy the predicate."
-            );
         }
+
+        size_t[2][] failingRanges = failingIndices.map!(e => cast(size_t[2])[e, e + 1]).array;
+
+        fail(
+            "Received: ".color(fg.red) ~ prettyPrintHighlightedArray(received, failingRanges) ~ "\n" ~
+            "Some elements in the received array do not satisfy the predicate."
+        );
     }
 }
