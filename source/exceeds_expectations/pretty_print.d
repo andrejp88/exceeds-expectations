@@ -90,9 +90,7 @@ if (isArray!T)
 in (ranges.all!(e => e[1] > e[0]), "All ranges must have the second element greater than the first.")
 out (result; !result.endsWith("\n") && !result.startsWith("\n"))
 {
-    alias E = ElementType!T;
-
-    static string printRange(E[] arr)
+    static string printRange(T arr)
     {
         auto elements = arr.map!(e => prettyPrint(e, true));
 

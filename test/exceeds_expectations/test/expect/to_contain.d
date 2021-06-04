@@ -83,13 +83,13 @@ unittest
 @("predicate success")
 unittest
 {
-    expect([2, 4, 6, 8, 10, 11]).toContain((int e) => e % 2 == 1);
+    expect([2, 4, 6, 8, 10, 11]).toContain(e => e % 2 == 1);
 }
 
 @("predicate failure")
 unittest
 {
     shouldFail(
-        expect([2, 4, 6, 8, 10]).toContain((int e) => e % 2 == 1)
+        expect([2, 4, 6, 8, 10]).toContain(e => e % 2 == 1)
     );
 }

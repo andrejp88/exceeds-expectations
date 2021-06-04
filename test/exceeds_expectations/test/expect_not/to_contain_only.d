@@ -39,13 +39,13 @@ unittest
 @("toContainOnly, (predicate)")
 unittest
 {
-    expect(iota(0, 20, 2).array ~ [3]).not.toContainOnly((int e) => e % 2 == 0);
+    expect(iota(0, 20, 2).array ~ [3]).not.toContainOnly(e => e % 2 == 0);
 }
 
 @("toContainOnly, (predicate) but does")
 unittest
 {
     shouldFail(
-        expect([2, 4, 6, 8, 10]).not.toContainOnly((int e) => e % 2 == 0)
+        expect([2, 4, 6, 8, 10]).not.toContainOnly(e => e % 2 == 0)
     );
 }

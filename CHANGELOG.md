@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.8.0 · Not Yet Released
+
+## Changed
+- `toContain` and `toContainOnly` can now infer the parameter type of the given predicate.
+- The predicates given to `toContain` and `toContainOnly` now take the argument as `const`. Usages will have to change to either remove the type from the function literal or explicitly declare it as `const`.
+
+## Docs
+- Improved wording of expectations' doc comments.
+
+
 ## [0.7.1] · 2021-05-30
 
 ### Changed

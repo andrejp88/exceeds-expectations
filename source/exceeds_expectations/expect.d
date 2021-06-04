@@ -463,23 +463,20 @@ public struct Expect(TReceived)
         }
     }
 
-    /// ditto
-    public void toContain(TExpected)(TExpected predicate)
-    if (
-        isCallable!predicate &&
-        is(ReturnType!predicate == bool) &&
-        (Parameters!predicate.length == 1) &&
-        isImplicitlyConvertible!(ElementType!TReceived, Parameters!predicate[0])
-    )
+    static if (isInputRange!TReceived && is(ElementType!TReceived))
     {
-        completed = true;
+        /// ditto
+        public void toContain(bool delegate(const(ElementType!TReceived)) predicate)
+        {
+            completed = true;
 
-        if (received.any!predicate) return;
+            if (received.any!predicate) return;
 
-        fail(
-            "Received: ".color(fg.red) ~ prettyPrint(received) ~ "\n" ~
-            "None of the elements in the received array satisfy the predicate."
-        );
+            fail(
+                "Received: ".color(fg.red) ~ prettyPrint(received) ~ "\n" ~
+                "None of the elements in the received array satisfy the predicate."
+            );
+        }
     }
 
 
@@ -517,34 +514,31 @@ public struct Expect(TReceived)
     }
 
 
-    /// ditto
-    public void toContainOnly(TExpected)(TExpected predicate)
-    if (
-        isCallable!predicate &&
-        is(ReturnType!predicate == bool) &&
-        (Parameters!predicate.length == 1) &&
-        isImplicitlyConvertible!(ElementType!TReceived, Parameters!predicate[0])
-    )
+    static if (isInputRange!TReceived && is(ElementType!TReceived))
     {
-        completed = true;
-
-        if (received.all!predicate) return;
-
-        size_t[] failingIndices;
-
-        foreach (size_t index, ElementType!TReceived element; received)
+        /// ditto
+        public void toContainOnly(bool delegate(const(ElementType!TReceived)) predicate)
         {
-            if (!predicate(element))
+            completed = true;
+
+            if (received.all!predicate) return;
+
+            size_t[] failingIndices;
+
+            foreach (size_t index, const(ElementType!TReceived) element; received)
             {
-                failingIndices ~= index;
+                if (!predicate(element))
+                {
+                    failingIndices ~= index;
+                }
             }
+
+            size_t[2][] failingRanges = failingIndices.map!(e => cast(size_t[2])[e, e + 1]).array;
+
+            fail(
+                "Received: ".color(fg.red) ~ prettyPrintHighlightedArray(received, failingRanges) ~ "\n" ~
+                "Some elements in the received array do not satisfy the predicate."
+            );
         }
-
-        size_t[2][] failingRanges = failingIndices.map!(e => cast(size_t[2])[e, e + 1]).array;
-
-        fail(
-            "Received: ".color(fg.red) ~ prettyPrintHighlightedArray(received, failingRanges) ~ "\n" ~
-            "Some elements in the received array do not satisfy the predicate."
-        );
     }
 }
