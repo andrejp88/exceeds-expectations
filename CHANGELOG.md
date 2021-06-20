@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+---
+
 ## 0.8.0 · Not Yet Released
 
 ## Changed
@@ -13,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## Docs
 - Improved wording of expectations' doc comments.
 
+---
 
 ## [0.7.1] · 2021-05-30
 
@@ -22,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - Source code snippets can now highlight the last line in the file without crashing.
 
+---
 
 ## [0.7.0] · 2021-05-29
 
@@ -35,6 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - Text with yellow background highlighting no longer appears unreadable in most dark terminal themes. (#24)
 
+---
 
 ## [0.6.0] · 2021-05-23
 
@@ -47,6 +52,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `toSatisfy`, `toSatisfyAll`, and `toSatisfyAny` catch anything that is thrown while evaluating their predicates and throw a `FailingExpectationException` showing the original exception (or error) message. This is also true of their negated counterparts. (#19)
 - `toThrow` now prints the received throwable's message and stacktrace if it's not the expected type of throwable. (#21)
 
+---
 
 ## [0.5.0] · 2021-04-25
 
@@ -69,6 +75,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Docs
 - Improved wording in doc comments.
 
+---
 
 ## [0.4.2] · 2021-04-18
 
@@ -76,6 +83,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Use full URL for images in the readme so that they show up correctly on the dub website.
 - Add forgotten sections to changelog (v0.4.0 and v0.4.1).
 
+---
 
 ## [0.4.1] · 2021-04-15
 
@@ -83,6 +91,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Add `dub.json` formatted code to the readme.
 - Improve `toSatisfy___` example in the readme to demonstrate all three variants of that function.
 
+---
 
 ## [0.4.0] · 2021-04-11
 
@@ -100,6 +109,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Add section to the readme explaining why exceeds-expectations was created.
 - Add links to GitLab, GitHub, and Dub at the top of the readme.
 
+---
 
 ## [0.3.0] · 2021-02-28
 
@@ -109,18 +119,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - The documentation of `toBeOfType` now correctly refers to `TExpected` instead of `TActual`.
 
+---
 
 ## [0.2.0] · 2020-12-06
 
 ### Added
 - Throws an exception if `expect` was called but no assertion was made.
 
+---
 
 ## [0.1.1] · 2020-12-05
 
 ### Fixed
 - `toBe` is now legal iff `received `**`is`**` expected` is legal.
 
+---
 
 ## [0.1.0] · 2020-11-22
 
@@ -130,6 +143,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `toBe` method for comparing identity
 - `toApproximatelyEqual` method for floating-point comparisons
 - `toSatisfy`, `toSatisfyAny`, and `toSatisfyAll` methods for checking against predicate functions
+
+
 
 [0.1.0]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.1.0
 [0.1.1]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.1.1
