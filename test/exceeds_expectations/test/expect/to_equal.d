@@ -106,6 +106,18 @@ Hello World.
 World.`));
 }
 
+@("wstrings (UTF-16)")
+unittest
+{
+    expect("Hello World"w).toEqual("Hello World"w);
+}
+
+@("dstrings (UTF-32)")
+unittest
+{
+    expect("Hello World"d).toEqual("Hello World"d);
+}
+
 @("Don't over-strip trailing zeroes")
 unittest
 {

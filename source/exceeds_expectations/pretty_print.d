@@ -46,10 +46,11 @@ out(result; (!result.endsWith("\n") && !result.startsWith("\n")))
     }
     else static if (isSomeString!T)
     {
+        // Convert them all to the same string type, UTF-8 `string`. Concatenating wstring and string doesn't work, for example.
         rawStringified = (
-            customColor(`"`, fg.init, bg.init, mode.bold) ~
-            value ~
-            customColor(`"`, fg.init, bg.init, mode.bold)
+            customColor(`"`, fg.init, bg.init, mode.bold).to!string ~
+            value.to!string ~
+            customColor(`"`, fg.init, bg.init, mode.bold).to!string
         );
     }
     else static if (isArray!T)
