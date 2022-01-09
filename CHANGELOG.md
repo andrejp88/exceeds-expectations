@@ -6,16 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.9.0] · 2022-01-09
+
+### Added
+- `toBeNull` for testing whether `Nullable` and `NullableRef` types contain a value or not.
+
+### Docs
+- Fixed changelog subheadings in section for version 0.8.0.
+
+---
+
 ## [0.8.0] · 2021-10-03
 
-## Changed
+### Changed
 - `toContain` and `toContainOnly` can now infer the parameter type of the given predicate.
 - The predicates given to `toContain` and `toContainOnly` now take the argument as `const`. Usages will have to change to either remove the type from the function literal or explicitly declare it as `const`.
 
-## Fixed
+### Fixed
 - `wstring` or `dstring` are now handled correctly instead of causing a compile error.
 
-## Docs
+### Docs
 - Improved wording of expectations' doc comments.
 
 ---
@@ -161,3 +171,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [0.7.0]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.7.0
 [0.7.1]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.7.1
 [0.8.0]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.8.0
+[0.9.0]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.0
