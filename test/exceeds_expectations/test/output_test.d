@@ -79,6 +79,15 @@ public void main(string[] args)
         callCatchPrint(expect(S(5)).toBe(S(4)));
         callCatchPrint(expect("hello").toBe("world"));
         callCatchPrint(expect(new C()).toBe(new C()));
+
+        callCatchPrint(expect(3 == 5).not.toBe(false));
+        callCatchPrint(expect(S(99)).not.toBe(S(99)));
+
+        string bye = "goodbye";
+        callCatchPrint(expect(bye).not.toBe(bye));
+
+        C c = new C();
+        callCatchPrint(expect(c).not.toBe(c));
     }
 
     // Nullables
