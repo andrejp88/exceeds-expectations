@@ -81,6 +81,29 @@ public void main(string[] args)
         callCatchPrint(expect(new C()).toBe(new C()));
     }
 
+    // Nullables
+    if (!matchFirst("nullable nullableRef toBeNull", pattern).empty)
+    {
+        import std.typecons : Nullable, NullableRef, nullableRef;
+
+        int i = 3;
+        int* pi = &i;
+        int* ni;
+        callCatchPrint(expect(pi).toBeNull());
+        callCatchPrint(expect(ni).not.toBeNull());
+
+        Nullable!string s = "hi";
+        Nullable!string ns;
+        callCatchPrint(expect(s).toBeNull());
+        callCatchPrint(expect(ns).not.toBeNull());
+
+        real r = 99.0;
+        NullableRef!real rr = nullableRef!real(&r);
+        NullableRef!real nr;
+        callCatchPrint(expect(rr).toBeNull());
+        callCatchPrint(expect(nr).not.toBeNull());
+    }
+
     // Type
     if (!matchFirst("type toBeOfType", pattern).empty)
     {
@@ -118,13 +141,13 @@ public void main(string[] args)
         callCatchPrint(expect([1, 2, 3, 5, 3]).not.toContain(3));
         callCatchPrint(expect([1, 2, 3, 5, 3]).toContain([3, 4, 5]));
         callCatchPrint(expect([1, 2, 3, 5, 3]).not.toContain([3, 5, 3]));
-        callCatchPrint(expect([1, 2, 3, 5, 3]).toContain((int e) => e < 0));
-        callCatchPrint(expect([1, 2, 3, 5, 3]).not.toContain((int e) => e % 3 == 0));
+        callCatchPrint(expect([1, 2, 3, 5, 3]).toContain((e) => e < 0));
+        callCatchPrint(expect([1, 2, 3, 5, 3]).not.toContain((e) => e % 3 == 0));
 
         callCatchPrint(expect([4, 4, 4, 4, 5]).toContainOnly(4));
         callCatchPrint(expect([4, 4, 4, 4, 4]).not.toContainOnly(4));
-        callCatchPrint(expect([1, 2, 3, 5, 3]).toContainOnly((int e) => e % 5 == 0));
-        callCatchPrint(expect([1, 2, 3, 5, 3]).not.toContainOnly((int e) => e % 4 != 0));
+        callCatchPrint(expect([1, 2, 3, 5, 3]).toContainOnly((e) => e % 5 == 0));
+        callCatchPrint(expect([1, 2, 3, 5, 3]).not.toContainOnly((e) => e % 4 != 0));
     }
 
     // Contain

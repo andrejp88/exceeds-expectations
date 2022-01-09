@@ -12,6 +12,7 @@ import std.math;
 import std.range;
 import std.regex;
 import std.traits;
+import std.typecons;
 
 
 /// Begins an expectation.
@@ -301,6 +302,34 @@ public struct Expect(TReceived)
                 "Received", prettyPrint(received),
             ));
         }
+    }
+
+    /// If `received` has type [std.typecons.Nullable] or
+    /// [std.typecons.NullableRef], then succeeds if
+    /// `received.isNull`. Otherwise, behaves exactly like
+    /// `toBe(null)`.
+    ///
+    /// See_Also: [toBe]
+    public void toBeNull()()
+    if (
+        is(TReceived : Nullable!Payload, Payload) ||
+        is(TReceived : NullableRef!Payload, Payload)
+    )
+    {
+        completed = true;
+
+        if (received.isNull) return;
+
+        fail(
+            "Received: ".color(fg.red) ~ prettyPrint(received)
+        );
+    }
+
+    /// ditto
+    public void toBeNull()()
+    if (__traits(compiles, received is null))
+    {
+        toBe(null);
     }
 
     /// Succeeds if `received` is a `TExpected` or a sub-type of it.

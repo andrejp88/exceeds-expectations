@@ -12,6 +12,7 @@ import std.range;
 import std.regex;
 import std.string;
 import std.traits;
+import std.typecons;
 
 
 /// Provides negated versions of the usual expectations in [Expect].
@@ -284,6 +285,34 @@ struct ExpectNot(TReceived)
         fail(
             "Arguments reference the same object (received is expected == true)"
         );
+    }
+
+    /// If `received` has type [std.typecons.Nullable] or
+    /// [std.typecons.NullableRef], then succeeds if
+    /// `!received.isNull`. Otherwise, behaves exactly like
+    /// `toBe(null)`.
+    ///
+    /// See_Also: [toBe]
+    public void toBeNull()()
+    if (
+        is(TReceived : Nullable!Payload, Payload) ||
+        is(TReceived : NullableRef!Payload, Payload)
+    )
+    {
+        completed = true;
+
+        if (!received.isNull) return;
+
+        fail(
+            "Received: ".color(fg.red) ~ prettyPrint(received)
+        );
+    }
+
+    /// ditto
+    public void toBeNull()()
+    if (__traits(compiles, received is null))
+    {
+        toBe(null);
     }
 
     /// Succeeds if `received` is neither `TExpected` nor a sub-type

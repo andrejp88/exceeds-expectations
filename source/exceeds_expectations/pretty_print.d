@@ -7,6 +7,7 @@ import std.conv;
 import std.range;
 import std.string;
 import std.traits;
+import std.typecons;
 
 
 /// Prints the given value in a nice, human readable format. If
@@ -76,6 +77,17 @@ out(result; (!result.endsWith("\n") && !result.startsWith("\n")))
                 ) ~
             "]"
         );
+    }
+    else static if (is(T : NullableRef!Payload, Payload))
+    {
+        if (value.isNull)
+        {
+            rawStringified = "null";
+        }
+        else
+        {
+            rawStringified = prettyPrint(value.get, true);
+        }
     }
     else
     {
