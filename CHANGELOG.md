@@ -6,13 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.9.2] · 2022-04-19
+
+### Docs
+- Removed accidental copy-paste entry in 0.9.1 section of changelog.
+
+---
+
 ## [0.9.1] · 2022-04-19
 
 ### Fixed
 - Stop trying to print fields of an object when it's null and its type isn't `typeof(null)`.
-
-### Docs
-- Fixed changelog subheadings in section for version 0.8.0.
 
 ---
 

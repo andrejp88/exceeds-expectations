@@ -1,4 +1,4 @@
-[![](https://gitlab.com/andrej88/exceeds-expectations/-/raw/v0.9.1/readme-resources/gitlab-icon-rgb.svg) Main Repo](https://gitlab.com/andrej88/exceeds-expectations)   ·   [![](https://gitlab.com/andrej88/exceeds-expectations/-/raw/v0.9.1/readme-resources/github-icon.svg) Mirror](https://github.com/andrejp88/exceeds-expectations)   ·   [![](https://gitlab.com/andrej88/exceeds-expectations/-/raw/v0.9.1/readme-resources/dub-logo-small.png) Dub Package Registry](https://code.dlang.org/packages/exceeds-expectations)   ·   [![](https://gitlab.com/andrej88/exceeds-expectations/-/raw/v0.9.1/readme-resources/documentation-icon.svg) Documentation](https://exceeds-expectations.dpldocs.info/exceeds_expectations.expect.Expect.html)
+[![](https://gitlab.com/andrej88/exceeds-expectations/-/raw/v0.9.2/readme-resources/gitlab-icon-rgb.svg) Main Repo](https://gitlab.com/andrej88/exceeds-expectations)   ·   [![](https://gitlab.com/andrej88/exceeds-expectations/-/raw/v0.9.2/readme-resources/github-icon.svg) Mirror](https://github.com/andrejp88/exceeds-expectations)   ·   [![](https://gitlab.com/andrej88/exceeds-expectations/-/raw/v0.9.2/readme-resources/dub-logo-small.png) Dub Package Registry](https://code.dlang.org/packages/exceeds-expectations)   ·   [![](https://gitlab.com/andrej88/exceeds-expectations/-/raw/v0.9.2/readme-resources/documentation-icon.svg) Documentation](https://exceeds-expectations.dpldocs.info/exceeds_expectations.expect.Expect.html)
 
 # exceeds-expectations
 
@@ -6,11 +6,11 @@ exceeds-expectations is an assertions library for the D programming language. It
 
 It gets along well with IDE autocompletion:
 
-![After calling "expect" and typing ".to", VSCode shows a list of available assertions.](https://gitlab.com/andrej88/exceeds-expectations/-/raw/v0.9.1/readme-resources/ide-completion.png)
+![After calling "expect" and typing ".to", VSCode shows a list of available assertions.](https://gitlab.com/andrej88/exceeds-expectations/-/raw/v0.9.2/readme-resources/ide-completion.png)
 
 Failing tests show clear and informative messages:
 
-![Console output of a failing expectation showing the expected value, the received value, and a snippet of code surrounding the expectation.](https://gitlab.com/andrej88/exceeds-expectations/-/raw/v0.9.1/readme-resources/tomatch-failure.png)
+![Console output of a failing expectation showing the expected value, the received value, and a snippet of code surrounding the expectation.](https://gitlab.com/andrej88/exceeds-expectations/-/raw/v0.9.2/readme-resources/tomatch-failure.png)
 
 ## Usage
 
