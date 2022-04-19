@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.9.1] · 2022-04-19
+
+### Fixed
+- Stop trying to print fields of an object when it's null and its type isn't `typeof(null)`.
+
+### Docs
+- Fixed changelog subheadings in section for version 0.8.0.
+
+---
+
 ## [0.9.0] · 2022-01-09
 
 ### Added
@@ -172,3 +182,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [0.7.1]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.7.1
 [0.8.0]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.8.0
 [0.9.0]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.0
+[0.9.1]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.1
