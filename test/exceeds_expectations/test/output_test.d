@@ -47,8 +47,11 @@ public void main(string[] args)
     if (!matchFirst("classes", pattern).empty)
     {
         class C { float x; float y; float z; this (float x, float y, float z) { this.x = x; this.y = y; this.z = z; } }
+        C cNull;
         callCatchPrint(expect(new C(float.nan, float.nan, float.nan)).toEqual(null));
+        callCatchPrint(expect(new C(float.nan, float.nan, float.nan)).toEqual(cNull));
         callCatchPrint(expect(null).toEqual(new C(float.nan, float.nan, float.nan)));
+        callCatchPrint(expect(cNull).toEqual(new C(float.nan, float.nan, float.nan)));
         callCatchPrint(expect(new C(1.0, 2.0, 3.0)).toEqual(new C(-16.666666667f, 8f/7f, -float.infinity)));
     }
 
@@ -119,7 +122,10 @@ public void main(string[] args)
         interface I1 {}
         interface I2 {}
         class C : I1 {}
+
+        C cNull;
         callCatchPrint(expect(new C()).toBeOfType!I2);
+        callCatchPrint(expect(cNull).toBeOfType!I2);
         callCatchPrint(expect(new C()).not.toBeOfType!I1);
     }
 

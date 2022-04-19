@@ -29,12 +29,14 @@ out(result; (!result.endsWith("\n") && !result.startsWith("\n")))
 
     static if (is(T == class) && !__traits(isOverrideFunction, T.toString))
     {
-        if (TypeInfo typeInfo = cast(TypeInfo) value)
+        if (value is null)
         {
-            rawStringified = prettyPrintTypeInfo(typeInfo);
+            rawStringified = "null";
         }
-
-        rawStringified = prettyPrintObjectFields(value);
+        else
+        {
+            rawStringified = prettyPrintObjectFields(value);
+        }
     }
     else static if (is(T == struct) && !__traits(hasMember, T, "toString"))
     {
@@ -188,6 +190,11 @@ if (
     is(T == class) ||
     is(T == struct)
 )
+in
+{
+    static if (is(T == class))
+        assert(object !is null);
+}
 out(result; result.endsWith("\n") && !(result.startsWith("\n")))
 {
     import std.range : Appender;
