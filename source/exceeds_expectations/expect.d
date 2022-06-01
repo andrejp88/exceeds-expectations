@@ -16,7 +16,7 @@ import std.typecons;
 
 
 /// Begins an expectation.
-public Expect!T expect(T)(const T received, string filePath = __FILE__, size_t line = __LINE__)
+public Expect!T expect(T)(T received, string filePath = __FILE__, size_t line = __LINE__)
 {
     // TODO: Try to make this function auto-ref
     return Expect!T(received, filePath, line);
@@ -27,12 +27,12 @@ public Expect!T expect(T)(const T received, string filePath = __FILE__, size_t l
 /// using [expect].
 public struct Expect(TReceived)
 {
-    private const(TReceived) received;
+    private TReceived received;
     private immutable string filePath;
     private immutable size_t line;
     private bool completed = false;
 
-    private this(const(TReceived) received, string filePath, size_t line)
+    private this(TReceived received, string filePath, size_t line)
     {
         this.received = received;
         this.filePath = filePath;
@@ -543,7 +543,8 @@ public struct Expect(TReceived)
     }
 
 
-    static if (isInputRange!TReceived && is(ElementType!TReceived))
+    // TODO: Indexed foreach doesn't work with nullables
+    static if (isInputRange!TReceived && is(ElementType!TReceived) && !is(TReceived : Nullable!Payload, Payload))
     {
         /// ditto
         public void toContainOnly(bool delegate(const(ElementType!TReceived)) predicate)

@@ -18,12 +18,12 @@ import std.typecons;
 /// Provides negated versions of the usual expectations in [Expect].
 struct ExpectNot(TReceived)
 {
-    private const(TReceived) received;
+    private TReceived received;
     private immutable string filePath;
     private immutable size_t line;
     private bool completed = false;
 
-    package this(const(TReceived) received, string filePath, size_t line)
+    package this(TReceived received, string filePath, size_t line)
     {
         this.received = received;
         this.filePath = filePath;
@@ -475,7 +475,8 @@ struct ExpectNot(TReceived)
         }
     }
 
-    static if (isInputRange!TReceived && is(ElementType!TReceived))
+    // TODO: Indexed foreach doesn't work with nullables
+    static if (isInputRange!TReceived && is(ElementType!TReceived) && !is(TReceived : Nullable!Payload, Payload))
     {
         /// ditto
         public void toContain(bool delegate(const(ElementType!TReceived)) predicate)
