@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.9.3] · 2022-04-19
+
+### Fixed
+- Fixed compilation under D v2.100
+
+### Docs
+- Fixed link in changelog to v0.9.3
+
+---
+
 ## [0.9.2] · 2022-04-19
 
 ### Docs
@@ -187,3 +197,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [0.8.0]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.8.0
 [0.9.0]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.0
 [0.9.1]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.1
+[0.9.2]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.2
+[0.9.3]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.3
