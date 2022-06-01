@@ -6,7 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
-## [0.9.3] · 2022-04-19
+## Unreleased
+
+### Docs
+- Fixed release date of v0.9.3 in changelog
+
+---
+
+## [0.9.3] · 2022-06-01
 
 ### Fixed
 - Fixed compilation under D v2.100
