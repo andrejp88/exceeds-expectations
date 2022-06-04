@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+### Changed
+- Added quotation marks around string fields when printing struct and
+  class instances.
+
 ### Docs
 - Fixed release date of v0.9.3 in changelog
 

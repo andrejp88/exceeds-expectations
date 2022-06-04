@@ -216,7 +216,16 @@ out(result; result.endsWith("\n") && !(result.startsWith("\n")))
         output.put(" ");
         output.put(tup[1]);
         output.put(" = ");
+        static if (isSomeString!(typeof(__traits(getMember, object, tup[1]))))
+        {
+            output.put('"');
         output.put(__traits(getMember, object, tup[1]).to!string);
+            output.put('"');
+        }
+        else
+        {
+            output.put(__traits(getMember, object, tup[1]).to!string);
+        }
         output.put(";\n");
     }
 

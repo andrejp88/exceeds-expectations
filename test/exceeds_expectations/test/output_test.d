@@ -44,15 +44,19 @@ public void main(string[] args)
     }
 
     // Class equality
-    if (!matchFirst("classes", pattern).empty)
+    if (!matchFirst("classes objects fields", pattern).empty)
     {
-        class C { float x; float y; float z; this (float x, float y, float z) { this.x = x; this.y = y; this.z = z; } }
-        C cNull;
-        callCatchPrint(expect(new C(float.nan, float.nan, float.nan)).toEqual(null));
-        callCatchPrint(expect(new C(float.nan, float.nan, float.nan)).toEqual(cNull));
-        callCatchPrint(expect(null).toEqual(new C(float.nan, float.nan, float.nan)));
-        callCatchPrint(expect(cNull).toEqual(new C(float.nan, float.nan, float.nan)));
-        callCatchPrint(expect(new C(1.0, 2.0, 3.0)).toEqual(new C(-16.666666667f, 8f/7f, -float.infinity)));
+        class Cf { float x; float y; float z; this (float x, float y, float z) { this.x = x; this.y = y; this.z = z; } }
+        class Cs { string s; this (string s) { this.s = s; } }
+
+        Cf cNull;
+        callCatchPrint(expect(new Cf(float.nan, float.nan, float.nan)).toEqual(null));
+        callCatchPrint(expect(new Cf(float.nan, float.nan, float.nan)).toEqual(cNull));
+        callCatchPrint(expect(null).toEqual(new Cf(float.nan, float.nan, float.nan)));
+        callCatchPrint(expect(cNull).toEqual(new Cf(float.nan, float.nan, float.nan)));
+        callCatchPrint(expect(new Cf(1.0, 2.0, 3.0)).toEqual(new Cf(-16.666666667f, 8f/7f, -float.infinity)));
+
+        callCatchPrint(expect(new Cs("Hi")).toEqual(new Cs("wrong\nvalue")));
     }
 
     // Floating points
