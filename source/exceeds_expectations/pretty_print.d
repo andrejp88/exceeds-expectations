@@ -100,6 +100,9 @@ out(result; (!result.endsWith("\n") && !result.startsWith("\n")))
 }
 
 
+/// Prints the given array with the given ranges highlighted. `ranges`
+/// is an array of number pairs each representing the start
+/// (inclusive) and end (exclusive) indices of the range.
 package string prettyPrintHighlightedArray(T)(T arr, size_t[2][] ranges = [])
 if (isArray!T)
 in (ranges.all!(e => e[1] > e[0]), "All ranges must have the second element greater than the first.")
@@ -157,6 +160,10 @@ out (result; !result.endsWith("\n") && !result.startsWith("\n"))
 }
 
 
+/// Receives a list of number pairs representing ranges where the
+/// first number is the start (inclusive) and the second number is the
+/// end (exclusive). Returns a list of number pairs where overlapping
+/// ranges from the input have been merged together.
 package size_t[2][] mergeOverlappingRanges(const size_t[2][] input)
 in (input.isSorted!((a, b) => a[0] < b[0]), "mergeOverlappingRanges expects the input to be sorted")
 out (result; result.length <= input.length)
@@ -185,6 +192,14 @@ out (result; result.length <= input.length)
 }
 
 
+/// Prints the struct or class instance and its fields in the following format:
+///
+/// ```d
+/// class MyClass {
+///     string s = "Hello, World!";
+///     float f = 3.2;
+/// }
+/// ```
 private string prettyPrintObjectFields(T)(const T object)
 if (
     is(T == class) ||
@@ -219,7 +234,7 @@ out(result; result.endsWith("\n") && !(result.startsWith("\n")))
         static if (isSomeString!(typeof(__traits(getMember, object, tup[1]))))
         {
             output.put('"');
-        output.put(__traits(getMember, object, tup[1]).to!string);
+            output.put(__traits(getMember, object, tup[1]).to!string);
             output.put('"');
         }
         else
@@ -235,6 +250,8 @@ out(result; result.endsWith("\n") && !(result.startsWith("\n")))
 }
 
 
+/// Returns an array of the `.stringof` of each field's type of
+/// the given struct or class.
 private string[] fieldTypeStrings(T)()
 {
     string[] types;
@@ -249,6 +266,11 @@ private string[] fieldTypeStrings(T)()
 }
 
 
+/// Returns the `.toString()` of the type info with some tweaks:
+/// - If `typeInfo` is a `TypeInfo_Tuple`, the nested types are
+///   written between parentheses.
+/// - All instances of the text `immutable(char)[]` are replaced with
+///   `string`.
 package string prettyPrintTypeInfo(TypeInfo typeInfo)
 {
     import std.regex : ctRegex, replaceAll;
@@ -274,6 +296,18 @@ package string prettyPrintTypeInfo(TypeInfo typeInfo)
 }
 
 
+// Note: The non-breaking spaces in the following doc comment are
+// there to prevent `<:` from being interpreted as a heading named '<'
+
+/// Prints the inheritance tree of the given class or interface
+/// TypeInfo according in the following format:
+///
+/// ```text
+/// my_module.MyClass
+/// <: my_module.MySuperClass
+///    <: my_module.MyFirstInterface
+/// <: my_module.MySecondInterface
+/// ```
 package string prettyPrintInheritanceTree(TypeInfo typeInfo, int indentLevel = 0)
 {
     expect(typeInfo).toSatisfyAny(
@@ -304,6 +338,7 @@ package string prettyPrintInheritanceTree(TypeInfo typeInfo, int indentLevel = 0
 }
 
 
+/// Indents each line of `text` by `numSpaces` space characters.
 private string indent(string text, int numSpaces)
 {
     return text
@@ -317,6 +352,8 @@ private string indent(string text, int numSpaces)
 }
 
 
+/// Returns a string containing the two numbers separated by either
+/// `=`, `<`, or `>`.
 package string prettyPrintComparison(real lhs, real rhs)
 {
     static string getOrderOperator(real lhs, real rhs)
@@ -333,6 +370,10 @@ package string prettyPrintComparison(real lhs, real rhs)
 }
 
 
+/// Highlights from `focusLine` until the line with the next semicolon
+/// (which may be on the same line), adds `radius` lines of
+/// non-highlighted text above and below, and prepends each line witht
+/// the line number.
 package string formatCode(string source, size_t focusLine, size_t radius)
 in (
     focusLine != 0,
@@ -378,6 +419,7 @@ in (
 }
 
 
+/// Replaces leading tabs with four spaces each.
 package string convertTabsToSpaces(string line)
 {
     if (line.length == 0 || line[0] != '\t')
@@ -391,6 +433,8 @@ package string convertTabsToSpaces(string line)
 }
 
 
+/// Truncates `line` to a length of `length`, where the last four
+/// characters are a space followed by `...`.
 package string truncate(string line, int length)
 in(length >= 0, "Cannot truncate line to length " ~ length.to!string)
 {
@@ -402,18 +446,13 @@ in(length >= 0, "Cannot truncate line to length " ~ length.to!string)
     return line;
 }
 
-/// Returns a string showing the expected and received values. Ends
-/// with a line separator.
-package string formatDifferences(string expected, string received, bool not)
-{
-    immutable string lineLabel1 = (not ? "Forbidden: " : "Expected: ").color(fg.green);
-    immutable string lineLabel2 = (not ? "Received:  " : "Received: ").color(fg.red);
-    return (
-        lineLabel1 ~ expected ~ "\n" ~
-        lineLabel2 ~ received ~ "\n"
-    );
-}
 
+/// Prints the arguments formatted as key-value pairs. The first key
+/// will be green, the second red, and all further keys yellow. All
+/// keys are followed by a colon, and all values are aligned to the
+/// starting column. If a value has line breaks, it's printed on the
+/// next line. If there is an odd number of arguments, the last
+/// argument is a standalone line.
 package string formatFailureMessage(string[] args...)
 out(result; result.endsWith("\n") || result == "")
 {
@@ -480,6 +519,12 @@ out(result; result.endsWith("\n") || result == "")
 }
 
 
+/// Similar to `formatFailureMessage` but specifically made for
+/// `TypeInfo` values. The first TypeInfo will be simply
+/// pretty-printed, while the second one will have its whole
+/// inheritance tree printed.
+///
+/// See_Also: [prettyPrintInheritanceTree]
 package string formatTypeDifferences(TypeInfo expected, TypeInfo received, bool not)
 {
     static string indentAllExceptFirst(string text, int numSpaces)
@@ -497,13 +542,22 @@ package string formatTypeDifferences(TypeInfo expected, TypeInfo received, bool 
             .join("\n");
     }
 
-    return formatDifferences(
-        prettyPrint(expected),
-        indentAllExceptFirst(
-            prettyPrintInheritanceTree(received),
-            not ? 11 : 10
-        ),
-        not
+    // Format manually instead of using formatFailureMessage because
+    // here we actually don't want to put the multi-line inheritance
+    // on the line following the label, but rather on the same line.
+
+    string line1Label = (not ? "Forbidden: " : "Expected: ").color(fg.green);
+    string line1Value = prettyPrint(expected);
+
+    string line2Label = (not ? "Received:  " : "Received: ").color(fg.red);
+    string line2Value = indentAllExceptFirst(
+        prettyPrintInheritanceTree(received),
+        not ? 11 : 10
+    );
+
+    return (
+        line1Label ~ line1Value ~ "\n" ~
+        line2Label ~ line2Value ~ "\n"
     );
 }
 
