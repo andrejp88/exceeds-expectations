@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
-## Unreleased
+## [0.9.4] · 2022-06-05
 
 ### Added
 - Added overload of `toThrow` that checks for the right message.
@@ -213,3 +213,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [0.9.1]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.1
 [0.9.2]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.2
 [0.9.3]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.3
+[0.9.4]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.4
