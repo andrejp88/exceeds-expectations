@@ -134,12 +134,15 @@ public void main(string[] args)
     }
 
     // Throw
-    if (!matchFirst("throws exceptions", pattern).empty)
+    if (!matchFirst("throws exceptions toThrow", pattern).empty)
     {
         callCatchPrint(expect({ return; }).toThrow);
         callCatchPrint(expect({ throw new Exception("test"); }).toThrow!Error);
         callCatchPrint(expect({ throw new Exception("test"); }).not.toThrow);
         callCatchPrint(expect({ throw new Exception("test"); }).not.toThrow!Exception);
+        callCatchPrint(expect({ throw new Exception("test"); }).toThrow("a different message"));
+        callCatchPrint(expect({ throw new Exception("test"); }).toThrow!Error("test"));
+        callCatchPrint(expect({ throw new Exception("test"); }).not.toThrow("test"));
     }
 
     // Match

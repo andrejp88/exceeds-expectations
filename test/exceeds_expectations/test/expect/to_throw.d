@@ -74,6 +74,41 @@ unittest
     expect(c).toThrow!Exception;
 }
 
+@("Succeed if message matches")
+unittest
+{
+    class UnexpectedValueException : Exception
+    {
+        this(string msg, string file = __FILE__, size_t line = __LINE__, Throwable nextInChain = null)
+        pure nothrow @safe
+        {
+            super("Unexpected value: " ~ msg, file, line, nextInChain);
+        }
+    }
+
+    expect({
+        throw new UnexpectedValueException("spanish inquisition");
+    }).toThrow!UnexpectedValueException("Unexpected value: spanish inquisition");
+}
+
+@("Fail if message doesn't match")
+unittest
+{
+    class UnexpectedValueException : Exception
+    {
+        this(string msg, string file = __FILE__, size_t line = __LINE__, Throwable nextInChain = null)
+        pure nothrow @safe
+        {
+            super("Unexpected value: " ~ msg, file, line, nextInChain);
+        }
+    }
+
+    shouldFail(
+        expect({
+            throw new UnexpectedValueException("spanish inquisition");
+        }).toThrow!UnexpectedValueException("A different message")
+    );
+}
 
 @("Fail to compile if received is not callable")
 unittest

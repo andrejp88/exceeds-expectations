@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+### Added
+- Added overload of `toThrow` that checks for the right message.
+
 ### Changed
 - Added quotation marks around string fields when printing struct and
   class instances.

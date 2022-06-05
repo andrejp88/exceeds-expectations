@@ -421,6 +421,52 @@ public struct Expect(TReceived)
         );
     }
 
+    /// ditto
+    public void toThrow(TExpected : Throwable = Throwable)(string expectedMessage)
+    if (isCallable!TReceived)
+    {
+        completed = true;
+
+        try
+        {
+            received();
+        }
+        catch (Throwable e)             // @suppress(dscanner.suspicious.catch_em_all)
+        {
+            if (cast(TExpected) e is null)
+            {
+                fail(
+                    formatTypeDifferences(
+                        typeid(TExpected),
+                        typeid(e),
+                        false
+                    ) ~
+                    "Details:".color(fg.yellow) ~ "\n" ~
+                    prettyPrint(e)
+                );
+            }
+            else if (e.message != expectedMessage)
+            {
+                fail(
+                    formatFailureMessage(
+                        "Expected message", expectedMessage,
+                        "Received message", e.message.to!string,
+                        "Details", prettyPrint(e)
+                    )
+                );
+            }
+
+            return;
+        }
+
+        fail(
+            formatFailureMessage(
+                "Expected", prettyPrint(typeid(TExpected)),
+                "Received", "Nothing was thrown"
+            )
+        );
+    }
+
 
     /// Succeeds if `received` matches the regular expression
     /// `pattern`. Throws a [FailingExpectationError] otherwise.
