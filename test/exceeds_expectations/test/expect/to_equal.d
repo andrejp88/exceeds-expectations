@@ -123,3 +123,25 @@ unittest
 {
     shouldFail(expect(4.0).toEqual(40.0));
 }
+
+@("Arrays")
+unittest
+{
+    string[] witches = ["Esmerelda Weatherwax", "Gytha Ogg", "Magrat Garlick"];
+
+    expect(witches).toEqual(["Esmerelda Weatherwax", "Gytha Ogg", "Magrat Garlick"]);
+}
+
+@("Associative arrays")
+unittest
+{
+    string[string] aa = [
+        "name": "Mustrum",
+        "surname": "Ridcully",
+    ];
+
+    expect(aa).toEqual([
+        "name": "Mustrum",
+        "surname": "Ridcully",
+    ]);
+}

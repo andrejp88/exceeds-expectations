@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.9.5] · 2022-07-09
+
+### Fixed
+- Fixed `toEqual` failing to compile when comparing associative arrays.
+
+---
+
 ## [0.9.4] · 2022-06-05
 
 ### Added
