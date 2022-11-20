@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.9.6] · 2022-11-20
+
+### Fixed
+- Fixed `toEqual` failing to compile when structs containing associative arrays.
+- Allow caling `toEqual` when either operand is non-const.
+
+---
+
 ## [0.9.5] · 2022-07-09
 
 ### Fixed
@@ -222,3 +230,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [0.9.3]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.3
 [0.9.4]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.4
 [0.9.5]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.5
+[0.9.6]: https://gitlab.com/andrej88/exceeds-expectations/-/tree/v0.9.6
