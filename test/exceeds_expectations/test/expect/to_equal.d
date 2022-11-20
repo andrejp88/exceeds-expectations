@@ -145,3 +145,38 @@ unittest
         "surname": "Ridcully",
     ]);
 }
+
+@("Structs with associative arrays")
+unittest
+{
+    struct S
+    {
+        string[string] aa;
+    }
+
+    S s1 = S(["name": "Rincewind"]);
+
+    expect(s1).toEqual(S([
+        "name": "Rincewind",
+    ]));
+}
+
+@("Weird struct with a non-const toEquals")
+unittest
+{
+    struct Weird
+    {
+        int x;
+        uint opEqualsCallCount;
+
+        bool opEquals(R)(R other)
+        {
+            opEqualsCallCount++;
+            return this.x == other.x;
+        }
+    }
+
+    Weird w = Weird(2);
+
+    expect(w).toEqual(Weird(2));
+}

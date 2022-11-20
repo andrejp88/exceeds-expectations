@@ -32,4 +32,8 @@ private template FloatingPointBaseType(T)
     }
 }
 
-package enum bool canCompareForEquality(L, R) = __traits(compiles, rvalueOf!L == rvalueOf!R);
+// For some reason, this doesn't work properly if the __traits is
+// directly on the RHS, but does work when it's in a function body.
+package enum bool canCompareForEquality(L, R) = function() {
+    return __traits(compiles, rvalueOf!L == rvalueOf!R);
+}();

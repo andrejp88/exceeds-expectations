@@ -72,15 +72,14 @@ public struct Expect(TReceived)
 
     /// Succeeds if `received == expected`. Throws a
     /// [FailingExpectationError] otherwise.
-    public void toEqual(TExpected)(const auto ref TExpected expected)
+    public void toEqual(TExpected)(auto ref const(TExpected) expected)
     if (
-        canCompareForEquality!(TReceived, TExpected) &&
-        !(isAssociativeArray!TReceived && isAssociativeArray!TExpected)
+        canCompareForEquality!(const(TReceived), const(TExpected))
     )
     {
         completed = true;
 
-        if (received == expected) return;
+        if ((cast(const(TReceived)) received) == expected) return;
 
         fail(
             formatFailureMessage(
@@ -91,22 +90,20 @@ public struct Expect(TReceived)
     }
 
     /// ditto
-    public void toEqual(TExpected)(const auto ref TExpected expected)
+    public void toEqual(TExpected)(auto ref TExpected expected)
     if (
-        canCompareForEquality!(TReceived, TExpected) &&
-        isAssociativeArray!TReceived &&
-        isAssociativeArray!TExpected
+        !canCompareForEquality!(const(TReceived), const(TExpected)) &&
+        canCompareForEquality!(TReceived, TExpected)
     )
     {
         completed = true;
 
-        const(TReceived) constReceived = received;
-        if (constReceived == expected) return;
+        if (received == expected) return;
 
         fail(
             formatFailureMessage(
                 "Expected", prettyPrint(expected),
-                "Received", prettyPrint(constReceived),
+                "Received", prettyPrint(received),
             )
         );
     }

@@ -58,10 +58,26 @@ struct ExpectNot(TReceived)
 
     /// Succeeds if `received != expected`. Throws a
     /// [FailingExpectationError] otherwise.
-    public void toEqual(TExpected)(const auto ref TExpected expected)
+    public void toEqual(TExpected)(auto ref const(TExpected) expected)
     if (
-        canCompareForEquality!(TReceived, TExpected) &&
-        !(isAssociativeArray!TReceived && isAssociativeArray!TExpected)
+        canCompareForEquality!(const(TReceived), const(TExpected))
+    )
+    {
+        completed = true;
+
+        if ((cast(const(TReceived)) received) != expected) return;
+
+        fail(formatFailureMessage(
+            "Forbidden", prettyPrint(expected),
+            "Received", prettyPrint(received),
+        ));
+    }
+
+    /// ditto
+    public void toEqual(TExpected)(auto ref TExpected expected)
+    if (
+        !canCompareForEquality!(const(TReceived), const(TExpected)) &&
+        canCompareForEquality!(TReceived, TExpected)
     )
     {
         completed = true;
@@ -71,25 +87,6 @@ struct ExpectNot(TReceived)
         fail(formatFailureMessage(
             "Forbidden", prettyPrint(expected),
             "Received", prettyPrint(received),
-        ));
-    }
-
-    /// ditto
-    public void toEqual(TExpected)(const auto ref TExpected expected)
-    if (
-        canCompareForEquality!(TReceived, TExpected) &&
-        isAssociativeArray!TReceived &&
-        isAssociativeArray!TExpected
-    )
-    {
-        completed = true;
-
-        const(TReceived) constReceived = received;
-        if (constReceived != expected) return;
-
-        fail(formatFailureMessage(
-            "Forbidden", prettyPrint(expected),
-            "Received", prettyPrint(constReceived),
         ));
     }
 
