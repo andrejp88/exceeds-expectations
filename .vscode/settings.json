@@ -1,0 +1,133 @@
+{
+  "gitmoji.additionalEmojis": [
+    {
+      "emoji": "🎁",
+      "description": "Add new functionality"
+    },
+    {
+      "emoji": "🚩",
+      "description": "Update feature flags"
+    },
+    {
+      "emoji": "🐞",
+      "description": "Fix a bug"
+    },
+    {
+      "emoji": "🥀",
+      "description": "Mark code as deprecated"
+    },
+    {
+      "emoji": "👻",
+      "description": "Remove code or functionality"
+    },
+    {
+      "emoji": "✏️",
+      "description": "Update user-facing text"
+    },
+    {
+      "emoji": "🗺️",
+      "description": "Update localization files"
+    },
+    {
+      "emoji": "💄",
+      "description": "Update visual style and effects"
+    },
+    {
+      "emoji": "🎬",
+      "description": "Update assets or media files"
+    },
+    {
+      "emoji": "♿️",
+      "description": "Update support for assistive technologies"
+    },
+    {
+      "emoji": "🥚",
+      "description": "Update easter eggs"
+    },
+    {
+      "emoji": "📈",
+      "description": "Update analytics or telemetry code"
+    },
+    {
+      "emoji": "🔊",
+      "description": "Update diagnostic and debug log messages"
+    },
+    {
+      "emoji": "⚡",
+      "description": "Improve performance"
+    },
+    {
+      "emoji": "🦺",
+      "description": "Improve error handling and code safety"
+    },
+    {
+      "emoji": "🖇️",
+      "description": "Update dependencies, dependency versions, or adapters to external APIs"
+    },
+    {
+      "emoji": "📓",
+      "description": "Update documentation for developers (e.g. technical readmes, comments, and license files)"
+    },
+    {
+      "emoji": "📚",
+      "description": "Update documentation for users (e.g. readmes)"
+    },
+    {
+      "emoji": "♻️",
+      "description": "Refactor code"
+    },
+    {
+      "emoji": "🧹",
+      "description": "Fix warnings, formatting, and code cleanliness"
+    },
+    {
+      "emoji": "🔩",
+      "description": "Update infrastructure (e.g. CI, deployment)"
+    },
+    {
+      "emoji": "🧪",
+      "description": "Update tests"
+    },
+    {
+      "emoji": "🔨",
+      "description": "Update local development tooling (e.g. scripts, configs, ignores, or container images)"
+    },
+    {
+      "emoji": "🧫",
+      "description": "Try something out"
+    },
+    {
+      "emoji": "💩",
+      "description": "When you want to \"🧫 Try something out\" but you have no idea know what you're doing :D"
+    },
+    {
+      "emoji": "🕵️",
+      "description": "Investigate problems, profile performance, or run experiments"
+    },
+    {
+      "emoji": "🐣",
+      "description": "Start a new project, sub-project, or repository sub-module"
+    },
+    {
+      "emoji": "👥",
+      "description": "Update contributors list"
+    },
+    {
+      "emoji": "🗂️",
+      "description": "Reorganize repository files"
+    },
+    {
+      "emoji": "🔖",
+      "description": "Release a new version (create a tag at this commit)"
+    },
+    {
+      "emoji": "⏪️",
+      "description": "Revert changes"
+    },
+    {
+      "emoji": "🔀",
+      "description": "Merge branches"
+    }
+  ],
+  "gitmoji.onlyUseAdditionalEmojis": true
+}
